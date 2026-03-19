@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Workflow Editor - VideoGen AI</title>
+  <style>
+    /* ── Workflow Toolbar ── */
+    .workflow-toolbar {
+      height: 50px;
+      background: rgba(13,13,26,0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      z-index: 100;
+    }
+    .workflow-toolbar .toolbar-title {
+      font-size: 16px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-right: 16px;
+      white-space: nowrap;
+    }
+    .toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.08);
+      margin: 0 4px;
+    }
+    .toolbar-spacer { flex: 1; }
+    .wf-toolbar-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      font-family: 'Manrope', sans-serif;
+    }
+    .wf-toolbar-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .wf-toolbar-btn.primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      color: #fff;
+    }
+    .wf-toolbar-btn.primary:hover {
+      filter: brightness(1.15);
+    }
+    .wf-toolbar-btn.success {
+      background: rgba(39,174,96,0.15);
+      border-color: rgba(39,174,96,0.3);
+      color: #27ae60;
+    }
+    .wf-toolbar-btn.success:hover {
+      background: rgba(39,174,96,0.25);
+      color: #2ecc71;
+    }
+    .wf-toolbar-btn.danger {
+      background: rgba(231,76,60,0.1);
+      border-color: rgba(231,76,60,0.2);
+      color: rgba(231,76,60,0.7);
+    }
+    .wf-toolbar-btn.danger:hover {
+      background: rgba(231,76,60,0.2);
+      color: #e74c3c;
+    }
+
+    /* ── Add Node Dropdown ── */
+    .add-node-wrapper {
+      position: relative;
+    }
+    .add-node-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 240px;
+      background: #1a1a3e;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      z-index: 500;
+      display: none;
+      overflow: hidden;
+    }
+    .add-node-dropdown.open {
+      display: block;
+    }
+    .add-node-dropdown .dropdown-category {
+      padding: 8px 14px 4px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .add-node-dropdown .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.1s;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      font-family: 'Manrope', sans-serif;
+    }
+    .add-node-dropdown .dropdown-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .add-node-dropdown .dropdown-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Canvas ── */
+    .workflow-canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #0a0a14;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 20px 20px;
+      cursor: grab;
+    }
+    .workflow-canvas.panning {
+      cursor: grabbing;
+    }
+    .workflow-canvas.connecting {
+      cursor: crosshair;
+    }
+
+    /* ── Canvas transform layer ── */
+    #canvasTransform {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: 0 0;
+    }
+
+    /* ── Connections SVG ── */
+    .wf-connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: visible;
+    }
+    .wf-connection {
+      stroke-width: 2;
+      fill: none;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+    .wf-connection:hover {
+      stroke-width: 3;
+    }
+    .wf-connection.text { stroke: #9b59b6; }
+    .wf-connection.image { stroke: #27ae60; }
+    .wf-connection.video { stroke: #e74c3c; }
+    .wf-connection.active { stroke-dasharray: 8 4; animation: flowDash 0.6s linear infinite; }
+    @keyframes flowDash { to { stroke-dashoffset: -12; } }
+    .wf-temp-connection {
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 6 3;
+      opacity: 0.6;
+    }
+
+    /* ── Nodes ── */
+    .wf-node {
+      position: absolute;
+      width: 220px;
+      background: rgba(20,20,40,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      overflow: visible;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      cursor: move;
+      user-select: none;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      z-index: 1;
+    }
+    .wf-node:hover {
+      border-color: rgba(255,255,255,0.18);
+    }
+    .wf-node.selected {
+      border-color: #667eea;
+      box-shadow: 0 0 20px rgba(102,126,234,0.3);
+      z-index: 2;
+    }
+    .wf-node.running {
+      border-color: #f59e0b;
+      box-shadow: 0 0 24px rgba(245,158,11,0.25);
+    }
+    .wf-node-header {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 11px 11px 0 0;
+    }
+    .wf-node-body {
+      padding: 8px 12px 10px;
+    }
+    .wf-port-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+    .wf-port-row.input-only { justify-content: flex-start; gap: 8px; }
+    .wf-port-row.output-only { justify-content: flex-end; gap: 8px; }
+    .wf-port {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid;
+      cursor: crosshair;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .wf-port:hover {
+      transform: scale(1.3);
+    }
+    .wf-port.text { border-color: #9b59b6; background: rgba(155,89,182,0.3); }
+    .wf-port.image { border-color: #27ae60; background: rgba(39,174,96,0.3); }
+    .wf-port.video { border-color: #e74c3c; background: rgba(231,76,60,0.3); }
+    .wf-port.compatible {
+      box-shadow: 0 0 10px currentColor;
+      animation: portPulse 1s ease-in-out infinite;
+    }
+    @keyframes portPulse {
+      50% { transform: scale(1.35); }
+    }
+
+    /* ── Node parameter inputs ── */
+    .wf-param {
+      margin: 6px 0;
+    }
+    .wf-param label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      display: block;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .wf-param input,
+    .wf-param select,
+    .wf-param textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 11px;
+      padding: 6px 8px;
+      outline: none;
+      font-family: 'Manrope', sans-serif;
+      transition: border-color 0.15s;
+    }
+    .wf-param input:focus,
+    .wf-param select:focus,
+    .wf-param textarea:focus {
+      border-color: rgba(102,126,234,0.5);
+    }
+    .wf-param textarea {
+      min-height: 50px;
+      resize: vertical;
+    }
+    .wf-param select option {
+      background: #1a1a3e;
+    }
+
+    /* ── Run button on AI nodes ── */
+    .wf-run-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 6px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Manrope', sans-serif;
+      transition: filter 0.15s;
+    }
+    .wf-run-btn:hover {
+      filter: brightness(1.15);
+    }
+    .wf-run-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .wf-credit-cost {
+      font-size: 10px;
+      color: rgba(245,158,11,0.8);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* ── Status badge on node ── */
+    .wf-node-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .wf-node-status.idle { color: rgba(255,255,255,0.3); }
+    .wf-node-status.running { color: #f59e0b; }
+    .wf-node-status.done { color: #27ae60; }
+    .wf-node-status.error { color: #e74c3c; }
+
+    /* ── Properties Panel ── */
+    .properties-panel {
+      position: fixed;
+      top: 0;
+      right: -340px;
+      width: 340px;
+      height: 100vh;
+      background: #12122a;
+      border-left: 1px solid rgba(255,255,255,0.08);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Manrope', sans-serif;
+    }
+    .properties-panel.open {
+      right: 0;
+    }
+    .properties-panel .pp-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .properties-panel .pp-header .pp-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .properties-panel .pp-header .pp-color-bar {
+      width: 4px;
+      height: 20px;
+      border-radius: 2px;
+    }
+    .properties-panel .pp-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+    .properties-panel .pp-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .properties-panel .pp-body {
+      flex: 1;
+      padding: 16px 20px;
+      overflow-y: auto;
+    }
+    .pp-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 700;
+      margin: 16px 0 8px;
+    }
+    .pp-section-title:first-child { margin-top: 0; }
+    .pp-field { margin-bottom: 12px; }
+    .pp-field label {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .pp-field input,
+    .pp-field select,
+    .pp-field textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      padding: 8px 12px;
+      outline: none;
+      font-family: 'Manrope', sans-serif;
+    }
+    .pp-field input:focus,
+    .pp-field select:focus,
+    .pp-field textarea:focus {
+      border-color: rgba(102,126,234,0.5);
+    }
+    .pp-field textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .pp-field select option {
+      background: #1a1a3e;
+    }
+    .pp-connection-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .pp-connection-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .pp-connection-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .pp-run-section {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .pp-run-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Manrope', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: filter 0.15s;
+    }
+    .pp-run-btn:hover { filter: brightness(1.15); }
+    .pp-credit-info {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(245,158,11,0.7);
+      margin-top: 6px;
+    }
+
+    /* ── Node Picker Modal ── */
+    .node-picker-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .node-picker-overlay.open {
+      display: flex;
+    }
+    .node-picker {
+      width: 360px;
+      max-height: 500px;
+      background: #1a1a3e;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .node-picker-search {
+      width: 100%;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      font-family: 'Manrope', sans-serif;
+    }
+    .node-picker-search::placeholder {
+      color: rgba(255,255,255,0.25);
+    }
+    .node-picker-list {
+      max-height: 420px;
+      overflow-y: auto;
+      padding-bottom: 8px;
+    }
+    .node-picker-category {
+      padding: 10px 16px 4px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .node-picker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .node-picker-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .node-picker-item.hidden {
+      display: none;
+    }
+    .node-picker-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .node-picker-name {
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+    }
+    .node-picker-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      margin-left: auto;
+    }
+
+    /* ── Canvas empty state ── */
+    .canvas-empty-state {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .canvas-empty-state i {
+      font-size: 48px;
+      color: rgba(255,255,255,0.06);
+      margin-bottom: 16px;
+    }
+    .canvas-empty-state p {
+      color: rgba(255,255,255,0.12);
+      font-size: 14px;
+      margin: 0;
+    }
+    .canvas-empty-state .shortcut-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.08);
+      margin-top: 6px;
+    }
+
+    /* ── Minimap ── */
+    .wf-minimap {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 160px;
+      height: 100px;
+      background: rgba(13,13,26,0.85);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      z-index: 50;
+      overflow: hidden;
+    }
+    .wf-minimap-viewport {
+      position: absolute;
+      border: 1px solid rgba(102,126,234,0.5);
+      background: rgba(102,126,234,0.05);
+      border-radius: 2px;
+    }
+    .wf-minimap-node {
+      position: absolute;
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    /* ── Zoom display ── */
+    .zoom-display {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Scrollbar styling ── */
+    .properties-panel::-webkit-scrollbar,
+    .node-picker-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .properties-panel::-webkit-scrollbar-track,
+    .node-picker-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .properties-panel::-webkit-scrollbar-thumb,
+    .node-picker-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+
+    /* ── Toast notifications ── */
+    .wf-toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+    .wf-toast {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(30,30,60,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      animation: toastIn 0.25s ease-out;
+      font-family: 'Manrope', sans-serif;
+    }
+    .wf-toast.success { border-color: rgba(39,174,96,0.3); }
+    .wf-toast.error { border-color: rgba(231,76,60,0.3); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; overflow:hidden; background:#0a0a14; font-family:'Manrope',sans-serif;">
+  <%- include('partials/sidebar') %>
+
+  <div class="dash-main" style="margin-left:260px; height:100vh; display:flex; flex-direction:column; overflow:hidden;">
+
+    <!-- ═══════ Toolbar ═══════ -->
+    <div class="workflow-toolbar">
+      <span class="toolbar-title"><i class="fa-solid fa-diagram-project" style="margin-right:6px;"></i> Workflow</span>
+      <div class="toolbar-divider"></div>
+
+      <!-- Add Node -->
+      <div class="add-node-wrapper">
+        <button class="wf-toolbar-btn primary" id="btnAddNode">
+          <i class="fa-solid fa-plus"></i> Add Node
+        </button>
+        <div class="add-node-dropdown" id="addNodeDropdown">
+          <div class="dropdown-category">Text</div>
+          <div class="dropdown-item" data-type="prompt"><span class="dropdown-dot" style="background:#9b59b6;"></span> Prompt</div>
+          <div class="dropdown-item" data-type="prompt_enhancer"><span class="dropdown-dot" style="background:#8e44ad;"></span> Prompt Enhancer</div>
+          <div class="dropdown-category">Image</div>
+          <div class="dropdown-item" data-type="image_input"><span class="dropdown-dot" style="background:#27ae60;"></span> Image Input</div>
+          <div class="dropdown-category">Video</div>
+          <div class="dropdown-item" data-type="text_to_video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video</div>
+          <div class="dropdown-item" data-type="image_to_video"><span class="dropdown-dot" style="background:#c0392b;"></span> Image to Video</div>
+          <div class="dropdown-category">Utility</div>
+          <div class="dropdown-item" data-type="merge_videos"><span class="dropdown-dot" style="background:#3498db;"></span> Merge Videos</div>
+          <div class="dropdown-item" data-type="output"><span class="dropdown-dot" style="background:#f39c12;"></span> Output / Download</div>
+        </div>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <button class="wf-toolbar-btn success" id="btnRunAll" title="Run entire workflow">
+        <i class="fa-solid fa-play"></i> Run All
+      </button>
+      <button class="wf-toolbar-btn" id="btnSave" title="Save workflow (Ctrl+S)">
+        <i class="fa-solid fa-floppy-disk"></i> Save
+      </button>
+      <button class="wf-toolbar-btn" id="btnLoad" title="Load workflow">
+        <i class="fa-solid fa-folder-open"></i> Load
+      </button>
+
+      <div class="toolbar-spacer"></div>
+
+      <button class="wf-toolbar-btn" id="btnZoomOut" title="Zoom Out (-)">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <span class="zoom-display" id="zoomDisplay">100%</span>
+      <button class="wf-toolbar-btn" id="btnZoomIn" title="Zoom In (+)">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <button class="wf-toolbar-btn" id="btnFitView" title="Fit all nodes in view">
+        <i class="fa-solid fa-expand"></i>
+      </button>
+      <div class="toolbar-divider"></div>
+      <button class="wf-toolbar-btn danger" id="btnClear" title="Clear canvas">
+        <i class="fa-solid fa-trash-can"></i> Clear
+      </button>
+    </div>
+
+    <!-- ═══════ Canvas ═══════ -->
+    <div id="workflowCanvas" class="workflow-canvas">
+      <div id="canvasTransform">
+        <svg class="wf-connections" id="svgConnections"></svg>
+      </div>
+
+      <!-- Empty state -->
+      <div class="canvas-empty-state" id="canvasEmpty">
+        <i class="fa-solid fa-diagram-project"></i>
+        <p>Double-click to add a node</p>
+        <p class="shortcut-hint">or press <kbd style="padding:1px 5px;border-radius:3px;background:rgba(255,255,255,0.06);font-size:10px;">Space</kbd> to search</p>
+      </div>
+
+      <!-- Minimap -->
+      <div class="wf-minimap" id="minimap"></div>
+    </div>
+
+    <!-- ═══════ Properties Panel ═══════ -->
+    <div id="propertiesPanel" class="properties-panel">
+      <div class="pp-header">
+        <div class="pp-title">
+          <span class="pp-color-bar" id="ppColorBar"></span>
+          <span id="ppNodeName">Node</span>
+        </div>
+        <button class="pp-close" id="ppClose" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="pp-body" id="ppBody">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="pp-run-section" id="ppRunSection" style="display:none;">
+        <button class="pp-run-btn" id="ppRunBtn">
+          <i class="fa-solid fa-play"></i> Run This Node
+        </button>
+        <div class="pp-credit-info" id="ppCreditInfo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Node Picker Modal ═══════ -->
+  <div class="node-picker-overlay" id="nodePickerOverlay">
+    <div class="node-picker">
+      <input type="text" class="node-picker-search" id="nodePickerSearch" placeholder="Search nodes..." autofocus>
+      <div class="node-picker-list" id="nodePickerList">
+        <div class="node-picker-category">Text</div>
+        <div class="node-picker-item" data-type="prompt">
+          <span class="node-picker-dot" style="background:#9b59b6;"></span>
+          <span class="node-picker-name">Prompt</span>
+          <span class="node-picker-desc">Text input</span>
+        </div>
+        <div class="node-picker-item" data-type="prompt_enhancer">
+          <span class="node-picker-dot" style="background:#8e44ad;"></span>
+          <span class="node-picker-name">Prompt Enhancer</span>
+          <span class="node-picker-desc">AI rewrite</span>
+        </div>
+        <div class="node-picker-category">Image</div>
+        <div class="node-picker-item" data-type="image_input">
+          <span class="node-picker-dot" style="background:#27ae60;"></span>
+          <span class="node-picker-name">Image Input</span>
+          <span class="node-picker-desc">Upload image</span>
+        </div>
+        <div class="node-picker-category">Video</div>
+        <div class="node-picker-item" data-type="text_to_video">
+          <span class="node-picker-dot" style="background:#e74c3c;"></span>
+          <span class="node-picker-name">Text to Video</span>
+          <span class="node-picker-desc">AI generate</span>
+        </div>
+        <div class="node-picker-item" data-type="image_to_video">
+          <span class="node-picker-dot" style="background:#c0392b;"></span>
+          <span class="node-picker-name">Image to Video</span>
+          <span class="node-picker-desc">AI animate</span>
+        </div>
+        <div class="node-picker-category">Utility</div>
+        <div class="node-picker-item" data-type="merge_videos">
+          <span class="node-picker-dot" style="background:#3498db;"></span>
+          <span class="node-picker-name">Merge Videos</span>
+          <span class="node-picker-desc">Combine clips</span>
+        </div>
+        <div class="node-picker-item" data-type="output">
+          <span class="node-picker-dot" style="background:#f39c12;"></span>
+          <span class="node-picker-name">Output / Download</span>
+          <span class="node-picker-desc">Export result</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Toast Container ═══════ -->
+  <div class="wf-toast-container" id="toastContainer"></div>
+
+  <!-- Hidden file input for load -->
+  <input type="file" id="fileLoadInput" accept=".json" style="display:none;">
+
+  <script src="/public/js/workflow.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof WorkflowEditor !== 'undefined') {
+        window.workflowEditor = new WorkflowEditor('workflowCanvas');
+      }
+    });
+  </script>
+</body>
+</html>
