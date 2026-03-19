@@ -499,7 +499,9 @@
     });
 
     dropdown.querySelectorAll('.dropdown-item').forEach(function(item) {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
         var type = item.getAttribute('data-type');
         // Place at center of canvas
         var rect = canvas.container.getBoundingClientRect();
@@ -517,6 +519,22 @@
         showProperties(id);
       });
     });
+
+    // ── Pre-load starter workflow ──
+    // Add a sample pipeline so users see how it works immediately
+    (function() {
+      var p1 = canvas.addNode('prompt', 80, 120);
+      var p2 = canvas.addNode('prompt-enhancer', 380, 80);
+      var t2v = canvas.addNode('text-to-video', 700, 100);
+      var out = canvas.addNode('video-output', 1020, 120);
+      // Connect: Prompt -> Enhancer -> Text-to-Video -> Output
+      canvas.connections.push({ fromNode: p1, fromPort: 'text', toNode: p2, toPort: 'text', type: 'text' });
+      canvas.connections.push({ fromNode: p2, fromPort: 'enhanced', toNode: t2v, toPort: 'prompt', type: 'text' });
+      canvas.connections.push({ fromNode: t2v, fromPort: 'video', toNode: out, toPort: 'video', type: 'video' });
+      canvas.render();
+      canvas.fitView();
+      toast('Starter workflow loaded — edit nodes and hit Run All!');
+    })();
 
     // ── Run All ──
     document.getElementById('btnRunAll').addEventListener('click', function() {
