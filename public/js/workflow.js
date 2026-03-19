@@ -742,55 +742,53 @@ class WorkflowCanvas {
       }
       .wf-connection-path:hover { stroke-width: 4px !important; }
 
-      /* Model Picker Modal */
-      .wf-model-picker-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-        z-index: 9999; display: flex; align-items: center; justify-content: center;
+      /* Model Picker Dropdown */
+      .wf-model-picker-dropdown {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%) translateY(-10px);
+        width: 480px; max-height: 420px; z-index: 2000;
+        background: rgba(25,25,35,0.97); backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+        box-shadow: 0 16px 60px rgba(0,0,0,0.6);
+        opacity: 0; transition: opacity 0.2s, transform 0.2s;
+        overflow: hidden;
       }
-      .wf-model-picker {
-        width: 520px; max-height: 600px; background: rgba(30,30,40,0.97);
-        border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
-        overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-        backdrop-filter: blur(24px);
+      .wf-model-picker-dropdown.open { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .wf-mpd-header {
+        padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
       }
-      .wf-model-picker-header {
-        padding: 24px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      .wf-mpd-title { font-size: 16px; font-weight: 800; color: #fff; }
+      .wf-mpd-subtitle { font-size: 11px; color: rgba(255,255,255,0.3); font-family: monospace; margin-top: 2px; }
+      .wf-mpd-close {
+        width: 28px; height: 28px; border-radius: 6px; border: none;
+        background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4);
+        font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
       }
-      .wf-model-picker-title {
-        font-size: 20px; font-weight: 800; color: #fff; margin: 0;
+      .wf-mpd-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+      .wf-mpd-grid {
+        display: grid; grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px; padding: 12px 16px; overflow-y: auto; max-height: 340px;
       }
-      .wf-model-picker-subtitle {
-        font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px;
-        font-family: monospace;
+      .wf-mpd-card {
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px; padding: 16px 10px; text-align: center;
+        cursor: pointer; transition: all 0.15s;
       }
-      .wf-model-picker-grid {
-        display: grid; grid-template-columns: 1fr 1fr;
-        gap: 12px; padding: 20px 24px; overflow-y: auto; max-height: 460px;
-      }
-      .wf-model-card {
-        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px; padding: 24px 16px; text-align: center;
-        cursor: pointer; transition: all 0.2s;
-      }
-      .wf-model-card:hover {
-        background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2);
+      .wf-mpd-card:hover {
+        background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18);
         transform: translateY(-2px);
       }
-      .wf-model-card-icon {
-        display: block; margin: 0 auto 12px; height: 40px; line-height: 40px;
+      .wf-mpd-icon {
+        display: block; height: 36px; line-height: 36px; margin-bottom: 8px;
         color: rgba(255,255,255,0.7); user-select: none;
       }
-      .wf-model-card-name {
-        font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
+      .wf-mpd-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); }
+      .wf-model-badge {
+        padding: 4px 12px; font-size: 10px; color: rgba(255,255,255,0.4);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        display: flex; align-items: center; gap: 6px;
       }
-      .wf-model-picker-close {
-        position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
-        border-radius: 8px; border: none; background: rgba(255,255,255,0.06);
-        color: rgba(255,255,255,0.4); font-size: 18px; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-      }
-      .wf-model-picker-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
     `;
     document.head.appendChild(style);
   }
@@ -1018,6 +1016,7 @@ class WorkflowCanvas {
       if (this.panning) {
         this.panning = false;
         el.style.cursor = 'grab';
+        this._autoSave();
         return;
       }
 
@@ -1665,6 +1664,10 @@ class WorkflowCanvas {
     });
 
     this._drawMinimap();
+
+    // Debounced auto-save
+    clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => this._autoSave(), 500);
   }
 
   // -----------------------------------------------------------------------
@@ -1886,68 +1889,100 @@ class WorkflowCanvas {
   _showModelPicker(nodeType, x, y) {
     const catalog = MODEL_CATALOG[nodeType];
     if (!catalog) {
-      // No model picker needed, just add node directly
       return this.addNode(nodeType, x, y);
     }
 
-    const overlay = document.createElement('div');
-    overlay.className = 'wf-model-picker-overlay';
+    // Remove any existing picker
+    const old = document.querySelector('.wf-model-picker-dropdown');
+    if (old) old.remove();
 
-    const picker = document.createElement('div');
-    picker.className = 'wf-model-picker';
-    picker.style.position = 'relative';
+    // Create dropdown panel that slides down from top
+    const dropdown = document.createElement('div');
+    dropdown.className = 'wf-model-picker-dropdown';
 
-    // Close button
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'wf-model-picker-close';
-    closeBtn.innerHTML = '\u2715';
-    closeBtn.addEventListener('click', () => overlay.remove());
-    picker.appendChild(closeBtn);
-
-    // Header
+    // Header row
     const header = document.createElement('div');
-    header.className = 'wf-model-picker-header';
-    header.innerHTML = `<div class="wf-model-picker-title">${catalog.title}</div><div class="wf-model-picker-subtitle">${catalog.subtitle}</div>`;
-    picker.appendChild(header);
+    header.className = 'wf-mpd-header';
+    header.innerHTML = `<div><div class="wf-mpd-title">${catalog.title}</div><div class="wf-mpd-subtitle">${catalog.subtitle}</div></div>`;
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'wf-mpd-close';
+    closeBtn.innerHTML = '✕';
+    closeBtn.addEventListener('click', () => dropdown.remove());
+    header.appendChild(closeBtn);
+    dropdown.appendChild(header);
 
     // Grid
     const grid = document.createElement('div');
-    grid.className = 'wf-model-picker-grid';
+    grid.className = 'wf-mpd-grid';
 
     catalog.models.forEach(model => {
       const card = document.createElement('div');
-      card.className = 'wf-model-card';
-      card.innerHTML = `<span class="wf-model-card-icon" style="${model.iconStyle || ''}">${model.icon}</span><div class="wf-model-card-name">${model.name}</div>`;
+      card.className = 'wf-mpd-card';
+      card.innerHTML = `<span class="wf-mpd-icon" style="${model.iconStyle || ''}">${model.icon}</span><div class="wf-mpd-name">${model.name}</div>`;
       card.addEventListener('click', () => {
-        overlay.remove();
+        dropdown.remove();
         const id = this.addNode(nodeType, x, y);
-        // Set the selected model on the node
         const node = this.nodes.get(id);
         if (node) {
           node.values.model = model.id;
           node.selectedModelName = model.name;
           node.selectedModelIcon = model.icon;
           node.selectedModelIconStyle = model.iconStyle || '';
-          // Update the node header to show model name
           const titleEl = node.el.querySelector('.wf-title');
           if (titleEl) titleEl.textContent = model.name;
-          // Add model badge under header
           const badge = document.createElement('div');
-          badge.style.cssText = 'padding:4px 12px;font-size:10px;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:6px;';
+          badge.className = 'wf-model-badge';
           badge.innerHTML = `<span style="${model.iconStyle || ''}font-size:14px;">${model.icon}</span><span>${model.name}</span>`;
           node.el.querySelector('.wf-node-header').after(badge);
         }
+        this._autoSave();
       });
       grid.appendChild(card);
     });
 
-    picker.appendChild(grid);
-    overlay.appendChild(picker);
+    dropdown.appendChild(grid);
+    this.container.appendChild(dropdown);
 
-    // Click overlay to close
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    // Animate in
+    requestAnimationFrame(() => dropdown.classList.add('open'));
 
-    document.body.appendChild(overlay);
+    // Click outside to close
+    const handler = (e) => {
+      if (!dropdown.contains(e.target)) { dropdown.remove(); document.removeEventListener('mousedown', handler); }
+    };
+    setTimeout(() => document.addEventListener('mousedown', handler), 50);
+  }
+
+  // Auto-save workflow to localStorage
+  _autoSave() {
+    try {
+      const state = {
+        workflow: JSON.parse(this.exportWorkflow()),
+        pan: { ...this.pan },
+        zoom: this.zoom
+      };
+      localStorage.setItem('wf_autosave', JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  // Load from localStorage
+  _autoLoad() {
+    try {
+      const raw = localStorage.getItem('wf_autosave');
+      if (!raw) return false;
+      const state = JSON.parse(raw);
+      if (state.workflow && state.workflow.nodes && state.workflow.nodes.length > 0) {
+        this.importWorkflow(state.workflow);
+        if (state.pan) { this.pan = state.pan; }
+        if (state.zoom) { this.zoom = state.zoom; }
+        this._updateTransform();
+        this._drawGrid();
+        this._drawMinimap();
+        this.render();
+        return true;
+      }
+    } catch (e) {}
+    return false;
   }
 
   async runNode(id) {
