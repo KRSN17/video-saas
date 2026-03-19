@@ -523,12 +523,19 @@
     var canvas = new WorkflowCanvas('workflowCanvas');
     window._wfCanvas = canvas;
 
+    // ── Immediate save function ──
+    function saveNow() {
+      if (!workflowId || !canvas.nodes.size) return;
+      var workflowData = JSON.parse(canvas.exportWorkflow());
+      navigator.sendBeacon('/api/workflows/' + workflowId + '/save?token=' + token,
+        new Blob([JSON.stringify({ data: workflowData })], { type: 'application/json' })
+      );
+    }
+
     // ── Override auto-save to save to server ──
     var originalAutoSave = canvas._autoSave.bind(canvas);
     canvas._autoSave = function() {
-      // Still save to localStorage as backup
       originalAutoSave();
-      // Also save to server
       if (workflowId) {
         clearTimeout(canvas._serverSaveTimer);
         canvas._serverSaveTimer = setTimeout(function() {
@@ -538,9 +545,27 @@
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: workflowData })
           }).catch(function() {});
-        }, 1500);
+        }, 800);
       }
     };
+
+    // ── Save on exit (page unload, tab close, navigate away) ──
+    window.addEventListener('beforeunload', function() { saveNow(); });
+    window.addEventListener('pagehide', function() { saveNow(); });
+
+    // ── Save immediately when clicking any sidebar link ──
+    document.querySelectorAll('.dash-sidebar a, a[href="/workflows"]').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (workflowId && canvas.nodes.size) {
+          var workflowData = JSON.parse(canvas.exportWorkflow());
+          fetch('/api/workflows/' + workflowId, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: workflowData })
+          }).catch(function() {});
+        }
+      });
+    });
 
     // ── Zoom display sync ──
     var zoomEl = document.getElementById('zoomDisplay');
@@ -601,6 +626,10 @@
       .then(function(res) {
         if (res.workflow && res.workflow.data) {
           canvas.importWorkflow(res.workflow.data);
+          // If no saved pan/zoom, fit all nodes into view
+          if (!res.workflow.data.pan && !res.workflow.data.zoom) {
+            canvas.fitView();
+          }
           // Update toolbar title to show workflow name
           var titleEl = document.querySelector('.toolbar-title');
           if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-diagram-project" style="margin-right:6px;"></i> ' + (res.workflow.name || 'Workflow');

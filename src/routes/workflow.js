@@ -1,14 +1,28 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const prisma = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const router = express.Router();
+
+// Auth middleware that also checks query param token (for sendBeacon)
+const authOrQuery = async (req, res, next) => {
+  try {
+    let token = req.headers.authorization?.split(' ')[1] || req.cookies?.token || req.query?.token;
+    if (!token) return res.status(401).json({ error: 'Auth required' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (!user) return res.status(401).json({ error: 'User not found' });
+    req.user = user;
+    next();
+  } catch { res.status(401).json({ error: 'Invalid token' }); }
+};
 
 // List all workflows for user
 router.get('/', authenticate, async (req, res) => {
   const workflows = await prisma.workflow.findMany({
     where: { userId: req.user.id },
     orderBy: { updatedAt: 'desc' },
-    select: { id: true, name: true, isActive: true, createdAt: true, updatedAt: true }
+    select: { id: true, name: true, isActive: true, data: true, createdAt: true, updatedAt: true }
   });
   res.json({ workflows });
 });
@@ -31,15 +45,19 @@ router.get('/:id', authenticate, async (req, res) => {
   res.json({ workflow });
 });
 
-// Update workflow (save canvas data, rename)
-router.put('/:id', authenticate, async (req, res) => {
-  const { name, data } = req.body;
-  const update = {};
-  if (name !== undefined) update.name = name;
-  if (data !== undefined) update.data = data;
-  const workflow = await prisma.workflow.update({ where: { id: req.params.id }, data: update });
-  res.json({ workflow });
-});
+// Update workflow (save canvas data, rename) — PUT for normal, POST for sendBeacon
+const saveHandler = async (req, res) => {
+  try {
+    const { name, data } = req.body;
+    const update = {};
+    if (name !== undefined) update.name = name;
+    if (data !== undefined) update.data = data;
+    const workflow = await prisma.workflow.update({ where: { id: req.params.id }, data: update });
+    res.json({ workflow });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+};
+router.put('/:id', authenticate, saveHandler);
+router.post('/:id/save', authOrQuery, saveHandler);
 
 // Set active workflow
 router.put('/:id/activate', authenticate, async (req, res) => {

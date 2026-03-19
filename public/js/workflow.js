@@ -2148,6 +2148,8 @@ class WorkflowCanvas {
     });
     return JSON.stringify({
       version: 1,
+      pan: { x: this.pan.x, y: this.pan.y },
+      zoom: this.zoom,
       nodes: nodesArr,
       connections: this.connections.map(c => ({
         fromNode: c.fromNode,
@@ -2183,6 +2185,12 @@ class WorkflowCanvas {
     });
 
     this.connections = (data.connections || []).map(c => ({ ...c }));
+
+    // Restore pan/zoom if saved
+    if (data.pan) { this.pan = { x: data.pan.x || 0, y: data.pan.y || 0 }; }
+    if (data.zoom) { this.zoom = data.zoom; }
+    this._updateTransform();
+    this._drawGrid();
     this.render();
   }
 
