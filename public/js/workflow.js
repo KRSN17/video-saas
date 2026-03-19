@@ -177,137 +177,128 @@ class WorkflowCanvas {
     const style = document.createElement('style');
     style.id = 'wf-styles';
     style.textContent = `
+      /* ── Weavy-style node ── */
       .wf-node {
         position: absolute;
-        width: 240px;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 14px;
+        width: 320px;
+        background: rgba(35, 35, 45, 0.92);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
         backdrop-filter: blur(28px);
         -webkit-backdrop-filter: blur(28px);
-        box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.5);
         font-family: 'Manrope', 'Inter', -apple-system, sans-serif;
         font-size: 12px;
-        color: #e0e0e0;
-        transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+        color: #ccc;
         cursor: grab;
+        transition: box-shadow 0.2s, border-color 0.2s;
       }
-      .wf-node:hover {
-        border-color: rgba(255,255,255,0.2);
-        transform: translateY(-1px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.12);
-      }
+      .wf-node:hover { border-color: rgba(255,255,255,0.18); }
       .wf-node:active { cursor: grabbing; }
       .wf-node.selected {
-        border-color: rgba(255,255,255,0.35);
-        box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.3);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.12), 0 8px 40px rgba(0,0,0,0.5);
       }
+
+      /* ── Header ── */
       .wf-node-header {
-        height: 34px;
-        border-radius: 14px 14px 0 0;
+        height: 38px;
+        border-radius: 16px 16px 0 0;
         display: flex;
         align-items: center;
-        padding: 0 12px;
+        padding: 0 14px;
         gap: 8px;
-        font-weight: 700;
-        font-size: 11px;
+        font-weight: 600;
+        font-size: 13px;
         color: #fff;
-        letter-spacing: 0.3px;
-        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
       }
       .wf-node-header .wf-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .wf-run-btn {
-        width: 26px; height: 26px;
-        border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.25);
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        color: #fff;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 10px;
-        transition: all 0.2s;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      .wf-node-header .wf-menu-btn {
+        width: 24px; height: 24px; border: none; background: none;
+        color: rgba(255,255,255,0.3); cursor: pointer; font-size: 14px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 4px; transition: all 0.15s;
       }
-      .wf-run-btn:hover { background: rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
-      .wf-run-btn.running { animation: wf-spin 0.8s linear infinite; }
-      @keyframes wf-spin { to { transform: rotate(360deg); } }
-      .wf-node-body { padding: 10px 12px; }
-      .wf-ports { display: flex; flex-direction: column; gap: 6px; }
+      .wf-node-header .wf-menu-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+
+      /* ── Body ── */
+      .wf-node-body { padding: 0; }
+
+      /* ── Ports section ── */
+      .wf-ports-section {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+      }
+      .wf-ports-left, .wf-ports-right {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .wf-ports-left { align-items: flex-start; }
+      .wf-ports-right { align-items: flex-end; }
       .wf-port-row {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         position: relative;
-        height: 18px;
+        height: 22px;
+        padding: 0 14px;
       }
       .wf-port-row.input { justify-content: flex-start; }
       .wf-port-row.output { justify-content: flex-end; }
       .wf-port {
         width: 14px; height: 14px;
         border-radius: 50%;
-        border: 2px solid;
-        background: #0a0a14;
+        border: 2.5px solid;
+        background: rgba(35,35,45,0.9);
         cursor: crosshair;
         position: absolute;
         transition: box-shadow 0.15s, transform 0.15s;
         z-index: 10;
         pointer-events: all;
       }
-      /* Larger invisible hit area around each port */
       .wf-port::before {
         content: '';
         position: absolute;
-        top: -8px; left: -8px; right: -8px; bottom: -8px;
+        top: -10px; left: -10px; right: -10px; bottom: -10px;
         border-radius: 50%;
       }
-      .wf-port.input-port { left: -18px; }
-      .wf-port.output-port { right: -18px; }
+      .wf-port.input-port { left: -8px; }
+      .wf-port.output-port { right: -8px; }
       .wf-port:hover, .wf-port.highlight {
-        transform: scale(1.5);
-        box-shadow: 0 0 12px currentColor;
+        transform: scale(1.6);
+        box-shadow: 0 0 14px currentColor;
         background: currentColor;
       }
-      .wf-port-label { font-size: 11px; color: #999; }
-      .wf-port-row.output .wf-port-label { text-align: right; flex: 1; }
-      .wf-port-row.input .wf-port-label { text-align: left; flex: 1; }
-      .wf-params { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
-      .wf-params label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
-      .wf-params input, .wf-params select, .wf-params textarea {
-        width: 100%;
-        box-sizing: border-box;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 4px;
-        color: #ddd;
-        padding: 4px 6px;
-        font-size: 11px;
-        font-family: inherit;
-        outline: none;
-        resize: vertical;
+      .wf-port-label {
+        font-size: 12px;
+        color: rgba(255,255,255,0.55);
+        font-weight: 500;
       }
-      .wf-params textarea { min-height: 48px; }
-      .wf-params input:focus, .wf-params select:focus, .wf-params textarea:focus {
-        border-color: rgba(59,130,246,0.5);
-      }
+      .wf-port-row.input .wf-port-label { padding-left: 6px; }
+      .wf-port-row.output .wf-port-label { padding-right: 6px; }
 
-      /* Preview area in AI nodes */
+      /* ── Preview canvas (checkerboard) ── */
       .wf-preview {
-        margin-top: 8px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        padding-top: 8px;
+        margin: 0 12px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
       }
       .wf-preview-content {
         width: 100%;
-        aspect-ratio: 16/9;
-        border-radius: 8px;
-        overflow: hidden;
-        background: rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.06);
+        aspect-ratio: 1/1;
         position: relative;
+        background-color: rgba(20,20,28,0.8);
+        background-image:
+          linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+          linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%),
+          linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
+        background-size: 16px 16px;
+        background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
       }
       .wf-preview-placeholder {
         display: flex;
@@ -315,73 +306,86 @@ class WorkflowCanvas {
         align-items: center;
         justify-content: center;
         height: 100%;
-        color: rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.12);
         gap: 6px;
         font-size: 11px;
         user-select: none;
       }
-      .wf-preview-icon {
-        font-size: 24px;
-        font-style: normal;
-        opacity: 0.3;
-      }
+      .wf-preview-icon { font-size: 28px; font-style: normal; }
       .wf-preview-content video, .wf-preview-content img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+        width: 100%; height: 100%; object-fit: cover; display: block;
       }
-      .wf-preview-actions {
-        display: flex;
-        gap: 4px;
-        margin-top: 6px;
-      }
-      .wf-preview-btn {
-        flex: 1;
-        padding: 5px 0;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.04);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        color: rgba(255,255,255,0.5);
-        font-size: 10px;
-        font-weight: 600;
-        font-family: inherit;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-      }
-      .wf-preview-btn:hover {
-        background: rgba(255,255,255,0.1);
-        color: #fff;
-        border-color: rgba(255,255,255,0.2);
-      }
-      .wf-preview-clear:hover { border-color: rgba(239,68,68,0.4); color: #f87171; }
-      .wf-preview-download:hover { border-color: rgba(52,211,153,0.4); color: #34d399; }
       .wf-preview-generating {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        gap: 8px;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; height: 100%; gap: 10px;
       }
       .wf-preview-spinner {
-        width: 28px; height: 28px;
-        border: 2px solid rgba(255,255,255,0.1);
-        border-top-color: rgba(255,255,255,0.6);
+        width: 32px; height: 32px;
+        border: 2px solid rgba(255,255,255,0.08);
+        border-top-color: rgba(255,255,255,0.5);
         border-radius: 50%;
         animation: wf-spin 0.8s linear infinite;
       }
       .wf-preview-status {
-        font-size: 10px;
-        color: rgba(255,255,255,0.35);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 10px; color: rgba(255,255,255,0.3);
+        font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
       }
+
+      /* ── Bottom bar (actions) ── */
+      .wf-node-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        gap: 8px;
+      }
+      .wf-preview-btn {
+        padding: 6px 14px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(8px);
+        color: rgba(255,255,255,0.5);
+        font-size: 11px;
+        font-weight: 600;
+        font-family: inherit;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .wf-preview-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2); }
+      .wf-preview-clear:hover { border-color: rgba(239,68,68,0.4); color: #f87171; }
+      .wf-preview-download:hover { border-color: rgba(52,211,153,0.4); color: #34d399; }
+      .wf-run-model-btn {
+        padding: 7px 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(8px);
+        color: rgba(255,255,255,0.7);
+        font-size: 12px;
+        font-weight: 700;
+        font-family: inherit;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: auto;
+      }
+      .wf-run-model-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+      .wf-run-model-btn.running { opacity: 0.5; pointer-events: none; }
+      @keyframes wf-spin { to { transform: rotate(360deg); } }
+
+      /* ── Hidden old run btn in header (replaced by footer btn) ── */
+      .wf-run-btn { display: none; }
+
+      /* ── Params (shown in right panel, minimal in node) ── */
+      .wf-params { display: none; }
+      .wf-ports { display: flex; flex-direction: column; gap: 8px; }
 
       .wf-node-picker {
         position: absolute;
@@ -862,185 +866,154 @@ class WorkflowCanvas {
     el.style.left = x + 'px';
     el.style.top = y + 'px';
 
-    // Header
+    // ── Header with color accent bar ──
     const header = document.createElement('div');
     header.className = 'wf-node-header';
-    header.style.background = def.color;
+    header.style.background = `linear-gradient(135deg, ${def.color}22, rgba(35,35,45,0.95))`;
+    header.style.borderBottom = `2px solid ${def.color}44`;
 
     const title = document.createElement('span');
     title.className = 'wf-title';
     title.textContent = def.label;
     header.appendChild(title);
 
-    if (def.aiNode) {
-      const runBtn = document.createElement('button');
-      runBtn.className = 'wf-run-btn';
-      runBtn.innerHTML = '&#9654;';
-      runBtn.title = 'Run this node';
-      runBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.runNode(id);
-      });
-      header.appendChild(runBtn);
-    }
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'wf-menu-btn';
+    menuBtn.innerHTML = '⋯';
+    menuBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+    header.appendChild(menuBtn);
 
     el.appendChild(header);
 
-    // Body
+    // ── Body ──
     const body = document.createElement('div');
     body.className = 'wf-node-body';
 
-    // Input ports
-    if (def.inputs.length > 0) {
-      const portsDiv = document.createElement('div');
-      portsDiv.className = 'wf-ports';
-      def.inputs.forEach(inp => {
-        const row = document.createElement('div');
-        row.className = 'wf-port-row input';
-        const port = document.createElement('div');
-        port.className = 'wf-port input-port';
-        port.style.borderColor = TYPE_COLORS[inp.type] || '#888';
-        port.style.color = TYPE_COLORS[inp.type] || '#888';
-        port.dataset.nodeId = id;
-        port.dataset.portName = inp.name;
-        port.dataset.portType = inp.type;
-        port.dataset.direction = 'input';
-        this._bindPortEvents(port);
-        row.appendChild(port);
-        const label = document.createElement('span');
-        label.className = 'wf-port-label';
-        label.textContent = inp.name;
-        row.appendChild(label);
-        portsDiv.appendChild(row);
-      });
-      body.appendChild(portsDiv);
-    }
+    // ── Ports section: inputs LEFT, outputs RIGHT ──
+    const portsSection = document.createElement('div');
+    portsSection.className = 'wf-ports-section';
 
-    // Output ports
-    if (def.outputs.length > 0) {
-      const portsDiv = document.createElement('div');
-      portsDiv.className = 'wf-ports';
-      def.outputs.forEach(out => {
-        const row = document.createElement('div');
-        row.className = 'wf-port-row output';
-        const label = document.createElement('span');
-        label.className = 'wf-port-label';
-        label.textContent = out.name;
-        row.appendChild(label);
-        const port = document.createElement('div');
-        port.className = 'wf-port output-port';
-        port.style.borderColor = TYPE_COLORS[out.type] || '#888';
-        port.style.color = TYPE_COLORS[out.type] || '#888';
-        port.dataset.nodeId = id;
-        port.dataset.portName = out.name;
-        port.dataset.portType = out.type;
-        port.dataset.direction = 'output';
-        this._bindPortEvents(port);
-        row.appendChild(port);
-        portsDiv.appendChild(row);
-      });
-      body.appendChild(portsDiv);
-    }
+    const portsLeft = document.createElement('div');
+    portsLeft.className = 'wf-ports-left';
+    const portsRight = document.createElement('div');
+    portsRight.className = 'wf-ports-right';
 
-    // Params
-    const paramValues = values || {};
-    if (def.params.length > 0) {
-      const paramsDiv = document.createElement('div');
-      paramsDiv.className = 'wf-params';
-      def.params.forEach(p => {
-        const label = document.createElement('label');
-        label.textContent = p.name;
-        paramsDiv.appendChild(label);
+    // Input ports (left side)
+    def.inputs.forEach(inp => {
+      const row = document.createElement('div');
+      row.className = 'wf-port-row input';
+      const port = document.createElement('div');
+      port.className = 'wf-port input-port';
+      port.style.borderColor = TYPE_COLORS[inp.type] || '#888';
+      port.style.color = TYPE_COLORS[inp.type] || '#888';
+      port.dataset.nodeId = id;
+      port.dataset.portName = inp.name;
+      port.dataset.portType = inp.type;
+      port.dataset.direction = 'input';
+      this._bindPortEvents(port);
+      row.appendChild(port);
+      const label = document.createElement('span');
+      label.className = 'wf-port-label';
+      label.textContent = inp.name.charAt(0).toUpperCase() + inp.name.slice(1).replace(/_/g, ' ');
+      row.appendChild(label);
+      portsLeft.appendChild(row);
+    });
 
-        let input;
-        if (p.type === 'textarea') {
-          input = document.createElement('textarea');
-          input.placeholder = p.placeholder || '';
-          input.value = paramValues[p.name] || '';
-        } else if (p.type === 'select') {
-          input = document.createElement('select');
-          (p.options || []).forEach(opt => {
-            const o = document.createElement('option');
-            o.value = opt;
-            o.textContent = opt;
-            input.appendChild(o);
-          });
-          input.value = paramValues[p.name] || (p.options && p.options[0]) || '';
-        } else {
-          input = document.createElement('input');
-          input.type = 'text';
-          input.placeholder = p.placeholder || '';
-          input.value = paramValues[p.name] || '';
-        }
+    // Output ports (right side)
+    def.outputs.forEach(out => {
+      const row = document.createElement('div');
+      row.className = 'wf-port-row output';
+      const label = document.createElement('span');
+      label.className = 'wf-port-label';
+      label.textContent = out.name.charAt(0).toUpperCase() + out.name.slice(1).replace(/_/g, ' ');
+      row.appendChild(label);
+      const port = document.createElement('div');
+      port.className = 'wf-port output-port';
+      port.style.borderColor = TYPE_COLORS[out.type] || '#888';
+      port.style.color = TYPE_COLORS[out.type] || '#888';
+      port.dataset.nodeId = id;
+      port.dataset.portName = out.name;
+      port.dataset.portType = out.type;
+      port.dataset.direction = 'output';
+      this._bindPortEvents(port);
+      row.appendChild(port);
+      portsRight.appendChild(row);
+    });
 
-        input.dataset.paramName = p.name;
-        input.addEventListener('input', () => {
-          const node = this.nodes.get(id);
-          if (node) node.values[p.name] = input.value;
-        });
-        // Prevent node drag when interacting with inputs
-        input.addEventListener('mousedown', (e) => e.stopPropagation());
-        paramsDiv.appendChild(input);
-      });
-      body.appendChild(paramsDiv);
-    }
+    portsSection.appendChild(portsLeft);
+    portsSection.appendChild(portsRight);
+    body.appendChild(portsSection);
 
-    // Preview area for AI nodes (video/image generation)
-    if (def.aiNode || type === 'video-output' || type === 'video-merge') {
+    // ── Checkerboard preview canvas (for AI/output/merge nodes) ──
+    const hasPreview = def.aiNode || type === 'video-output' || type === 'video-merge';
+    let previewContent = null;
+    if (hasPreview) {
       const preview = document.createElement('div');
       preview.className = 'wf-preview';
-      preview.dataset.nodeId = id;
-
-      // Blank output slide
-      const previewContent = document.createElement('div');
+      previewContent = document.createElement('div');
       previewContent.className = 'wf-preview-content';
-      previewContent.innerHTML = '<div class="wf-preview-placeholder"><i class="wf-preview-icon">▶</i><span>No output yet</span></div>';
+      previewContent.innerHTML = '<div class="wf-preview-placeholder"><span>No output yet</span></div>';
       preview.appendChild(previewContent);
+      body.appendChild(preview);
+    }
 
-      // Action buttons row
-      const actions = document.createElement('div');
-      actions.className = 'wf-preview-actions';
+    // ── Store params (hidden, edited in right panel) ──
+    const paramValues = values || {};
 
+    el.appendChild(body);
+
+    // ── Footer with action buttons + Run Model ──
+    const footer = document.createElement('div');
+    footer.className = 'wf-node-footer';
+
+    if (hasPreview) {
       const clearBtn = document.createElement('button');
       clearBtn.className = 'wf-preview-btn wf-preview-clear';
       clearBtn.innerHTML = '✕ Clear';
-      clearBtn.title = 'Remove current generation';
       clearBtn.addEventListener('mousedown', (e) => e.stopPropagation());
       clearBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const node = this.nodes.get(id);
-        if (node) {
-          node.outputUrl = null;
-          node.outputType = null;
-          previewContent.innerHTML = '<div class="wf-preview-placeholder"><i class="wf-preview-icon">▶</i><span>No output yet</span></div>';
-          clearBtn.style.opacity = '0.3';
-          dlBtn.style.opacity = '0.3';
-        }
+        if (node) { node.outputUrl = null; node.outputType = null; }
+        if (previewContent) previewContent.innerHTML = '<div class="wf-preview-placeholder"><span>No output yet</span></div>';
       });
-      actions.appendChild(clearBtn);
+      footer.appendChild(clearBtn);
 
       const dlBtn = document.createElement('button');
       dlBtn.className = 'wf-preview-btn wf-preview-download';
       dlBtn.innerHTML = '↓ Download';
-      dlBtn.title = 'Download output';
       dlBtn.addEventListener('mousedown', (e) => e.stopPropagation());
       dlBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const node = this.nodes.get(id);
-        if (node && node.outputUrl) {
+        if (node?.outputUrl) {
           const a = document.createElement('a');
           a.href = node.outputUrl;
-          a.download = (node.values.filename || 'output') + '.mp4';
+          a.download = 'output.mp4';
           a.click();
         }
       });
-      actions.appendChild(dlBtn);
-
-      preview.appendChild(actions);
-      body.appendChild(preview);
+      footer.appendChild(dlBtn);
     }
 
-    el.appendChild(body);
+    if (def.aiNode) {
+      const runModelBtn = document.createElement('button');
+      runModelBtn.className = 'wf-run-model-btn';
+      runModelBtn.innerHTML = '→ Run Model';
+      runModelBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+      runModelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        runModelBtn.classList.add('running');
+        runModelBtn.innerHTML = '⟳ Running...';
+        this.runNode(id).finally(() => {
+          runModelBtn.classList.remove('running');
+          runModelBtn.innerHTML = '→ Run Model';
+        });
+      });
+      footer.appendChild(runModelBtn);
+    }
+
+    el.appendChild(footer);
 
     // Node drag
     header.addEventListener('mousedown', (e) => {
