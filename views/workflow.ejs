@@ -141,6 +141,40 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
+    /* Submenu for AI model selection */
+    .dropdown-item.has-models { position: relative; }
+    .model-submenu {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: -4px;
+      width: 220px;
+      background: rgba(22,22,32,0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      z-index: 100;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+    .dropdown-item.has-models:hover > .model-submenu { display: block; }
+    .model-sub-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: grab;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .model-sub-item:hover { background: rgba(255,255,255,0.06); }
+    .model-sub-item:active { cursor: grabbing; }
 
     /* ── Canvas Container ── */
     .workflow-canvas-wrap {
@@ -396,7 +430,7 @@
         <button class="wf-toolbar-btn primary" id="btnAddNode">
           <i class="fa-solid fa-plus"></i> Add Node
         </button>
-        <div class="add-node-dropdown" id="addNodeDropdown" style="max-height:480px;overflow-y:auto;">
+        <div class="add-node-dropdown" id="addNodeDropdown" style="max-height:520px;overflow-y:auto;">
           <div class="dropdown-category">Text</div>
           <div class="dropdown-item" data-type="prompt"><span class="dropdown-dot" style="background:#9b59b6;"></span> Prompt</div>
           <div class="dropdown-item" data-type="prompt-enhancer"><span class="dropdown-dot" style="background:#8e44ad;"></span> Prompt Enhancer</div>
@@ -405,13 +439,46 @@
           <div class="dropdown-category">Input</div>
           <div class="dropdown-item" data-type="image-input"><span class="dropdown-dot" style="background:#27ae60;"></span> Image Input</div>
           <div class="dropdown-item" data-type="video-input"><span class="dropdown-dot" style="background:#e74c3c;"></span> Video Input</div>
+
           <div class="dropdown-category">Image Generation</div>
-          <div class="dropdown-item" data-type="text-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Text to Image</div>
-          <div class="dropdown-item" data-type="image-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Image to Image</div>
+          <div class="dropdown-item has-models" data-type="text-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Text to Image <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:10px;opacity:0.3;"></i>
+            <div class="model-submenu">
+              <div class="model-sub-item" data-type="text-to-image" data-model="flux-pro" data-mname="Flux 2 Pro" data-micon="△"><span style="font-size:18px;">△</span> Flux 2 Pro</div>
+              <div class="model-sub-item" data-type="text-to-image" data-model="flux-dev-lora" data-mname="Flux 2 Dev LoRA" data-micon="△"><span style="font-size:18px;">△</span> Flux 2 Dev LoRA</div>
+              <div class="model-sub-item" data-type="text-to-image" data-model="stable-diffusion-3.5" data-mname="SD 3.5" data-micon="◎"><span style="font-size:18px;">◎</span> Stable Diffusion 3.5</div>
+              <div class="model-sub-item" data-type="text-to-image" data-model="ideogram-v3" data-mname="Ideogram V3" data-micon="✦"><span style="font-size:18px;color:#ff6b35;">✦</span> Ideogram V3</div>
+              <div class="model-sub-item" data-type="text-to-image" data-model="imagen-3" data-mname="Imagen 3" data-micon="G"><span style="font-size:16px;font-weight:800;color:#4285f4;">G</span> Imagen 3</div>
+              <div class="model-sub-item" data-type="text-to-image" data-model="gpt-image" data-mname="GPT Image 1.5" data-micon="◈"><span style="font-size:18px;color:#10a37f;">◈</span> GPT Image 1.5</div>
+            </div>
+          </div>
+          <div class="dropdown-item has-models" data-type="image-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Image to Image <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:10px;opacity:0.3;"></i>
+            <div class="model-submenu">
+              <div class="model-sub-item" data-type="image-to-image" data-model="flux-kontext" data-mname="Flux Kontext" data-micon="△"><span style="font-size:18px;">△</span> Flux Kontext</div>
+              <div class="model-sub-item" data-type="image-to-image" data-model="stable-diffusion-3.5" data-mname="SD 3.5 i2i" data-micon="◎"><span style="font-size:18px;">◎</span> SD 3.5 img2img</div>
+            </div>
+          </div>
+
           <div class="dropdown-category">Video Generation</div>
-          <div class="dropdown-item" data-type="text-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video</div>
-          <div class="dropdown-item" data-type="image-to-video"><span class="dropdown-dot" style="background:#c0392b;"></span> Image to Video</div>
+          <div class="dropdown-item has-models" data-type="text-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:10px;opacity:0.3;"></i>
+            <div class="model-submenu">
+              <div class="model-sub-item" data-type="text-to-video" data-model="kling-text" data-mname="Kling 3" data-micon="⚡"><span style="font-size:18px;color:#7c3aed;">⚡</span> Kling 3</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="minimax-text" data-mname="MiniMax Video" data-micon="▣"><span style="font-size:18px;color:#06b6d4;">▣</span> MiniMax Video</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="wan-text" data-mname="Wan 2.5" data-micon="◐"><span style="font-size:18px;">◐</span> Wan 2.5</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="luma-ray2" data-mname="Luma Ray 2" data-micon="◉"><span style="font-size:18px;color:#8b5cf6;">◉</span> Luma Ray 2</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="hunyuan" data-mname="Hunyuan" data-micon="⬢"><span style="font-size:18px;color:#ef4444;">⬢</span> Hunyuan</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="veo2" data-mname="Veo 3.1" data-micon="G"><span style="font-size:16px;font-weight:800;color:#4285f4;">G</span> Veo 3.1</div>
+              <div class="model-sub-item" data-type="text-to-video" data-model="sora2" data-mname="Sora 2" data-micon="○"><span style="font-size:18px;">○</span> Sora 2</div>
+            </div>
+          </div>
+          <div class="dropdown-item has-models" data-type="image-to-video"><span class="dropdown-dot" style="background:#c0392b;"></span> Image to Video <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:10px;opacity:0.3;"></i>
+            <div class="model-submenu">
+              <div class="model-sub-item" data-type="image-to-video" data-model="kling-image" data-mname="Kling 3 i2v" data-micon="⚡"><span style="font-size:18px;color:#7c3aed;">⚡</span> Kling 3</div>
+              <div class="model-sub-item" data-type="image-to-video" data-model="runway-gen4" data-mname="Runway Gen-4" data-micon="▶"><span style="font-size:16px;color:#22d3ee;">▶</span> Runway Gen-4</div>
+              <div class="model-sub-item" data-type="image-to-video" data-model="veo-3.1" data-mname="Veo 3.1 i2v" data-micon="G"><span style="font-size:16px;font-weight:800;color:#4285f4;">G</span> Veo 3.1</div>
+            </div>
+          </div>
           <div class="dropdown-item" data-type="video-to-video"><span class="dropdown-dot" style="background:#c0392b;"></span> Video to Video</div>
+
           <div class="dropdown-category">Editing Tools</div>
           <div class="dropdown-item" data-type="upscale"><span class="dropdown-dot" style="background:#3498db;"></span> Upscale</div>
           <div class="dropdown-item" data-type="inpaint"><span class="dropdown-dot" style="background:#2980b9;"></span> Inpaint</div>
@@ -599,18 +666,28 @@
     document.body.appendChild(dragGhost);
 
     var dragNodeType = null;
+    var dragModelId = null;
+    var dragModelName = null;
+    var dragModelIcon = null;
     var dragStartX = 0, dragStartY = 0;
     var isDragging = false;
     var hasDragged = false;
 
+    // Make regular dropdown items draggable
     dropdown.querySelectorAll('.dropdown-item').forEach(function(item) {
-      item.style.cursor = 'grab';
       item.style.userSelect = 'none';
+      // Only set grab cursor on items without submenus
+      if (!item.classList.contains('has-models')) {
+        item.style.cursor = 'grab';
+      }
 
       item.addEventListener('mousedown', function(e) {
-        if (e.button !== 0) return;
+        if (e.button !== 0 || item.classList.contains('has-models')) return;
         e.preventDefault();
         dragNodeType = item.getAttribute('data-type');
+        dragModelId = null;
+        dragModelName = null;
+        dragModelIcon = null;
         dragStartX = e.clientX;
         dragStartY = e.clientY;
         isDragging = true;
@@ -622,6 +699,63 @@
         dragGhost.style.background = color;
       });
     });
+
+    // Make model sub-items draggable — these carry the specific model
+    dropdown.querySelectorAll('.model-sub-item').forEach(function(item) {
+      item.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        dragNodeType = item.getAttribute('data-type');
+        dragModelId = item.getAttribute('data-model');
+        dragModelName = item.getAttribute('data-mname');
+        dragModelIcon = item.getAttribute('data-micon');
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        isDragging = true;
+        hasDragged = false;
+
+        dragGhost.textContent = dragModelName;
+        dragGhost.style.background = 'rgba(102,126,234,0.85)';
+      });
+
+      // Click on model sub-item = add directly with model pre-selected
+      item.addEventListener('click', function(e) {
+        if (hasDragged) return;
+        e.stopPropagation();
+        var type = item.getAttribute('data-type');
+        var modelId = item.getAttribute('data-model');
+        var modelName = item.getAttribute('data-mname');
+        var modelIcon = item.getAttribute('data-micon');
+        dropdown.classList.remove('open');
+
+        var rect = canvas.container.getBoundingClientRect();
+        var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom + (Math.random() - 0.5) * 80;
+        var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom + (Math.random() - 0.5) * 80;
+        addNodeWithModel(type, cx, cy, modelId, modelName, modelIcon);
+      });
+    });
+
+    function addNodeWithModel(type, x, y, modelId, modelName, modelIcon) {
+      var id = canvas.addNode(type, x, y);
+      var node = canvas.nodes.get(id);
+      if (node && modelId) {
+        node.values.model = modelId;
+        node.selectedModelName = modelName;
+        node.selectedModelIcon = modelIcon;
+        var titleEl = node.el.querySelector('.wf-title');
+        if (titleEl) titleEl.textContent = modelName;
+        var badge = document.createElement('div');
+        badge.className = 'wf-model-badge';
+        badge.innerHTML = '<span style="font-size:14px;">' + (modelIcon || '') + '</span><span>' + modelName + '</span>';
+        node.el.querySelector('.wf-node-header').after(badge);
+      }
+      toast((modelName || NODE_TYPES[type].label) + ' added');
+      canvas.selectedNodes.clear();
+      canvas.selectedNodes.add(id);
+      canvas._updateSelectionVisuals();
+      return id;
+    }
 
     document.addEventListener('mousemove', function(e) {
       if (!isDragging) return;
@@ -647,34 +781,38 @@
       dragGhost.style.display = 'none';
 
       if (!hasDragged) {
-        // Was a click, not a drag — use original click behavior
+        // Was a click, not a drag
         var type = dragNodeType;
-        dragNodeType = null;
+        var mId = dragModelId;
+        var mName = dragModelName;
+        var mIcon = dragModelIcon;
+        dragNodeType = null; dragModelId = null; dragModelName = null; dragModelIcon = null;
         if (!type) return;
 
         var rect = canvas.container.getBoundingClientRect();
-        var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom;
-        var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom;
-        cx += (Math.random() - 0.5) * 80;
-        cy += (Math.random() - 0.5) * 80;
+        var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom + (Math.random() - 0.5) * 80;
+        var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom + (Math.random() - 0.5) * 80;
 
-        if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
+        if (mId) {
+          // Model already selected — add directly
+          dropdown.classList.remove('open');
+          addNodeWithModel(type, cx, cy, mId, mName, mIcon);
+        } else if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
           dropdown.classList.remove('open');
           canvas._showModelPicker(type, cx, cy);
         } else {
-          var id = canvas.addNode(type, cx, cy);
           dropdown.classList.remove('open');
-          toast(NODE_TYPES[type].label + ' added');
-          canvas.selectedNodes.clear();
-          canvas.selectedNodes.add(id);
-          canvas._updateSelectionVisuals();
+          addNodeWithModel(type, cx, cy, null, null, null);
         }
         return;
       }
 
       // Was a drag — check if dropped on canvas
       var type = dragNodeType;
-      dragNodeType = null;
+      var mId = dragModelId;
+      var mName = dragModelName;
+      var mIcon = dragModelIcon;
+      dragNodeType = null; dragModelId = null; dragModelName = null; dragModelIcon = null;
       if (!type) return;
 
       var canvasRect = canvas.container.getBoundingClientRect();
@@ -683,14 +821,13 @@
 
       if (inCanvas) {
         var pos = canvas._screenToCanvas(e.clientX, e.clientY);
-        if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
+        if (mId) {
+          // Model pre-selected from submenu — add directly, no picker
+          addNodeWithModel(type, pos.x, pos.y, mId, mName, mIcon);
+        } else if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
           canvas._showModelPicker(type, pos.x, pos.y);
         } else {
-          var id = canvas.addNode(type, pos.x, pos.y);
-          toast(NODE_TYPES[type].label + ' added');
-          canvas.selectedNodes.clear();
-          canvas.selectedNodes.add(id);
-          canvas._updateSelectionVisuals();
+          addNodeWithModel(type, pos.x, pos.y, null, null, null);
         }
       } else {
         toast('Drop on the canvas to add node', 'error');
