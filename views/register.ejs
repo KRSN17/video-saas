@@ -265,11 +265,10 @@
       .catch(function() {
         alertBox.textContent = 'Network error. Please try again.';
         alertBox.style.display = 'block';
-      } finally {
         btn.disabled = false;
-        btnText.classList.remove('d-none');
-        btnSpinner.classList.add('d-none');
-      }
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      });
     });
   </script>
 </body>

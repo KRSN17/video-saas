@@ -179,21 +179,26 @@ class WorkflowCanvas {
       .wf-node {
         position: absolute;
         width: 220px;
-        background: rgba(20, 20, 35, 0.92);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 10px;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-        font-family: 'Inter', -apple-system, sans-serif;
+        background: rgba(20, 20, 40, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+        font-family: 'Manrope', 'Inter', -apple-system, sans-serif;
         font-size: 12px;
         color: #ccc;
-        transition: box-shadow 0.15s;
+        transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
         cursor: grab;
+      }
+      .wf-node:hover {
+        border-color: rgba(255,255,255,0.15);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(102,126,234,0.08), inset 0 1px 0 rgba(255,255,255,0.08);
       }
       .wf-node:active { cursor: grabbing; }
       .wf-node.selected {
         border-color: #3b82f6;
-        box-shadow: 0 0 0 2px rgba(59,130,246,0.5), 0 4px 24px rgba(0,0,0,0.5);
+        box-shadow: 0 0 0 2px rgba(59,130,246,0.4), 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(59,130,246,0.1);
       }
       .wf-node-header {
         height: 32px;
@@ -208,19 +213,20 @@ class WorkflowCanvas {
       }
       .wf-node-header .wf-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .wf-run-btn {
-        width: 22px; height: 22px;
+        width: 24px; height: 24px;
         border-radius: 50%;
-        border: none;
-        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(8px);
         color: #fff;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 10px;
-        transition: background 0.15s;
+        transition: all 0.15s;
       }
-      .wf-run-btn:hover { background: rgba(255,255,255,0.35); }
+      .wf-run-btn:hover { background: rgba(255,255,255,0.25); box-shadow: 0 0 10px rgba(255,255,255,0.15); }
       .wf-run-btn.running { animation: wf-spin 0.8s linear infinite; }
       @keyframes wf-spin { to { transform: rotate(360deg); } }
       .wf-node-body { padding: 8px 10px; }

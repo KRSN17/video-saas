@@ -410,7 +410,7 @@
             .then(function(data) {
               if (data.status === 'completed') {
                 clearInterval(interval);
-                mergeComplete(data.videoUrl || data.url || null);
+                mergeComplete(data.videoUrl || data.url || '/api/merge/' + mergeId + '/download');
               } else if (data.status === 'failed') {
                 clearInterval(interval);
                 document.getElementById('mergeStatusText').textContent = 'Failed';

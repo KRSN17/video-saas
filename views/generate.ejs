@@ -587,11 +587,11 @@
         var selCard = document.querySelector('.model-card-option.selected');
         var mtype = selCard ? selCard.getAttribute('data-type') : 'text';
         if (mtype === 'image' || mtype === 'img2video' || model.indexOf('image') !== -1) {
-          body.type = 'img2video';
+          body.type = 'image';
           body.imageUrl = document.getElementById('imageUrl').value.trim();
           if (!body.imageUrl) return alert('Please provide an image URL for Image-to-Video.');
         } else {
-          body.type = 'text2video';
+          body.type = 'text';
         }
 
         document.getElementById('btnGenerate').disabled = true;

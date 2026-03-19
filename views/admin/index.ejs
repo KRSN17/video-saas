@@ -745,7 +745,7 @@
         var amount = parseInt(document.getElementById('adjustAmount').value);
         if (isNaN(amount)) return alert('Enter a valid number.');
         fetch('/api/admin/users/' + userId + '/credits', {
-          method: 'POST',
+          method: 'PUT',
           headers: jsonHeaders,
           body: JSON.stringify({ credits: amount })
         })
@@ -843,8 +843,8 @@
               managedApiKeys[i].active = !managedApiKeys[i].active;
             }
             // Try to update via API
-            fetch('/api/admin/api-keys/' + keyId + '/toggle', {
-              method: 'POST',
+            fetch('/api/admin/api-keys/' + keyId, {
+              method: 'PUT',
               headers: jsonHeaders
             }).catch(function() {});
             renderApiKeyMgmt();
@@ -951,23 +951,19 @@
         var btn = this;
         btn.disabled = true;
         btn.textContent = 'Saving...';
-        var body = {
-          apiKeys: apiKeys,
-          siteName: document.getElementById('settingSiteName').value.trim(),
-          logoUrl: document.getElementById('settingLogoUrl').value.trim()
-        };
-        fetch('/api/admin/settings', {
-          method: 'POST',
-          headers: jsonHeaders,
-          body: JSON.stringify(body)
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.error) {
-            alert(data.error);
-          } else {
-            showToast('Settings saved successfully');
-          }
+        var settings = [
+          { key: 'siteName', value: document.getElementById('settingSiteName').value.trim() },
+          { key: 'logoUrl', value: document.getElementById('settingLogoUrl').value.trim() }
+        ];
+        Promise.all(settings.map(function(s) {
+          return fetch('/api/admin/settings', {
+            method: 'PUT',
+            headers: jsonHeaders,
+            body: JSON.stringify(s)
+          }).then(function(r) { return r.json(); });
+        }))
+        .then(function() {
+          showToast('Settings saved successfully');
           btn.disabled = false;
           btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Save Settings';
         })
