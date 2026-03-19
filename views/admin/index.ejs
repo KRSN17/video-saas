@@ -1,47 +1,464 @@
-<%- include('../partials/head') %>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <%- include('../partials/head') %>
+  <style>
+    body {
+      background: #0a0a14;
+      margin: 0;
+      font-family: 'Manrope', 'Gordita', sans-serif;
+    }
+    .dash-main { margin-left: 260px; min-height: 100vh; }
+    .dash-topbar {
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+    .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
+    .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
+    .dash-content { padding: 28px 32px; }
+    .section-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.2s ease;
+    }
+    .stat-card:hover { border-color: rgba(123,92,255,0.2); }
+    .stat-card .stat-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 16px;
+    }
+    .stat-card .stat-value { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .stat-card .stat-label { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 500; }
+
+    .admin-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .admin-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .admin-table th {
+      text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);
+    }
+    .admin-table td {
+      padding: 12px 16px; font-size: 13px; color: rgba(255,255,255,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .role-badge {
+      font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .role-admin { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .role-user { background: rgba(59,130,246,0.15); color: #3b82f6; }
+
+    .status-badge {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .status-processing { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .status-completed { background: rgba(16,185,129,0.15); color: #10b981; }
+    .status-failed { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    .btn-sm-action {
+      padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: 1px solid rgba(123,92,255,0.3);
+      background: rgba(123,92,255,0.1); color: #a78bfa;
+      transition: all 0.15s ease;
+    }
+    .btn-sm-action:hover { background: rgba(123,92,255,0.2); }
+
+    .pkg-form {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .form-label { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color: #fff; font-size: 13px; padding: 8px 12px;
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255,255,255,0.06); border-color: rgba(123,92,255,0.4);
+      box-shadow: 0 0 0 3px rgba(123,92,255,0.1); color: #fff;
+    }
+
+    .modal-content {
+      background: #141425;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+    }
+    .modal-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .modal-footer { border-top: 1px solid rgba(255,255,255,0.06); }
+    .modal-title { color: #fff; font-weight: 700; }
+    .btn-close { filter: invert(1); }
+  </style>
+</head>
 <body>
-<div class="dashboard-wrapper">
   <%- include('../partials/sidebar') %>
-  <div class="main-content">
-    <div class="content-header">
-      <h2 class="gradient-text">Admin Panel</h2>
-      <p class="text-secondary">Manage your SaaS platform</p>
-    </div>
-    <div class="content-body">
-      <div class="row g-4 mb-4">
-        <div class="col-md-3"><div class="glass-card p-4 text-center"><i class="fa-solid fa-users fa-2x mb-2 text-info"></i><h3 id="statUsers">0</h3><p class="text-secondary mb-0">Total Users</p></div></div>
-        <div class="col-md-3"><div class="glass-card p-4 text-center"><i class="fa-solid fa-video fa-2x mb-2 text-success"></i><h3 id="statVideos">0</h3><p class="text-secondary mb-0">Videos Generated</p></div></div>
-        <div class="col-md-3"><div class="glass-card p-4 text-center"><i class="fa-solid fa-coins fa-2x mb-2 text-warning"></i><h3 id="statCredits">0</h3><p class="text-secondary mb-0">Credits Used</p></div></div>
-        <div class="col-md-3"><div class="glass-card p-4 text-center"><i class="fa-solid fa-dollar-sign fa-2x mb-2 text-success"></i><h3 id="statRevenue">$0</h3><p class="text-secondary mb-0">Revenue</p></div></div>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1><i class="fa-solid fa-shield me-2" style="color: #a78bfa;"></i>Admin Panel</h1>
+      <div class="user-info">
+        <span id="topbarUserName"></span>
+        <div class="user-avatar" id="topbarAvatar"></div>
       </div>
-      <div class="row g-4">
-        <div class="col-lg-7">
-          <div class="glass-card p-4">
-            <h5 class="mb-3"><i class="fa-solid fa-users me-2"></i>Users</h5>
-            <div class="table-responsive">
-              <table class="table table-dark-custom">
-                <thead><tr><th>Email</th><th>Name</th><th>Credits</th><th>Videos</th><th>Role</th><th>Actions</th></tr></thead>
-                <tbody id="adminUsers"><tr><td colspan="6" class="text-center text-secondary">Loading...</td></tr></tbody>
-              </table>
+    </div>
+
+    <div class="dash-content">
+      <!-- Stats Row -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59,130,246,0.12); color: #3b82f6;">
+              <i class="fa-solid fa-users"></i>
             </div>
+            <div class="stat-value" id="statUsers">--</div>
+            <div class="stat-label">Total Users</div>
           </div>
         </div>
-        <div class="col-lg-5">
-          <div class="glass-card p-4">
-            <h5 class="mb-3"><i class="fa-solid fa-film me-2"></i>Recent Videos</h5>
-            <div class="table-responsive">
-              <table class="table table-dark-custom">
-                <thead><tr><th>User</th><th>Prompt</th><th>Status</th></tr></thead>
-                <tbody id="adminVideos"><tr><td colspan="3" class="text-center text-secondary">Loading...</td></tr></tbody>
-              </table>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16,185,129,0.12); color: #10b981;">
+              <i class="fa-solid fa-film"></i>
+            </div>
+            <div class="stat-value" id="statVideos">--</div>
+            <div class="stat-label">Total Videos</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245,158,11,0.12); color: #f59e0b;">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div class="stat-value" id="statCredits">--</div>
+            <div class="stat-label">Credits Used</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(168,85,247,0.12); color: #a855f7;">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <div class="stat-value" id="statRevenue">--</div>
+            <div class="stat-label">Revenue</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="section-title">Users</div>
+      <div class="admin-panel">
+        <div id="usersTableContainer">
+          <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Videos Table -->
+      <div class="section-title">Recent Videos</div>
+      <div class="admin-panel">
+        <div id="videosTableContainer">
+          <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit Packages Management -->
+      <div class="section-title">Credit Packages</div>
+      <div id="packagesContainer">
+        <div class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <button class="btn-sm-action" id="btnAddPackage" style="padding: 10px 20px; font-size: 13px;">
+          <i class="fa-solid fa-plus me-2"></i>Add Package
+        </button>
+      </div>
+
+      <!-- Add/Edit Package Form -->
+      <div class="pkg-form mt-3" id="packageForm" style="display: none;">
+        <div class="section-title" style="font-size: 15px;" id="packageFormTitle">Add Package</div>
+        <form id="formPackage">
+          <input type="hidden" id="pkgEditId">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" id="pkgName" placeholder="e.g. Starter" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Credits</label>
+              <input type="number" class="form-control" id="pkgCredits" placeholder="e.g. 10" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Price ($)</label>
+              <input type="number" step="0.01" class="form-control" id="pkgPrice" placeholder="e.g. 9.99" required>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+              <button type="submit" class="btn-sm-action" style="padding: 8px 16px;">Save</button>
+              <button type="button" class="btn-sm-action" style="padding: 8px 16px; border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4);" id="btnCancelPkg">Cancel</button>
             </div>
           </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Credits Modal -->
+  <div class="modal fade" id="adjustCreditsModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Adjust Credits</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="adjustUserId">
+          <p style="font-size: 13px; color: rgba(255,255,255,0.5);">User: <strong id="adjustUserEmail" style="color: #fff;"></strong></p>
+          <label class="form-label">Credits to add (negative to subtract)</label>
+          <input type="number" class="form-control" id="adjustAmount" placeholder="e.g. 10 or -5">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-sm-action" id="btnAdjustSubmit">Apply</button>
         </div>
       </div>
     </div>
   </div>
-</div>
-<%- include('../partials/footer') %>
-<script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/public/js/app.js"></script>
-</body></html>
+
+  <script src="/assets/vendor/jquery.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      var headers = { 'Authorization': 'Bearer ' + token };
+      var jsonHeaders = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+
+      // Profile & admin check
+      fetch('/api/auth/profile', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.user) {
+            var name = data.user.name || data.user.email || 'User';
+            document.getElementById('topbarUserName').textContent = name;
+            document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+            if (data.user.role !== 'admin') {
+              window.location.href = '/dashboard';
+            }
+          }
+        });
+
+      // Load admin stats
+      fetch('/api/admin/stats', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('statUsers').textContent = data.totalUsers || 0;
+          document.getElementById('statVideos').textContent = data.totalVideos || 0;
+          document.getElementById('statCredits').textContent = data.creditsUsed || 0;
+          document.getElementById('statRevenue').textContent = '$' + (data.revenue || 0).toFixed(2);
+        })
+        .catch(function() {});
+
+      // Load users
+      function loadUsers() {
+        fetch('/api/admin/users', { headers: headers })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var users = data.users || data || [];
+            if (!Array.isArray(users)) users = [];
+            var container = document.getElementById('usersTableContainer');
+
+            if (users.length === 0) {
+              container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No users found</div>';
+              return;
+            }
+
+            var html = '<table class="admin-table"><thead><tr>' +
+              '<th>Email</th><th>Name</th><th>Credits</th><th>Videos</th><th>Role</th><th>Joined</th><th>Action</th>' +
+              '</tr></thead><tbody>';
+            users.forEach(function(u) {
+              var id = u._id || u.id;
+              var roleClass = u.role === 'admin' ? 'role-admin' : 'role-user';
+              var date = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '--';
+              var videoCount = u.videoCount != null ? u.videoCount : (u._count && u._count.videos != null ? u._count.videos : 0);
+              html += '<tr>' +
+                '<td>' + (u.email || '--') + '</td>' +
+                '<td>' + (u.name || '--') + '</td>' +
+                '<td>' + (u.credits != null ? u.credits : 0) + '</td>' +
+                '<td>' + videoCount + '</td>' +
+                '<td><span class="role-badge ' + roleClass + '">' + (u.role || 'user') + '</span></td>' +
+                '<td>' + date + '</td>' +
+                '<td><button class="btn-sm-action btn-adjust" data-id="' + id + '" data-email="' + (u.email || '') + '">Adjust Credits</button></td>' +
+                '</tr>';
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            container.querySelectorAll('.btn-adjust').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                document.getElementById('adjustUserId').value = this.getAttribute('data-id');
+                document.getElementById('adjustUserEmail').textContent = this.getAttribute('data-email');
+                document.getElementById('adjustAmount').value = '';
+                new bootstrap.Modal(document.getElementById('adjustCreditsModal')).show();
+              });
+            });
+          });
+      }
+
+      // Adjust credits
+      document.getElementById('btnAdjustSubmit').addEventListener('click', function() {
+        var userId = document.getElementById('adjustUserId').value;
+        var amount = parseInt(document.getElementById('adjustAmount').value);
+        if (isNaN(amount)) return alert('Enter a valid number.');
+        fetch('/api/admin/users/' + userId + '/credits', {
+          method: 'POST',
+          headers: jsonHeaders,
+          body: JSON.stringify({ credits: amount })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) alert(data.error);
+          else {
+            bootstrap.Modal.getInstance(document.getElementById('adjustCreditsModal')).hide();
+            loadUsers();
+          }
+        });
+      });
+
+      // Load recent videos
+      fetch('/api/admin/videos', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var videos = data.videos || data || [];
+          if (!Array.isArray(videos)) videos = [];
+          var container = document.getElementById('videosTableContainer');
+
+          if (videos.length === 0) {
+            container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No videos found</div>';
+            return;
+          }
+
+          var html = '<table class="admin-table"><thead><tr>' +
+            '<th>User</th><th>Prompt</th><th>Model</th><th>Status</th><th>Date</th>' +
+            '</tr></thead><tbody>';
+          videos.slice(0, 20).forEach(function(v) {
+            var statusClass = 'status-' + (v.status || 'pending');
+            var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '--';
+            var userEmail = v.user ? (v.user.email || '--') : (v.userEmail || '--');
+            var prompt = (v.prompt || 'No prompt');
+            if (prompt.length > 60) prompt = prompt.substring(0, 60) + '...';
+            html += '<tr>' +
+              '<td>' + userEmail + '</td>' +
+              '<td>' + prompt + '</td>' +
+              '<td>' + (v.model || '--') + '</td>' +
+              '<td><span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span></td>' +
+              '<td>' + date + '</td>' +
+              '</tr>';
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        });
+
+      // Load packages
+      function loadPackages() {
+        fetch('/api/credits/packages', { headers: headers })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var packages = data.packages || data || [];
+            if (!Array.isArray(packages)) packages = [];
+            var container = document.getElementById('packagesContainer');
+
+            if (packages.length === 0) {
+              container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No packages configured</div>';
+              return;
+            }
+
+            container.innerHTML = '';
+            packages.forEach(function(pkg) {
+              var pkgId = pkg.id || pkg._id;
+              var div = document.createElement('div');
+              div.className = 'pkg-form';
+              div.innerHTML =
+                '<div class="d-flex align-items-center justify-content-between">' +
+                '<div>' +
+                '<strong style="color: #fff;">' + (pkg.name || 'Package') + '</strong>' +
+                '<span style="color: rgba(255,255,255,0.3); font-size: 13px; margin-left: 12px;">' +
+                pkg.credits + ' credits - $' + (pkg.price || 0).toFixed(2) +
+                '</span></div>' +
+                '<button class="btn-sm-action btn-edit-pkg" data-id="' + pkgId + '" ' +
+                'data-name="' + (pkg.name || '') + '" data-credits="' + pkg.credits + '" data-price="' + (pkg.price || 0) + '">' +
+                '<i class="fa-solid fa-pen me-1"></i>Edit</button>' +
+                '</div>';
+              container.appendChild(div);
+            });
+
+            container.querySelectorAll('.btn-edit-pkg').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                document.getElementById('pkgEditId').value = this.getAttribute('data-id');
+                document.getElementById('pkgName').value = this.getAttribute('data-name');
+                document.getElementById('pkgCredits').value = this.getAttribute('data-credits');
+                document.getElementById('pkgPrice').value = this.getAttribute('data-price');
+                document.getElementById('packageFormTitle').textContent = 'Edit Package';
+                document.getElementById('packageForm').style.display = 'block';
+              });
+            });
+          });
+      }
+
+      document.getElementById('btnAddPackage').addEventListener('click', function() {
+        document.getElementById('pkgEditId').value = '';
+        document.getElementById('pkgName').value = '';
+        document.getElementById('pkgCredits').value = '';
+        document.getElementById('pkgPrice').value = '';
+        document.getElementById('packageFormTitle').textContent = 'Add Package';
+        document.getElementById('packageForm').style.display = 'block';
+      });
+
+      document.getElementById('btnCancelPkg').addEventListener('click', function() {
+        document.getElementById('packageForm').style.display = 'none';
+      });
+
+      document.getElementById('formPackage').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var id = document.getElementById('pkgEditId').value;
+        var body = {
+          name: document.getElementById('pkgName').value,
+          credits: parseInt(document.getElementById('pkgCredits').value),
+          price: parseFloat(document.getElementById('pkgPrice').value)
+        };
+        var url = id ? '/api/admin/packages/' + id : '/api/admin/packages';
+        var method = id ? 'PUT' : 'POST';
+        fetch(url, { method: method, headers: jsonHeaders, body: JSON.stringify(body) })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.error) alert(data.error);
+            else {
+              document.getElementById('packageForm').style.display = 'none';
+              loadPackages();
+            }
+          });
+      });
+
+      loadUsers();
+      loadPackages();
+    })();
+  </script>
+</body>
+</html>

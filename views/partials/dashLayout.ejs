@@ -1,0 +1,35 @@
+<%#
+  Dashboard Layout Wrapper
+
+  Since EJS doesn't support layout blocks natively, each dashboard page
+  includes head.ejs and sidebar.ejs directly. This file documents the
+  standard dashboard page structure for reference:
+
+  <!DOCTYPE html>
+  <html lang="en" data-bs-theme="dark">
+  <head>
+    <%- include('partials/head') %>
+    <style>
+      body { background: #0a0a14; margin: 0; font-family: 'Manrope', 'Gordita', sans-serif; }
+      .dash-main { margin-left: 260px; min-height: 100vh; }
+      .dash-topbar { padding: 20px 32px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
+      .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+      .dash-content { padding: 28px 32px; }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/sidebar') %>
+    <div class="dash-main">
+      <div class="dash-topbar">
+        <h1>Page Title</h1>
+        <div class="user-info">...</div>
+      </div>
+      <div class="dash-content">
+        <!-- Page content here -->
+      </div>
+    </div>
+    <script src="/assets/vendor/jquery.min.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  </body>
+  </html>
+%>
