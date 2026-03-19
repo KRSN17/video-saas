@@ -23,7 +23,7 @@ const NODE_TYPES = {
     color: '#27ae60', label: 'Image Input', category: 'image',
     inputs: [],
     outputs: [{ name: 'image', type: 'image' }],
-    params: [{ name: 'url', type: 'text', placeholder: 'Image URL or upload' }]
+    params: [{ name: 'url', type: 'dropzone', placeholder: 'Drop image here or click to upload' }]
   },
   'text-to-video': {
     color: '#e74c3c', label: 'Text to Video', category: 'video', aiNode: true,
@@ -378,6 +378,26 @@ class WorkflowCanvas {
       }
       .wf-run-model-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
       .wf-run-model-btn.running { opacity: 0.5; pointer-events: none; }
+
+      /* Dropzone for image input */
+      .wf-dropzone {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+      }
+      .wf-dropzone-inner {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 6px; color: rgba(255,255,255,0.2); font-size: 11px;
+        font-weight: 500; user-select: none; transition: color 0.2s;
+      }
+      .wf-dropzone:hover .wf-dropzone-inner { color: rgba(255,255,255,0.4); }
+      .wf-dropzone.dragover {
+        background: rgba(39,174,96,0.08);
+        outline: 2px dashed rgba(39,174,96,0.4);
+        outline-offset: -4px;
+        border-radius: 8px;
+      }
+      .wf-dropzone.dragover .wf-dropzone-inner { color: rgba(39,174,96,0.6); }
       @keyframes wf-spin { to { transform: rotate(360deg); } }
 
       /* ── Hidden old run btn in header (replaced by footer btn) ── */
@@ -956,15 +976,49 @@ class WorkflowCanvas {
     portsSection.appendChild(portsRight);
     body.appendChild(portsSection);
 
-    // ── Checkerboard preview canvas (for AI/output/merge nodes) ──
-    const hasPreview = def.aiNode || type === 'video-output' || type === 'video-merge';
+    // ── Preview / Dropzone area ──
+    const hasPreview = def.aiNode || type === 'video-output' || type === 'video-merge' || type === 'image-input';
     let previewContent = null;
     if (hasPreview) {
       const preview = document.createElement('div');
       preview.className = 'wf-preview';
       previewContent = document.createElement('div');
       previewContent.className = 'wf-preview-content';
-      previewContent.innerHTML = '<div class="wf-preview-placeholder"><span>No output yet</span></div>';
+
+      if (type === 'image-input') {
+        // Image dropzone
+        previewContent.innerHTML = `<div class="wf-dropzone" id="dropzone-${id}">
+          <div class="wf-dropzone-inner">
+            <span style="font-size:28px;opacity:0.3;">⬆</span>
+            <span>Drop image or click</span>
+          </div>
+          <input type="file" accept="image/*" style="display:none;" id="dropfile-${id}">
+        </div>`;
+        previewContent.style.cursor = 'pointer';
+        previewContent.style.backgroundImage = 'none';
+        previewContent.style.background = 'rgba(20,20,28,0.8)';
+
+        setTimeout(() => {
+          const dz = document.getElementById(`dropzone-${id}`);
+          const fi = document.getElementById(`dropfile-${id}`);
+          if (!dz || !fi) return;
+
+          dz.addEventListener('click', (e) => { e.stopPropagation(); fi.click(); });
+          dz.addEventListener('mousedown', (e) => e.stopPropagation());
+          dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+          dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+          dz.addEventListener('drop', (e) => {
+            e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover');
+            if (e.dataTransfer.files.length) this._handleImageDrop(id, e.dataTransfer.files[0], previewContent);
+          });
+          fi.addEventListener('change', (e) => {
+            if (e.target.files.length) this._handleImageDrop(id, e.target.files[0], previewContent);
+          });
+        }, 50);
+      } else {
+        previewContent.innerHTML = '<div class="wf-preview-placeholder"><span>No output yet</span></div>';
+      }
+
       preview.appendChild(previewContent);
       body.appendChild(preview);
     }
@@ -1452,6 +1506,39 @@ class WorkflowCanvas {
   }
 
   // -----------------------------------------------------------------------
+  // Image drop handler
+  // -----------------------------------------------------------------------
+  _handleImageDrop(nodeId, file, previewContent) {
+    const node = this.nodes.get(nodeId);
+    if (!node) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      node.values.url = dataUrl;
+      node.outputUrl = dataUrl;
+      node.result = { image: dataUrl };
+      previewContent.style.backgroundImage = 'none';
+      previewContent.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:9px;">`;
+    };
+    reader.readAsDataURL(file);
+
+    // Also upload to server for use in API calls
+    const formData = new FormData();
+    formData.append('video', file); // reuse the upload endpoint
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/videos/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      }).then(r => r.json()).then(data => {
+        if (data.video?.localPath) {
+          node.values.url = data.video.localPath;
+        }
+      }).catch(() => {});
+    }
+  }
+
   // Workflow execution
   // -----------------------------------------------------------------------
   _setNodePreview(node, state, url) {

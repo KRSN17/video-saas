@@ -5,14 +5,14 @@
 
 /* --- Root Variables --- */
 :root {
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-card: #1a1a3e;
-  --bg-sidebar: #0d0d1a;
-  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #7b91f7 0%, #8a5fb5 100%);
-  --accent-blue: #667eea;
-  --accent-purple: #764ba2;
+  --bg-primary: #0c0c0c;
+  --bg-secondary: #141414;
+  --bg-card: #1c1c1c;
+  --bg-sidebar: #0a0a0a;
+  --accent-gradient: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #f0f0f0 0%, #b0b0b0 100%);
+  --accent-blue: #e0e0e0;
+  --accent-purple: #a0a0a0;
   --accent-green: #34d399;
   --accent-red: #f87171;
   --accent-yellow: #fbbf24;
@@ -41,8 +41,8 @@
 /* --- Body & Base --- */
 body {
   background: var(--bg-primary);
-  background-image: radial-gradient(ellipse at 20% 50%, rgba(102,126,234,0.04) 0%, transparent 50%),
-                    radial-gradient(ellipse at 80% 20%, rgba(118,75,162,0.04) 0%, transparent 50%);
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.02) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.015) 0%, transparent 50%);
   color: var(--text-primary);
   font-family: 'Gordita', 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;

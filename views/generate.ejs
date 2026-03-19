@@ -342,8 +342,16 @@
           </div>
 
           <div class="mb-3 image-url-row" id="imageUrlRow">
-            <label class="form-label">Image URL</label>
-            <input type="text" class="form-control" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+            <label class="form-label">Upload Image</label>
+            <div id="imageDropzone" style="border:2px dashed rgba(255,255,255,0.12); border-radius:12px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s; background:rgba(255,255,255,0.02);">
+              <div style="color:rgba(255,255,255,0.3); font-size:13px;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size:24px; display:block; margin-bottom:8px;"></i>
+                Drop image here or click to browse
+              </div>
+              <img id="imagePreviewThumb" style="display:none; max-width:100%; max-height:120px; border-radius:8px; margin-top:12px;">
+            </div>
+            <input type="file" id="imageFileInput" accept="image/*" style="display:none;">
+            <input type="hidden" id="imageUrl" name="imageUrl">
           </div>
 
           <div class="row g-3 mb-3">
@@ -494,6 +502,33 @@
         } else {
           imageUrlRow.classList.remove('visible');
         }
+      }
+
+      // Image dropzone
+      var imgDz = document.getElementById('imageDropzone');
+      var imgFi = document.getElementById('imageFileInput');
+      var imgPrev = document.getElementById('imagePreviewThumb');
+      var imgUrl = document.getElementById('imageUrl');
+      if (imgDz && imgFi) {
+        imgDz.addEventListener('click', function() { imgFi.click(); });
+        imgDz.addEventListener('dragover', function(e) { e.preventDefault(); imgDz.style.borderColor = 'rgba(102,126,234,0.5)'; imgDz.style.background = 'rgba(102,126,234,0.05)'; });
+        imgDz.addEventListener('dragleave', function() { imgDz.style.borderColor = 'rgba(255,255,255,0.12)'; imgDz.style.background = 'rgba(255,255,255,0.02)'; });
+        imgDz.addEventListener('drop', function(e) {
+          e.preventDefault();
+          imgDz.style.borderColor = 'rgba(255,255,255,0.12)';
+          imgDz.style.background = 'rgba(255,255,255,0.02)';
+          if (e.dataTransfer.files.length) handleImageFile(e.dataTransfer.files[0]);
+        });
+        imgFi.addEventListener('change', function() { if (this.files.length) handleImageFile(this.files[0]); });
+      }
+      function handleImageFile(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          imgPrev.src = e.target.result;
+          imgPrev.style.display = 'block';
+          imgUrl.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
       }
 
       // Option buttons
