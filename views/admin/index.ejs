@@ -20,7 +20,11 @@
     .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
     .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
     .dash-content { padding: 28px 32px; }
-    .section-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+    .section-title {
+      font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title i { color: #a78bfa; font-size: 16px; }
 
     .stat-card {
       background: rgba(255,255,255,0.03);
@@ -156,6 +160,189 @@
     .modal-footer { border-top: 1px solid rgba(255,255,255,0.06); }
     .modal-title { color: #fff; font-weight: 700; }
     .btn-close { filter: invert(1); }
+
+    /* Analytics Section */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .analytics-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .analytics-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .analytics-card-title i { color: #a78bfa; font-size: 14px; }
+
+    /* Horizontal bar chart */
+    .h-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .h-bar-label {
+      width: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      text-align: right;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .h-bar-track {
+      flex: 1;
+      height: 24px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .h-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.6s ease;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      min-width: 24px;
+    }
+    .h-bar-count {
+      width: 36px;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+
+    /* Status blocks */
+    .status-blocks {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .status-block {
+      flex: 1;
+      min-width: 100px;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .status-block .sb-count {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .status-block .sb-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Top users table */
+    .top-users-table { width: 100%; border-collapse: collapse; }
+    .top-users-table th {
+      text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 700;
+      color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .top-users-table td {
+      padding: 10px 12px; font-size: 12px; color: rgba(255,255,255,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .top-users-table tr:last-child td { border-bottom: none; }
+    .top-user-rank {
+      width: 24px; height: 24px; border-radius: 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+    }
+
+    /* API Key Management */
+    .apikey-mgmt-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      transition: all 0.15s ease;
+    }
+    .apikey-mgmt-row:hover { border-color: rgba(123,92,255,0.15); }
+    .apikey-mgmt-key {
+      flex: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.5px;
+    }
+    .apikey-mgmt-usage {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      white-space: nowrap;
+    }
+    .apikey-status-badge {
+      font-size: 10px;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .apikey-active {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+    }
+    .apikey-inactive {
+      background: rgba(239,68,68,0.12);
+      color: #ef4444;
+    }
+    .apikey-btn-del {
+      background: none;
+      border: none;
+      color: rgba(239,68,68,0.4);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 8px;
+      transition: color 0.15s ease;
+    }
+    .apikey-btn-del:hover { color: #ef4444; }
+    .apikey-add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .apikey-add-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      padding: 8px 12px;
+      font-family: monospace;
+      outline: none;
+    }
+    .apikey-add-input:focus { border-color: rgba(123,92,255,0.4); }
+    .apikey-add-input::placeholder { color: rgba(255,255,255,0.2); }
   </style>
 </head>
 <body>
@@ -211,8 +398,62 @@
         </div>
       </div>
 
+      <!-- Analytics Section -->
+      <div class="section-title"><i class="fa-solid fa-chart-pie"></i> Analytics</div>
+      <div class="analytics-grid">
+        <!-- Videos by Model -->
+        <div class="analytics-card">
+          <div class="analytics-card-title"><i class="fa-solid fa-robot"></i> Videos by Model</div>
+          <div id="analyticsByModel">
+            <div class="text-center py-3" style="color: rgba(255,255,255,0.2); font-size: 13px;">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Videos by Status -->
+        <div class="analytics-card">
+          <div class="analytics-card-title"><i class="fa-solid fa-signal"></i> Videos by Status</div>
+          <div id="analyticsByStatus">
+            <div class="text-center py-3" style="color: rgba(255,255,255,0.2); font-size: 13px;">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Users -->
+      <div class="admin-panel" style="margin-bottom: 28px;">
+        <div style="padding: 16px 16px 0;">
+          <div class="analytics-card-title"><i class="fa-solid fa-trophy"></i> Top Users</div>
+        </div>
+        <div id="topUsersContainer">
+          <div class="text-center py-3" style="color: rgba(255,255,255,0.2); font-size: 13px;">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Key Management -->
+      <div class="section-title"><i class="fa-solid fa-key"></i> API Key Management</div>
+      <div class="admin-panel" style="padding: 24px;">
+        <p style="font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 16px;">
+          Manage fal.ai API keys. Toggle active/inactive, monitor usage, and add new keys for load balancing.
+        </p>
+        <div id="apiKeyMgmtContainer">
+          <div class="text-center py-3" style="color: rgba(255,255,255,0.2); font-size: 13px;">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
+        </div>
+        <div class="apikey-add-row">
+          <input type="text" class="apikey-add-input" id="newMgmtApiKey" placeholder="fal-xxxxxxxxxxxxxxxxxxxxxxxx">
+          <button class="btn-sm-action" id="btnAddMgmtApiKey" style="padding: 8px 16px; white-space: nowrap;">
+            <i class="fa-solid fa-plus me-1"></i>Add Key
+          </button>
+        </div>
+      </div>
+
       <!-- Users Table -->
-      <div class="section-title">Users</div>
+      <div class="section-title"><i class="fa-solid fa-users"></i> Users</div>
       <div class="admin-panel">
         <div id="usersTableContainer">
           <div class="text-center py-4">
@@ -222,7 +463,7 @@
       </div>
 
       <!-- Recent Videos Table -->
-      <div class="section-title">Recent Videos</div>
+      <div class="section-title"><i class="fa-solid fa-film"></i> Recent Videos</div>
       <div class="admin-panel">
         <div id="videosTableContainer">
           <div class="text-center py-4">
@@ -232,9 +473,9 @@
       </div>
 
       <!-- Settings Section -->
-      <div class="section-title">Settings</div>
+      <div class="section-title"><i class="fa-solid fa-gear"></i> Settings</div>
       <div class="settings-panel">
-        <!-- fal.ai API Keys -->
+        <!-- fal.ai API Keys (legacy) -->
         <div class="settings-group">
           <div class="settings-group-title">
             <i class="fa-solid fa-key"></i>
@@ -311,6 +552,15 @@
       var headers = { 'Authorization': 'Bearer ' + token };
       var jsonHeaders = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
 
+      var barColors = [
+        'linear-gradient(135deg, #7b5cff, #c86dd7)',
+        'linear-gradient(135deg, #3b82f6, #06b6d4)',
+        'linear-gradient(135deg, #f59e0b, #f97316)',
+        'linear-gradient(135deg, #10b981, #34d399)',
+        'linear-gradient(135deg, #ef4444, #f97316)',
+        'linear-gradient(135deg, #a855f7, #ec4899)'
+      ];
+
       // Profile & admin check
       fetch('/api/auth/profile', { headers: headers })
         .then(function(r) { return r.json(); })
@@ -336,50 +586,157 @@
         })
         .catch(function() {});
 
-      // --- Users Table ---
+      // --- Analytics: Videos by Model & Status ---
+      var allAdminVideos = [];
+      var allAdminUsers = [];
+
+      fetch('/api/admin/videos', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var videos = data.videos || data || [];
+          if (!Array.isArray(videos)) videos = [];
+          allAdminVideos = videos;
+          renderAnalytics(videos);
+          renderVideosTable(videos);
+        })
+        .catch(function() {
+          renderAnalytics([]);
+        });
+
+      function renderAnalytics(videos) {
+        // Videos by Model
+        var modelCounts = {};
+        videos.forEach(function(v) {
+          var m = v.model || 'unknown';
+          modelCounts[m] = (modelCounts[m] || 0) + 1;
+        });
+        var modelContainer = document.getElementById('analyticsByModel');
+        var modelKeys = Object.keys(modelCounts).sort(function(a, b) { return modelCounts[b] - modelCounts[a]; });
+        if (modelKeys.length === 0) {
+          modelContainer.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:13px;">No data</div>';
+        } else {
+          var maxModel = Math.max.apply(null, modelKeys.map(function(k) { return modelCounts[k]; }));
+          var html = '';
+          modelKeys.forEach(function(key, idx) {
+            var pct = maxModel > 0 ? Math.round((modelCounts[key] / maxModel) * 100) : 0;
+            html += '<div class="h-bar-row">' +
+              '<div class="h-bar-label">' + key + '</div>' +
+              '<div class="h-bar-track"><div class="h-bar-fill" style="width:' + pct + '%;background:' + barColors[idx % barColors.length] + ';"></div></div>' +
+              '<div class="h-bar-count">' + modelCounts[key] + '</div>' +
+            '</div>';
+          });
+          modelContainer.innerHTML = html;
+        }
+
+        // Videos by Status
+        var statusCounts = { completed: 0, processing: 0, pending: 0, failed: 0 };
+        videos.forEach(function(v) {
+          var s = v.status || 'pending';
+          if (statusCounts[s] !== undefined) statusCounts[s]++;
+          else statusCounts[s] = 1;
+        });
+        var statusContainer = document.getElementById('analyticsByStatus');
+        var statusConfig = [
+          { key: 'completed', label: 'Completed', bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
+          { key: 'processing', label: 'Processing', bg: 'rgba(59,130,246,0.12)', color: '#3b82f6' },
+          { key: 'pending', label: 'Pending', bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
+          { key: 'failed', label: 'Failed', bg: 'rgba(239,68,68,0.12)', color: '#ef4444' }
+        ];
+        var statusHtml = '<div class="status-blocks">';
+        statusConfig.forEach(function(sc) {
+          statusHtml += '<div class="status-block" style="background:' + sc.bg + ';">' +
+            '<div class="sb-count">' + (statusCounts[sc.key] || 0) + '</div>' +
+            '<div class="sb-label" style="color:' + sc.color + ';">' + sc.label + '</div>' +
+          '</div>';
+        });
+        statusHtml += '</div>';
+        statusContainer.innerHTML = statusHtml;
+      }
+
+      // --- Top Users ---
       function loadUsers() {
         fetch('/api/admin/users', { headers: headers })
           .then(function(r) { return r.json(); })
           .then(function(data) {
             var users = data.users || data || [];
             if (!Array.isArray(users)) users = [];
-            var container = document.getElementById('usersTableContainer');
-
-            if (users.length === 0) {
-              container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No users found</div>';
-              return;
-            }
-
-            var html = '<table class="admin-table"><thead><tr>' +
-              '<th>Email</th><th>Name</th><th>Credits</th><th>Videos</th><th>Role</th><th>Joined</th><th>Action</th>' +
-              '</tr></thead><tbody>';
-            users.forEach(function(u) {
-              var id = u._id || u.id;
-              var roleClass = u.role === 'admin' ? 'role-admin' : 'role-user';
-              var date = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '--';
-              var videoCount = u.videoCount != null ? u.videoCount : (u._count && u._count.videos != null ? u._count.videos : 0);
-              html += '<tr>' +
-                '<td>' + (u.email || '--') + '</td>' +
-                '<td>' + (u.name || '--') + '</td>' +
-                '<td>' + (u.credits != null ? u.credits : 0) + '</td>' +
-                '<td>' + videoCount + '</td>' +
-                '<td><span class="role-badge ' + roleClass + '">' + (u.role || 'user') + '</span></td>' +
-                '<td>' + date + '</td>' +
-                '<td><button class="btn-sm-action btn-adjust" data-id="' + id + '" data-email="' + (u.email || '') + '">Adjust Credits</button></td>' +
-                '</tr>';
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-
-            container.querySelectorAll('.btn-adjust').forEach(function(btn) {
-              btn.addEventListener('click', function() {
-                document.getElementById('adjustUserId').value = this.getAttribute('data-id');
-                document.getElementById('adjustUserEmail').textContent = this.getAttribute('data-email');
-                document.getElementById('adjustAmount').value = '';
-                new bootstrap.Modal(document.getElementById('adjustCreditsModal')).show();
-              });
-            });
+            allAdminUsers = users;
+            renderUsersTable(users);
+            renderTopUsers(users);
           });
+      }
+
+      function renderTopUsers(users) {
+        var container = document.getElementById('topUsersContainer');
+        var sorted = users.slice().sort(function(a, b) {
+          var va = a.videoCount != null ? a.videoCount : (a._count && a._count.videos != null ? a._count.videos : 0);
+          var vb = b.videoCount != null ? b.videoCount : (b._count && b._count.videos != null ? b._count.videos : 0);
+          return vb - va;
+        });
+        var top = sorted.slice(0, 10);
+        if (top.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:13px;">No users</div>';
+          return;
+        }
+        var rankColors = [
+          { bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' },
+          { bg: 'rgba(192,192,192,0.12)', color: '#c0c0c0' },
+          { bg: 'rgba(205,127,50,0.12)', color: '#cd7f32' }
+        ];
+        var html = '<table class="top-users-table"><thead><tr>' +
+          '<th style="width:40px;">#</th><th>User</th><th>Videos</th><th>Credits</th><th>Role</th>' +
+        '</tr></thead><tbody>';
+        top.forEach(function(u, idx) {
+          var videoCount = u.videoCount != null ? u.videoCount : (u._count && u._count.videos != null ? u._count.videos : 0);
+          var rc = idx < 3 ? rankColors[idx] : { bg: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)' };
+          var roleClass = u.role === 'admin' ? 'role-admin' : 'role-user';
+          html += '<tr>' +
+            '<td><span class="top-user-rank" style="background:' + rc.bg + ';color:' + rc.color + ';">' + (idx + 1) + '</span></td>' +
+            '<td style="color:rgba(255,255,255,0.7);font-weight:600;">' + (u.email || u.name || '--') + '</td>' +
+            '<td>' + videoCount + '</td>' +
+            '<td>' + (u.credits != null ? u.credits : 0) + '</td>' +
+            '<td><span class="role-badge ' + roleClass + '">' + (u.role || 'user') + '</span></td>' +
+          '</tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      }
+
+      function renderUsersTable(users) {
+        var container = document.getElementById('usersTableContainer');
+        if (users.length === 0) {
+          container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No users found</div>';
+          return;
+        }
+        var html = '<table class="admin-table"><thead><tr>' +
+          '<th>Email</th><th>Name</th><th>Credits</th><th>Videos</th><th>Role</th><th>Joined</th><th>Action</th>' +
+          '</tr></thead><tbody>';
+        users.forEach(function(u) {
+          var id = u._id || u.id;
+          var roleClass = u.role === 'admin' ? 'role-admin' : 'role-user';
+          var date = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '--';
+          var videoCount = u.videoCount != null ? u.videoCount : (u._count && u._count.videos != null ? u._count.videos : 0);
+          html += '<tr>' +
+            '<td>' + (u.email || '--') + '</td>' +
+            '<td>' + (u.name || '--') + '</td>' +
+            '<td>' + (u.credits != null ? u.credits : 0) + '</td>' +
+            '<td>' + videoCount + '</td>' +
+            '<td><span class="role-badge ' + roleClass + '">' + (u.role || 'user') + '</span></td>' +
+            '<td>' + date + '</td>' +
+            '<td><button class="btn-sm-action btn-adjust" data-id="' + id + '" data-email="' + (u.email || '') + '">Adjust Credits</button></td>' +
+            '</tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        container.querySelectorAll('.btn-adjust').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            document.getElementById('adjustUserId').value = this.getAttribute('data-id');
+            document.getElementById('adjustUserEmail').textContent = this.getAttribute('data-email');
+            document.getElementById('adjustAmount').value = '';
+            new bootstrap.Modal(document.getElementById('adjustCreditsModal')).show();
+          });
+        });
       }
 
       // Adjust credits submit
@@ -403,40 +760,141 @@
       });
 
       // --- Videos Table ---
-      fetch('/api/admin/videos', { headers: headers })
+      function renderVideosTable(videos) {
+        var container = document.getElementById('videosTableContainer');
+        if (videos.length === 0) {
+          container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No videos found</div>';
+          return;
+        }
+        var html = '<table class="admin-table"><thead><tr>' +
+          '<th>User</th><th>Prompt</th><th>Model</th><th>Status</th><th>Date</th>' +
+          '</tr></thead><tbody>';
+        videos.slice(0, 20).forEach(function(v) {
+          var statusClass = 'status-' + (v.status || 'pending');
+          var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '--';
+          var userEmail = v.user ? (v.user.email || '--') : (v.userEmail || '--');
+          var prompt = (v.prompt || 'No prompt');
+          if (prompt.length > 60) prompt = prompt.substring(0, 60) + '...';
+          html += '<tr>' +
+            '<td>' + userEmail + '</td>' +
+            '<td>' + prompt + '</td>' +
+            '<td>' + (v.model || '--') + '</td>' +
+            '<td><span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span></td>' +
+            '<td>' + date + '</td>' +
+            '</tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      }
+
+      // --- API Key Management (new section) ---
+      var managedApiKeys = [];
+
+      function loadApiKeyMgmt() {
+        fetch('/api/admin/api-keys', { headers: headers })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            managedApiKeys = data.apiKeys || data.keys || data || [];
+            if (!Array.isArray(managedApiKeys)) managedApiKeys = [];
+            renderApiKeyMgmt();
+          })
+          .catch(function() {
+            // Fallback: load from settings
+            fetch('/api/admin/settings', { headers: headers })
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                var settings = data.settings || data || {};
+                var keys = settings.apiKeys || [];
+                managedApiKeys = keys.map(function(k, idx) {
+                  return { key: k, active: true, usage: 0, id: 'key-' + idx };
+                });
+                renderApiKeyMgmt();
+              })
+              .catch(function() { renderApiKeyMgmt(); });
+          });
+      }
+
+      function renderApiKeyMgmt() {
+        var container = document.getElementById('apiKeyMgmtContainer');
+        if (managedApiKeys.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:13px;"><i class="fa-solid fa-key" style="font-size:24px;display:block;margin-bottom:8px;"></i>No API keys configured</div>';
+          return;
+        }
+        container.innerHTML = '';
+        managedApiKeys.forEach(function(item, idx) {
+          var keyStr = typeof item === 'string' ? item : (item.key || item.value || '');
+          var isActive = typeof item === 'object' ? (item.active !== false) : true;
+          var usage = typeof item === 'object' ? (item.usage || item.usageCount || 0) : 0;
+          var keyId = typeof item === 'object' ? (item._id || item.id || 'key-' + idx) : 'key-' + idx;
+          var masked = keyStr.length > 12 ? keyStr.substring(0, 8) + '...' + keyStr.substring(keyStr.length - 4) : keyStr;
+
+          var row = document.createElement('div');
+          row.className = 'apikey-mgmt-row';
+          row.innerHTML =
+            '<span class="apikey-mgmt-key">' + masked + '</span>' +
+            '<span class="apikey-mgmt-usage"><i class="fa-solid fa-chart-line me-1"></i>' + usage + ' uses</span>' +
+            '<span class="apikey-status-badge ' + (isActive ? 'apikey-active' : 'apikey-inactive') + '" data-idx="' + idx + '">' + (isActive ? 'Active' : 'Inactive') + '</span>' +
+            '<button class="apikey-btn-del" data-idx="' + idx + '" data-id="' + keyId + '"><i class="fa-solid fa-trash"></i></button>';
+
+          // Toggle active/inactive
+          row.querySelector('.apikey-status-badge').addEventListener('click', function() {
+            var i = parseInt(this.getAttribute('data-idx'));
+            if (typeof managedApiKeys[i] === 'object') {
+              managedApiKeys[i].active = !managedApiKeys[i].active;
+            }
+            // Try to update via API
+            fetch('/api/admin/api-keys/' + keyId + '/toggle', {
+              method: 'POST',
+              headers: jsonHeaders
+            }).catch(function() {});
+            renderApiKeyMgmt();
+          });
+
+          // Delete
+          row.querySelector('.apikey-btn-del').addEventListener('click', function() {
+            if (!confirm('Delete this API key?')) return;
+            var delId = this.getAttribute('data-id');
+            fetch('/api/admin/api-keys/' + delId, {
+              method: 'DELETE',
+              headers: headers
+            }).then(function() {
+              managedApiKeys.splice(idx, 1);
+              renderApiKeyMgmt();
+            }).catch(function() {
+              managedApiKeys.splice(idx, 1);
+              renderApiKeyMgmt();
+            });
+          });
+
+          container.appendChild(row);
+        });
+      }
+
+      document.getElementById('btnAddMgmtApiKey').addEventListener('click', function() {
+        var input = document.getElementById('newMgmtApiKey');
+        var key = input.value.trim();
+        if (!key) return alert('Enter an API key.');
+        // Try to add via API
+        fetch('/api/admin/api-keys', {
+          method: 'POST',
+          headers: jsonHeaders,
+          body: JSON.stringify({ key: key })
+        })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          var videos = data.videos || data || [];
-          if (!Array.isArray(videos)) videos = [];
-          var container = document.getElementById('videosTableContainer');
-
-          if (videos.length === 0) {
-            container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No videos found</div>';
-            return;
-          }
-
-          var html = '<table class="admin-table"><thead><tr>' +
-            '<th>User</th><th>Prompt</th><th>Model</th><th>Status</th><th>Date</th>' +
-            '</tr></thead><tbody>';
-          videos.slice(0, 20).forEach(function(v) {
-            var statusClass = 'status-' + (v.status || 'pending');
-            var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '--';
-            var userEmail = v.user ? (v.user.email || '--') : (v.userEmail || '--');
-            var prompt = (v.prompt || 'No prompt');
-            if (prompt.length > 60) prompt = prompt.substring(0, 60) + '...';
-            html += '<tr>' +
-              '<td>' + userEmail + '</td>' +
-              '<td>' + prompt + '</td>' +
-              '<td>' + (v.model || '--') + '</td>' +
-              '<td><span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span></td>' +
-              '<td>' + date + '</td>' +
-              '</tr>';
-          });
-          html += '</tbody></table>';
-          container.innerHTML = html;
+          input.value = '';
+          loadApiKeyMgmt();
+          showToast('API key added');
+        })
+        .catch(function() {
+          // Fallback: add locally
+          managedApiKeys.push({ key: key, active: true, usage: 0 });
+          input.value = '';
+          renderApiKeyMgmt();
         });
+      });
 
-      // --- Settings: API Keys ---
+      // --- Settings: API Keys (legacy) ---
       var apiKeys = [];
 
       function loadSettings() {
@@ -450,7 +908,6 @@
             renderApiKeys();
           })
           .catch(function() {
-            // Settings endpoint may not exist yet
             renderApiKeys();
           });
       }
@@ -531,6 +988,7 @@
       // Initialize
       loadUsers();
       loadSettings();
+      loadApiKeyMgmt();
     })();
   </script>
 </body>
