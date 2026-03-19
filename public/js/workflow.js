@@ -108,7 +108,7 @@ class WorkflowCanvas {
   _init() {
     this.container.style.position = 'relative';
     this.container.style.overflow = 'hidden';
-    this.container.style.background = '#0a0a14';
+    this.container.style.background = '#0c0c0c';
     this.container.style.width = '100%';
     this.container.style.height = '100%';
     this.container.style.userSelect = 'none';
@@ -122,9 +122,10 @@ class WorkflowCanvas {
 
     // SVG layer for connections
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;transform-origin:0 0;';
+    this.svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;transform-origin:0 0;overflow:visible;';
     this.svg.setAttribute('width', '100%');
     this.svg.setAttribute('height', '100%');
+    this.svg.setAttribute('overflow', 'visible');
     this.container.appendChild(this.svg);
 
     // Defs for glow filters
@@ -178,58 +179,63 @@ class WorkflowCanvas {
     style.textContent = `
       .wf-node {
         position: absolute;
-        width: 220px;
-        background: rgba(20, 20, 40, 0.6);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+        width: 240px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 14px;
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
         font-family: 'Manrope', 'Inter', -apple-system, sans-serif;
         font-size: 12px;
-        color: #ccc;
-        transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+        color: #e0e0e0;
+        transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
         cursor: grab;
       }
       .wf-node:hover {
-        border-color: rgba(255,255,255,0.15);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(102,126,234,0.08), inset 0 1px 0 rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.12);
       }
       .wf-node:active { cursor: grabbing; }
       .wf-node.selected {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 2px rgba(59,130,246,0.4), 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(59,130,246,0.1);
+        border-color: rgba(255,255,255,0.35);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 12px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
       }
       .wf-node-header {
-        height: 32px;
-        border-radius: 10px 10px 0 0;
+        height: 34px;
+        border-radius: 14px 14px 0 0;
         display: flex;
         align-items: center;
-        padding: 0 10px;
-        gap: 6px;
-        font-weight: 600;
-        font-size: 12px;
+        padding: 0 12px;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 11px;
         color: #fff;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
       }
       .wf-node-header .wf-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .wf-run-btn {
-        width: 24px; height: 24px;
+        width: 26px; height: 26px;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.2);
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         color: #fff;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 10px;
-        transition: all 0.15s;
+        transition: all 0.2s;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
       }
-      .wf-run-btn:hover { background: rgba(255,255,255,0.25); box-shadow: 0 0 10px rgba(255,255,255,0.15); }
+      .wf-run-btn:hover { background: rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
       .wf-run-btn.running { animation: wf-spin 0.8s linear infinite; }
       @keyframes wf-spin { to { transform: rotate(360deg); } }
-      .wf-node-body { padding: 8px 10px; }
+      .wf-node-body { padding: 10px 12px; }
       .wf-ports { display: flex; flex-direction: column; gap: 6px; }
       .wf-port-row {
         display: flex;
@@ -241,21 +247,29 @@ class WorkflowCanvas {
       .wf-port-row.input { justify-content: flex-start; }
       .wf-port-row.output { justify-content: flex-end; }
       .wf-port {
-        width: 12px; height: 12px;
+        width: 14px; height: 14px;
         border-radius: 50%;
         border: 2px solid;
         background: #0a0a14;
         cursor: crosshair;
         position: absolute;
         transition: box-shadow 0.15s, transform 0.15s;
-        z-index: 2;
+        z-index: 10;
         pointer-events: all;
       }
-      .wf-port.input-port { left: -17px; }
-      .wf-port.output-port { right: -17px; }
+      /* Larger invisible hit area around each port */
+      .wf-port::before {
+        content: '';
+        position: absolute;
+        top: -8px; left: -8px; right: -8px; bottom: -8px;
+        border-radius: 50%;
+      }
+      .wf-port.input-port { left: -18px; }
+      .wf-port.output-port { right: -18px; }
       .wf-port:hover, .wf-port.highlight {
-        transform: scale(1.4);
-        box-shadow: 0 0 8px currentColor;
+        transform: scale(1.5);
+        box-shadow: 0 0 12px currentColor;
+        background: currentColor;
       }
       .wf-port-label { font-size: 11px; color: #999; }
       .wf-port-row.output .wf-port-label { text-align: right; flex: 1; }
@@ -458,7 +472,7 @@ class WorkflowCanvas {
     const offsetX = (this.pan.x % (24 * this.zoom));
     const offsetY = (this.pan.y % (24 * this.zoom));
 
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
     for (let x = offsetX; x < cr.width; x += spacing) {
       for (let y = offsetY; y < cr.height; y += spacing) {
         ctx.beginPath();
