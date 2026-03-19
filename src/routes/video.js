@@ -5,10 +5,34 @@ const prisma = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const { requireCredits } = require('../middleware/credits');
 const upload = require('../middleware/upload');
-const { submitTextToVideo, submitImageToVideo, checkStatus, getResult } = require('../services/fal');
+const { submitTextToVideo, submitImageToVideo, checkStatus, getResult, MODEL_INFO } = require('../services/fal');
 const { deductCredits } = require('../services/credits');
 
 const router = express.Router();
+
+// Enhance prompt (rule-based)
+router.post('/enhance-prompt', authenticate, async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'Prompt required' });
+
+    const cinematic = ['cinematic lighting', 'professional quality', '4K resolution', 'detailed textures'];
+    const cameras = ['smooth camera movement', 'wide angle shot', 'close-up detail shot', 'aerial view'];
+    const moods = ['dramatic atmosphere', 'vibrant colors', 'soft natural lighting', 'golden hour'];
+
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const enhanced = `${prompt}, ${pick(cinematic)}, ${pick(cameras)}, ${pick(moods)}, high detail, masterpiece`;
+
+    res.json({ original: prompt, enhanced });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List available models
+router.get('/models', authenticate, async (req, res) => {
+  res.json({ models: MODEL_INFO });
+});
 
 // Generate video
 router.post('/generate', authenticate, requireCredits(1), async (req, res) => {
@@ -75,14 +99,42 @@ router.get('/:id/status', authenticate, async (req, res) => {
   }
 });
 
-// List user videos
+// List user videos with filtering, sorting, and pagination
 router.get('/', authenticate, async (req, res) => {
   try {
-    const videos = await prisma.video.findMany({
-      where: { userId: req.user.id },
-      orderBy: { createdAt: 'desc' },
+    const { status, model, sort = 'newest', page = 1, limit = 12 } = req.query;
+    const take = Math.min(parseInt(limit) || 12, 100);
+    const skip = (Math.max(parseInt(page) || 1, 1) - 1) * take;
+
+    const where = { userId: req.user.id };
+    if (status) where.status = status;
+    if (model) where.model = model;
+
+    let orderBy;
+    switch (sort) {
+      case 'oldest':
+        orderBy = { createdAt: 'asc' };
+        break;
+      case 'newest':
+      default:
+        orderBy = { createdAt: 'desc' };
+        break;
+    }
+
+    const [videos, total] = await Promise.all([
+      prisma.video.findMany({ where, orderBy, take, skip }),
+      prisma.video.count({ where }),
+    ]);
+
+    res.json({
+      videos,
+      pagination: {
+        page: Math.max(parseInt(page) || 1, 1),
+        limit: take,
+        total,
+        totalPages: Math.ceil(total / take),
+      },
     });
-    res.json({ videos });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

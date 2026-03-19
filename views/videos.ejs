@@ -20,16 +20,205 @@
     .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
     .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
     .dash-content { padding: 28px 32px; }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .filter-pills {
+      display: flex;
+      gap: 4px;
+    }
+    .filter-pill {
+      padding: 5px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      color: rgba(255,255,255,0.45);
+      transition: all 0.15s ease;
+    }
+    .filter-pill:hover { border-color: rgba(123,92,255,0.2); color: rgba(255,255,255,0.7); }
+    .filter-pill.active {
+      background: rgba(123,92,255,0.15);
+      border-color: rgba(123,92,255,0.3);
+      color: #fff;
+    }
+    .filter-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      padding: 5px 10px;
+      outline: none;
+    }
+    .filter-select option { background: #1a1a2e; color: #fff; }
+    .filter-search {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 12px 6px 32px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 200px;
+      position: relative;
+    }
+    .filter-search:focus { border-color: rgba(123,92,255,0.4); }
+    .filter-search::placeholder { color: rgba(255,255,255,0.2); }
+    .search-wrapper {
+      position: relative;
+    }
+    .search-wrapper i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+    }
+    .filter-separator {
+      width: 1px;
+      height: 24px;
+      background: rgba(255,255,255,0.08);
+    }
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .view-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.15s ease;
+    }
+    .view-btn.active {
+      background: rgba(123,92,255,0.15);
+      border-color: rgba(123,92,255,0.3);
+      color: #fff;
+    }
+
+    /* Bulk Actions */
+    .bulk-bar {
+      background: linear-gradient(135deg, rgba(123,92,255,0.1), rgba(200,109,215,0.1));
+      border: 1px solid rgba(123,92,255,0.2);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar .bulk-info {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+    }
+    .bulk-bar .bulk-info strong { color: #a78bfa; }
+    .bulk-bar .bulk-actions { display: flex; gap: 8px; }
+    .bulk-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.15s ease;
+    }
+    .bulk-btn-download {
+      border-color: rgba(16,185,129,0.3);
+      background: rgba(16,185,129,0.1);
+      color: #10b981;
+    }
+    .bulk-btn-download:hover { background: rgba(16,185,129,0.2); }
+    .bulk-btn-delete {
+      border-color: rgba(239,68,68,0.3);
+      background: rgba(239,68,68,0.1);
+      color: #ef4444;
+    }
+    .bulk-btn-delete:hover { background: rgba(239,68,68,0.2); }
+    .bulk-btn-clear {
+      border-color: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Grid View */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
     .video-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 14px;
       overflow: hidden;
       transition: all 0.2s ease;
+      position: relative;
     }
     .video-card:hover {
       border-color: rgba(123,92,255,0.25);
       transform: translateY(-2px);
+    }
+    .video-card .select-check {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 5;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: transparent;
+      transition: all 0.15s ease;
+    }
+    .video-card .select-check:hover { border-color: rgba(123,92,255,0.5); }
+    .video-card .select-check.checked {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border-color: transparent;
+      color: #fff;
     }
     .video-thumb {
       width: 100%;
@@ -48,6 +237,18 @@
       height: 100%;
       object-fit: cover;
     }
+    .video-thumb .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .video-card:hover .play-overlay { opacity: 1; }
+    .play-overlay i { font-size: 32px; color: rgba(255,255,255,0.8); }
     .video-card-body { padding: 16px; }
     .video-card-body .prompt-text {
       font-size: 13px;
@@ -106,6 +307,90 @@
     .card-actions .btn-download:hover { background: rgba(16,185,129,0.1); }
     .card-actions .btn-delete { border-color: rgba(239,68,68,0.15); color: #ef4444; }
     .card-actions .btn-delete:hover { background: rgba(239,68,68,0.1); }
+
+    /* List View */
+    .videos-list { display: none; }
+    .videos-list.active { display: block; }
+    .videos-grid.active { display: grid; }
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: all 0.15s ease;
+    }
+    .list-item:hover {
+      border-color: rgba(123,92,255,0.2);
+      background: rgba(123,92,255,0.03);
+    }
+    .list-item .list-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: transparent;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .list-item .list-check.checked {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border-color: transparent;
+      color: #fff;
+    }
+    .list-thumb {
+      width: 80px;
+      height: 45px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.15);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .list-thumb video { width: 100%; height: 100%; object-fit: cover; }
+    .list-info { flex: 1; min-width: 0; }
+    .list-info .list-prompt {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .list-info .list-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .list-info .list-meta span { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .list-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .list-actions .btn-action {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .list-actions .btn-download { border-color: rgba(16,185,129,0.2); color: #10b981; }
+    .list-actions .btn-delete { border-color: rgba(239,68,68,0.15); color: #ef4444; }
+
     .empty-state {
       text-align: center;
       padding: 80px 20px;
@@ -124,6 +409,11 @@
       color: #7b5cff;
       font-weight: 600;
     }
+    .results-count {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -139,14 +429,75 @@
     </div>
 
     <div class="dash-content">
-      <div class="row g-4" id="videosGrid">
-        <div class="col-12 text-center py-5" id="videosLoading">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">Status</span>
+          <div class="filter-pills" id="statusFilters">
+            <div class="filter-pill active" data-status="all">All</div>
+            <div class="filter-pill" data-status="completed"><i class="fa-solid fa-circle-check me-1" style="font-size:10px;color:#10b981;"></i>Completed</div>
+            <div class="filter-pill" data-status="processing"><i class="fa-solid fa-spinner me-1" style="font-size:10px;color:#3b82f6;"></i>Processing</div>
+            <div class="filter-pill" data-status="failed"><i class="fa-solid fa-circle-xmark me-1" style="font-size:10px;color:#ef4444;"></i>Failed</div>
+          </div>
+        </div>
+
+        <div class="filter-separator"></div>
+
+        <div class="filter-group">
+          <span class="filter-label">Model</span>
+          <select class="filter-select" id="modelFilter">
+            <option value="all">All Models</option>
+          </select>
+        </div>
+
+        <div class="filter-separator"></div>
+
+        <div class="filter-group">
+          <span class="filter-label">Sort</span>
+          <select class="filter-select" id="sortFilter">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </div>
+
+        <div class="filter-separator"></div>
+
+        <div class="search-wrapper">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" class="filter-search" id="searchInput" placeholder="Search prompts...">
+        </div>
+
+        <div class="view-toggle">
+          <button class="view-btn active" id="btnGridView" title="Grid View"><i class="fa-solid fa-grid-2"></i></button>
+          <button class="view-btn" id="btnListView" title="List View"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+
+      <!-- Bulk Actions -->
+      <div class="bulk-bar" id="bulkBar">
+        <div class="bulk-info"><strong id="selectedCount">0</strong> videos selected</div>
+        <div class="bulk-actions">
+          <button class="bulk-btn bulk-btn-download" id="btnBulkDownload"><i class="fa-solid fa-download me-1"></i>Download</button>
+          <button class="bulk-btn bulk-btn-delete" id="btnBulkDelete"><i class="fa-solid fa-trash me-1"></i>Delete</button>
+          <button class="bulk-btn bulk-btn-clear" id="btnBulkClear"><i class="fa-solid fa-xmark me-1"></i>Clear</button>
+        </div>
+      </div>
+
+      <div class="results-count" id="resultsCount"></div>
+
+      <!-- Grid View -->
+      <div class="videos-grid active" id="videosGrid">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;" id="videosLoading">
           <div class="spinner-border text-secondary" role="status"></div>
         </div>
       </div>
+
+      <!-- List View -->
+      <div class="videos-list" id="videosList"></div>
+
       <div id="emptyState" class="empty-state" style="display: none;">
         <i class="fa-solid fa-film"></i>
-        <p>No videos yet. <a href="/generate">Generate your first video!</a></p>
+        <p>No videos found. <a href="/generate">Generate your first video!</a></p>
       </div>
     </div>
   </div>
@@ -157,6 +508,14 @@
       var token = localStorage.getItem('token');
       if (!token) { window.location.href = '/login'; return; }
       var headers = { 'Authorization': 'Bearer ' + token };
+
+      var allVideos = [];
+      var selectedIds = new Set();
+      var currentView = 'grid';
+      var currentStatus = 'all';
+      var currentModel = 'all';
+      var currentSort = 'newest';
+      var searchQuery = '';
 
       // Profile
       fetch('/api/auth/profile', { headers: headers })
@@ -169,59 +528,265 @@
           }
         });
 
+      // Status filter pills
+      document.querySelectorAll('#statusFilters .filter-pill').forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          document.querySelectorAll('#statusFilters .filter-pill').forEach(function(p) { p.classList.remove('active'); });
+          pill.classList.add('active');
+          currentStatus = pill.getAttribute('data-status');
+          renderVideos();
+        });
+      });
+
+      // Model filter
+      document.getElementById('modelFilter').addEventListener('change', function() {
+        currentModel = this.value;
+        renderVideos();
+      });
+
+      // Sort filter
+      document.getElementById('sortFilter').addEventListener('change', function() {
+        currentSort = this.value;
+        renderVideos();
+      });
+
+      // Search
+      var searchTimeout;
+      document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        var val = this.value;
+        searchTimeout = setTimeout(function() {
+          searchQuery = val.toLowerCase().trim();
+          renderVideos();
+        }, 300);
+      });
+
+      // View toggle
+      document.getElementById('btnGridView').addEventListener('click', function() {
+        currentView = 'grid';
+        this.classList.add('active');
+        document.getElementById('btnListView').classList.remove('active');
+        document.getElementById('videosGrid').classList.add('active');
+        document.getElementById('videosList').classList.remove('active');
+      });
+      document.getElementById('btnListView').addEventListener('click', function() {
+        currentView = 'list';
+        this.classList.add('active');
+        document.getElementById('btnGridView').classList.remove('active');
+        document.getElementById('videosList').classList.add('active');
+        document.getElementById('videosGrid').classList.remove('active');
+      });
+
+      function getFilteredVideos() {
+        var filtered = allVideos.slice();
+        if (currentStatus !== 'all') {
+          filtered = filtered.filter(function(v) {
+            if (currentStatus === 'processing') return v.status === 'processing' || v.status === 'pending';
+            return v.status === currentStatus;
+          });
+        }
+        if (currentModel !== 'all') {
+          filtered = filtered.filter(function(v) { return v.model === currentModel; });
+        }
+        if (searchQuery) {
+          filtered = filtered.filter(function(v) {
+            return (v.prompt || '').toLowerCase().indexOf(searchQuery) !== -1;
+          });
+        }
+        filtered.sort(function(a, b) {
+          var da = new Date(a.createdAt || 0);
+          var db = new Date(b.createdAt || 0);
+          return currentSort === 'newest' ? db - da : da - db;
+        });
+        return filtered;
+      }
+
+      function updateBulkBar() {
+        var bar = document.getElementById('bulkBar');
+        if (selectedIds.size > 0) {
+          bar.classList.add('visible');
+          document.getElementById('selectedCount').textContent = selectedIds.size;
+        } else {
+          bar.classList.remove('visible');
+        }
+      }
+
+      function toggleSelect(id) {
+        if (selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+        updateBulkBar();
+        // Update check marks
+        document.querySelectorAll('.select-check, .list-check').forEach(function(c) {
+          if (c.getAttribute('data-id') === id) {
+            c.classList.toggle('checked', selectedIds.has(id));
+            c.innerHTML = selectedIds.has(id) ? '<i class="fa-solid fa-check"></i>' : '';
+          }
+        });
+      }
+
+      function renderVideos() {
+        var filtered = getFilteredVideos();
+        document.getElementById('resultsCount').textContent = filtered.length + ' video' + (filtered.length !== 1 ? 's' : '');
+
+        // Grid
+        var grid = document.getElementById('videosGrid');
+        var list = document.getElementById('videosList');
+        var empty = document.getElementById('emptyState');
+
+        if (filtered.length === 0) {
+          grid.innerHTML = '';
+          list.innerHTML = '';
+          empty.style.display = 'block';
+          return;
+        }
+        empty.style.display = 'none';
+
+        // Render grid
+        grid.innerHTML = '';
+        filtered.forEach(function(v) {
+          var vid = v._id || v.id;
+          var statusClass = 'status-' + (v.status || 'pending');
+          var isChecked = selectedIds.has(vid);
+          var thumb = '';
+          if (v.status === 'completed' && v.videoUrl) {
+            thumb = '<video src="' + v.videoUrl + '" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>' +
+              '<div class="play-overlay"><i class="fa-solid fa-play"></i></div>';
+          } else {
+            thumb = '<i class="fa-solid fa-film"></i>';
+          }
+          var actions = '';
+          if (v.status === 'completed' && v.videoUrl) {
+            actions += '<a href="' + v.videoUrl + '" download class="btn-action btn-download"><i class="fa-solid fa-download me-1"></i>Download</a>';
+          }
+          actions += '<button class="btn-action btn-delete" onclick="deleteVideo(\'' + vid + '\')"><i class="fa-solid fa-trash me-1"></i>Delete</button>';
+          var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '';
+
+          var card = document.createElement('div');
+          card.className = 'video-card';
+          card.innerHTML =
+            '<div class="select-check' + (isChecked ? ' checked' : '') + '" data-id="' + vid + '">' + (isChecked ? '<i class="fa-solid fa-check"></i>' : '') + '</div>' +
+            '<div class="video-thumb">' + thumb + '</div>' +
+            '<div class="video-card-body">' +
+              '<p class="prompt-text">' + (v.prompt || 'No prompt') + '</p>' +
+              '<div class="meta-row">' +
+                '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
+                '<span class="model-tag">' + (v.model || 'N/A') + '</span>' +
+              '</div>' +
+              '<div class="meta">' + date + '</div>' +
+              '<div class="card-actions">' + actions + '</div>' +
+            '</div>';
+          card.querySelector('.select-check').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleSelect(vid);
+          });
+          grid.appendChild(card);
+        });
+
+        // Render list
+        list.innerHTML = '';
+        filtered.forEach(function(v) {
+          var vid = v._id || v.id;
+          var statusClass = 'status-' + (v.status || 'pending');
+          var isChecked = selectedIds.has(vid);
+          var thumbHtml = '';
+          if (v.status === 'completed' && v.videoUrl) {
+            thumbHtml = '<video src="' + v.videoUrl + '" muted preload="metadata"></video>';
+          } else {
+            thumbHtml = '<i class="fa-solid fa-film"></i>';
+          }
+          var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '';
+          var actions = '';
+          if (v.status === 'completed' && v.videoUrl) {
+            actions += '<a href="' + v.videoUrl + '" download class="btn-action btn-download"><i class="fa-solid fa-download"></i></a>';
+          }
+          actions += '<button class="btn-action btn-delete" onclick="deleteVideo(\'' + vid + '\')"><i class="fa-solid fa-trash"></i></button>';
+
+          var item = document.createElement('div');
+          item.className = 'list-item';
+          item.innerHTML =
+            '<div class="list-check' + (isChecked ? ' checked' : '') + '" data-id="' + vid + '">' + (isChecked ? '<i class="fa-solid fa-check"></i>' : '') + '</div>' +
+            '<div class="list-thumb">' + thumbHtml + '</div>' +
+            '<div class="list-info">' +
+              '<div class="list-prompt">' + (v.prompt || 'No prompt') + '</div>' +
+              '<div class="list-meta">' +
+                '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
+                '<span>' + (v.model || '') + '</span>' +
+                '<span>' + date + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="list-actions">' + actions + '</div>';
+          item.querySelector('.list-check').addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleSelect(vid);
+          });
+          list.appendChild(item);
+        });
+      }
+
       function loadVideos() {
         fetch('/api/videos', { headers: headers })
           .then(function(r) { return r.json(); })
           .then(function(data) {
             var videos = data.videos || data || [];
             if (!Array.isArray(videos)) videos = [];
+            allVideos = videos;
             document.getElementById('videosLoading').style.display = 'none';
 
-            if (videos.length === 0) {
-              document.getElementById('emptyState').style.display = 'block';
-              return;
-            }
-
-            document.getElementById('emptyState').style.display = 'none';
-            var grid = document.getElementById('videosGrid');
-            grid.innerHTML = '';
-
-            videos.forEach(function(v) {
-              var statusClass = 'status-' + (v.status || 'pending');
-              var thumb = '';
-              if (v.status === 'completed' && v.videoUrl) {
-                thumb = '<video src="' + v.videoUrl + '" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>';
-              } else {
-                thumb = '<i class="fa-solid fa-film"></i>';
-              }
-
-              var actions = '';
-              if (v.status === 'completed' && v.videoUrl) {
-                actions += '<a href="' + v.videoUrl + '" download class="btn-action btn-download"><i class="fa-solid fa-download me-1"></i>Download</a>';
-              }
-              actions += '<button class="btn-action btn-delete" onclick="deleteVideo(\'' + (v._id || v.id) + '\')"><i class="fa-solid fa-trash me-1"></i>Delete</button>';
-
-              var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString() : '';
-
-              var card = '<div class="col-xl-3 col-lg-4 col-md-6">' +
-                '<div class="video-card">' +
-                '<div class="video-thumb">' + thumb + '</div>' +
-                '<div class="video-card-body">' +
-                '<p class="prompt-text">' + (v.prompt || 'No prompt') + '</p>' +
-                '<div class="meta-row">' +
-                '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
-                '<span class="model-tag">' + (v.model || 'N/A') + '</span>' +
-                '</div>' +
-                '<div class="meta">' + date + '</div>' +
-                '<div class="card-actions">' + actions + '</div>' +
-                '</div></div></div>';
-              grid.innerHTML += card;
+            // Populate model filter
+            var models = {};
+            videos.forEach(function(v) { if (v.model) models[v.model] = true; });
+            var select = document.getElementById('modelFilter');
+            select.innerHTML = '<option value="all">All Models</option>';
+            Object.keys(models).forEach(function(m) {
+              var opt = document.createElement('option');
+              opt.value = m;
+              opt.textContent = m;
+              select.appendChild(opt);
             });
+
+            renderVideos();
           })
           .catch(function() {
             document.getElementById('videosLoading').style.display = 'none';
           });
       }
+
+      // Bulk actions
+      document.getElementById('btnBulkDownload').addEventListener('click', function() {
+        selectedIds.forEach(function(id) {
+          var v = allVideos.find(function(v) { return (v._id || v.id) === id; });
+          if (v && v.videoUrl) {
+            var a = document.createElement('a');
+            a.href = v.videoUrl;
+            a.download = '';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+        });
+      });
+
+      document.getElementById('btnBulkDelete').addEventListener('click', function() {
+        if (!confirm('Delete ' + selectedIds.size + ' selected videos?')) return;
+        var ids = Array.from(selectedIds);
+        var promises = ids.map(function(id) {
+          return fetch('/api/videos/' + id, { method: 'DELETE', headers: headers });
+        });
+        Promise.all(promises).then(function() {
+          selectedIds.clear();
+          updateBulkBar();
+          loadVideos();
+        });
+      });
+
+      document.getElementById('btnBulkClear').addEventListener('click', function() {
+        selectedIds.clear();
+        updateBulkBar();
+        document.querySelectorAll('.select-check, .list-check').forEach(function(c) {
+          c.classList.remove('checked');
+          c.innerHTML = '';
+        });
+      });
 
       window.deleteVideo = function(id) {
         if (!confirm('Delete this video?')) return;

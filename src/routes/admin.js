@@ -26,6 +26,67 @@ router.get('/stats', async (req, res) => {
   }
 });
 
+router.get('/analytics', async (req, res) => {
+  try {
+    // Videos grouped by model
+    const videosByModelRaw = await prisma.video.groupBy({
+      by: ['model'],
+      _count: { id: true },
+    });
+    const videosByModel = {};
+    videosByModelRaw.forEach((r) => { videosByModel[r.model] = r._count.id; });
+
+    // Videos grouped by status
+    const videosByStatusRaw = await prisma.video.groupBy({
+      by: ['status'],
+      _count: { id: true },
+    });
+    const videosByStatus = {};
+    videosByStatusRaw.forEach((r) => { videosByStatus[r.status] = r._count.id; });
+
+    // Credit usage by day (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const usageTransactions = await prisma.transaction.findMany({
+      where: { type: 'usage', createdAt: { gte: thirtyDaysAgo } },
+      select: { credits: true, createdAt: true },
+    });
+    const dailyMap = {};
+    usageTransactions.forEach((t) => {
+      const day = t.createdAt.toISOString().slice(0, 10);
+      dailyMap[day] = (dailyMap[day] || 0) + Math.abs(t.credits);
+    });
+    const creditUsageByDay = Object.entries(dailyMap)
+      .map(([date, credits]) => ({ date, credits }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // Top users by video count and credits used
+    const topUsers = await prisma.user.findMany({
+      select: {
+        email: true,
+        _count: { select: { videos: true } },
+        videos: { select: { creditsUsed: true } },
+      },
+      orderBy: { videos: { _count: 'desc' } },
+      take: 10,
+    });
+    const topUsersFormatted = topUsers.map((u) => ({
+      email: u.email,
+      videoCount: u._count.videos,
+      creditsUsed: u.videos.reduce((sum, v) => sum + (v.creditsUsed || 0), 0),
+    }));
+
+    res.json({
+      videosByModel,
+      videosByStatus,
+      creditUsageByDay,
+      topUsers: topUsersFormatted,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/users', async (req, res) => {
   try {
     const users = await prisma.user.findMany({

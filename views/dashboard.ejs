@@ -84,7 +84,11 @@
       font-weight: 700;
       color: #fff;
       margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+    .section-title i { color: #a78bfa; font-size: 16px; }
     .quick-action-btn {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
@@ -113,52 +117,94 @@
       justify-content: center;
       font-size: 18px;
     }
-    .video-card {
+
+    /* Video Gallery */
+    .video-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .gallery-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 14px;
       overflow: hidden;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+      position: relative;
     }
-    .video-card:hover {
-      border-color: rgba(123,92,255,0.25);
-      transform: translateY(-2px);
+    .gallery-card:hover {
+      border-color: rgba(123,92,255,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
     }
-    .video-thumb {
+    .gallery-thumb {
       width: 100%;
       aspect-ratio: 16/9;
       background: linear-gradient(135deg, #1a1a2e, #16213e);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.12);
       font-size: 36px;
       position: relative;
+      overflow: hidden;
     }
-    .video-thumb video {
+    .gallery-thumb video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .video-card-body {
+    .gallery-thumb .hover-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
       padding: 16px;
     }
-    .video-card-body .prompt-text {
-      font-size: 13px;
-      color: rgba(255,255,255,0.65);
-      margin-bottom: 8px;
+    .gallery-card:hover .hover-overlay { opacity: 1; }
+    .hover-overlay .prompt-overlay-text {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 12px;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .video-card-body .meta {
+    .hover-overlay .btn-quick-download {
+      background: rgba(16,185,129,0.2);
+      border: 1px solid rgba(16,185,129,0.4);
+      color: #10b981;
+      padding: 6px 16px;
+      border-radius: 8px;
       font-size: 11px;
-      color: rgba(255,255,255,0.35);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .hover-overlay .btn-quick-download:hover { background: rgba(16,185,129,0.35); color: #fff; }
+    .gallery-card-footer {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .gallery-card-footer .gallery-model {
+      font-size: 11px;
+      color: rgba(123,92,255,0.7);
+      font-weight: 600;
     }
     .status-badge {
-      font-size: 11px;
-      padding: 3px 10px;
+      font-size: 10px;
+      padding: 2px 8px;
       border-radius: 20px;
       font-weight: 600;
     }
@@ -167,6 +213,154 @@
     .status-completed { background: rgba(16,185,129,0.15); color: #10b981; }
     .status-failed { background: rgba(239,68,68,0.15); color: #ef4444; }
     @keyframes pulse-badge { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* Quick Generate */
+    .quick-gen-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .quick-gen-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .quick-gen-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .quick-gen-input:focus {
+      border-color: rgba(123,92,255,0.4);
+      box-shadow: 0 0 0 3px rgba(123,92,255,0.1);
+    }
+    .quick-gen-input::placeholder { color: rgba(255,255,255,0.25); }
+    .btn-quick-gen {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border: none;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .btn-quick-gen:hover { opacity: 0.9; }
+    .btn-quick-gen:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Model Usage Chart */
+    .chart-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .chart-bar-label {
+      width: 120px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .chart-bar-track {
+      flex: 1;
+      height: 28px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .chart-bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.8s ease;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      min-width: 30px;
+    }
+    .chart-bar-count {
+      width: 40px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* Activity Feed */
+    .activity-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .activity-text {
+      flex: 1;
+    }
+    .activity-text .activity-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2px;
+    }
+    .activity-text .activity-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .activity-time {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .activity-panel::-webkit-scrollbar { width: 4px; }
+    .activity-panel::-webkit-scrollbar-track { background: transparent; }
+    .activity-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -222,9 +416,24 @@
         </div>
       </div>
 
+      <!-- Quick Generate -->
+      <div class="section-title"><i class="fa-solid fa-bolt"></i> Quick Generate</div>
+      <div class="quick-gen-panel">
+        <div class="quick-gen-row">
+          <input type="text" class="quick-gen-input" id="quickPrompt" placeholder="Describe a video and generate instantly with default settings..." maxlength="2000">
+          <button class="btn-quick-gen" id="btnQuickGen">
+            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Quick Generate
+          </button>
+        </div>
+        <div id="quickGenStatus" style="display: none; margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.5); text-align: center;">
+          <div class="spinner-border spinner-border-sm text-secondary me-2" role="status"></div>
+          <span id="quickGenStatusText">Submitting...</span>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
-      <div class="section-title">Quick Actions</div>
-      <div class="row g-3 mb-5">
+      <div class="section-title"><i class="fa-solid fa-zap"></i> Quick Actions</div>
+      <div class="row g-3 mb-4">
         <div class="col-md-4">
           <a href="/generate" class="quick-action-btn">
             <div class="action-icon" style="background: linear-gradient(135deg, #7b5cff, #c86dd7);">
@@ -251,10 +460,30 @@
         </div>
       </div>
 
-      <!-- Recent Videos -->
-      <div class="section-title">Recent Videos</div>
-      <div class="row g-4" id="recentVideos">
-        <div class="col-12 text-center py-5" id="videosLoading">
+      <!-- Two Column: Model Usage + Activity Feed -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+          <div class="section-title"><i class="fa-solid fa-chart-bar"></i> Model Usage</div>
+          <div class="chart-panel" id="modelUsageChart">
+            <div class="text-center py-3" style="color: rgba(255,255,255,0.25); font-size: 13px;">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Activity Feed</div>
+          <div class="activity-panel" id="activityFeed">
+            <div class="text-center py-3" style="color: rgba(255,255,255,0.25); font-size: 13px;">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Gallery -->
+      <div class="section-title"><i class="fa-solid fa-images"></i> Recent Videos</div>
+      <div class="video-gallery-grid" id="recentVideos">
+        <div class="col-12 text-center py-5" id="videosLoading" style="grid-column: 1 / -1;">
           <div class="spinner-border text-secondary" role="status"></div>
         </div>
       </div>
@@ -271,6 +500,7 @@
       var token = localStorage.getItem('token');
       if (!token) { window.location.href = '/login'; return; }
       var headers = { 'Authorization': 'Bearer ' + token };
+      var jsonHeaders = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
 
       // Load profile
       fetch('/api/auth/profile', { headers: headers })
@@ -287,11 +517,13 @@
         .catch(function() {});
 
       // Load videos
+      var allVideos = [];
       fetch('/api/videos', { headers: headers })
         .then(function(r) { return r.json(); })
         .then(function(data) {
           var videos = data.videos || data || [];
           if (!Array.isArray(videos)) videos = [];
+          allVideos = videos;
           document.getElementById('videosLoading').style.display = 'none';
 
           var total = videos.filter(function(v) { return v.status === 'completed'; }).length;
@@ -302,35 +534,188 @@
 
           if (videos.length === 0) {
             document.getElementById('emptyVideos').style.display = 'block';
+            renderModelUsage({});
+            renderActivityFeed([]);
             return;
           }
 
-          var recent = videos.slice(0, 4);
+          // Render gallery (recent 8)
+          var recent = videos.slice(0, 8);
           var grid = document.getElementById('recentVideos');
           grid.innerHTML = '';
           recent.forEach(function(v) {
             var statusClass = 'status-' + (v.status || 'pending');
             var thumb = '';
             if (v.status === 'completed' && v.videoUrl) {
-              thumb = '<video src="' + v.videoUrl + '" muted preload="metadata"></video>';
+              thumb = '<video src="' + v.videoUrl + '" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>';
             } else {
               thumb = '<i class="fa-solid fa-film"></i>';
             }
-            var card = '<div class="col-lg-3 col-md-6">' +
-              '<div class="video-card">' +
-              '<div class="video-thumb">' + thumb + '</div>' +
-              '<div class="video-card-body">' +
-              '<p class="prompt-text">' + (v.prompt || 'No prompt') + '</p>' +
-              '<div class="d-flex justify-content-between align-items-center">' +
-              '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
-              '<span class="meta">' + (v.model || '') + '</span>' +
-              '</div></div></div></div>';
+            var downloadBtn = '';
+            if (v.status === 'completed' && v.videoUrl) {
+              downloadBtn = '<a href="' + v.videoUrl + '" download class="btn-quick-download"><i class="fa-solid fa-download me-1"></i>Download</a>';
+            }
+
+            var card = '<div class="gallery-card">' +
+              '<div class="gallery-thumb">' + thumb +
+                '<div class="hover-overlay">' +
+                  '<div class="prompt-overlay-text">' + (v.prompt || 'No prompt') + '</div>' +
+                  downloadBtn +
+                '</div>' +
+              '</div>' +
+              '<div class="gallery-card-footer">' +
+                '<span class="gallery-model">' + (v.model || '') + '</span>' +
+                '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
+              '</div>' +
+            '</div>';
             grid.innerHTML += card;
           });
+
+          // Model Usage Chart
+          var modelCounts = {};
+          videos.forEach(function(v) {
+            var m = v.model || 'unknown';
+            modelCounts[m] = (modelCounts[m] || 0) + 1;
+          });
+          renderModelUsage(modelCounts);
+
+          // Activity Feed
+          renderActivityFeed(videos);
         })
         .catch(function() {
           document.getElementById('videosLoading').style.display = 'none';
+          renderModelUsage({});
+          renderActivityFeed([]);
         });
+
+      // Render Model Usage Chart
+      var barColors = ['linear-gradient(135deg, #7b5cff, #c86dd7)', 'linear-gradient(135deg, #3b82f6, #06b6d4)', 'linear-gradient(135deg, #f59e0b, #f97316)', 'linear-gradient(135deg, #10b981, #34d399)', 'linear-gradient(135deg, #ef4444, #f97316)', 'linear-gradient(135deg, #a855f7, #ec4899)'];
+      function renderModelUsage(counts) {
+        var panel = document.getElementById('modelUsageChart');
+        var keys = Object.keys(counts);
+        if (keys.length === 0) {
+          panel.innerHTML = '<div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.2); font-size: 13px;"><i class="fa-solid fa-chart-bar" style="font-size: 28px; display: block; margin-bottom: 10px;"></i>No usage data yet</div>';
+          return;
+        }
+        var max = Math.max.apply(null, keys.map(function(k) { return counts[k]; }));
+        var html = '';
+        keys.sort(function(a, b) { return counts[b] - counts[a]; });
+        keys.forEach(function(key, idx) {
+          var pct = max > 0 ? Math.round((counts[key] / max) * 100) : 0;
+          var color = barColors[idx % barColors.length];
+          html += '<div class="chart-bar-row">' +
+            '<div class="chart-bar-label">' + key + '</div>' +
+            '<div class="chart-bar-track">' +
+              '<div class="chart-bar-fill" style="width: ' + pct + '%; background: ' + color + ';">' + '</div>' +
+            '</div>' +
+            '<div class="chart-bar-count">' + counts[key] + '</div>' +
+          '</div>';
+        });
+        panel.innerHTML = html;
+      }
+
+      // Render Activity Feed
+      function renderActivityFeed(videos) {
+        var panel = document.getElementById('activityFeed');
+        var sorted = videos.slice().sort(function(a, b) {
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        });
+        var recent = sorted.slice(0, 15);
+        if (recent.length === 0) {
+          panel.innerHTML = '<div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.2); font-size: 13px;"><i class="fa-solid fa-clock-rotate-left" style="font-size: 28px; display: block; margin-bottom: 10px;"></i>No activity yet</div>';
+          return;
+        }
+        var html = '';
+        recent.forEach(function(v) {
+          var iconBg, iconClass, title;
+          if (v.status === 'completed') {
+            iconBg = 'background: rgba(16,185,129,0.12); color: #10b981;';
+            iconClass = 'fa-solid fa-circle-check';
+            title = 'Video completed';
+          } else if (v.status === 'processing' || v.status === 'pending') {
+            iconBg = 'background: rgba(59,130,246,0.12); color: #3b82f6;';
+            iconClass = 'fa-solid fa-spinner';
+            title = 'Video generating';
+          } else if (v.status === 'failed') {
+            iconBg = 'background: rgba(239,68,68,0.12); color: #ef4444;';
+            iconClass = 'fa-solid fa-circle-xmark';
+            title = 'Generation failed';
+          } else {
+            iconBg = 'background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4);';
+            iconClass = 'fa-solid fa-film';
+            title = 'Video created';
+          }
+          var timeAgo = getTimeAgo(v.createdAt);
+          var prompt = v.prompt || 'No prompt';
+          html += '<div class="activity-item">' +
+            '<div class="activity-icon" style="' + iconBg + '"><i class="' + iconClass + '"></i></div>' +
+            '<div class="activity-text">' +
+              '<div class="activity-title">' + title + '</div>' +
+              '<div class="activity-desc">' + prompt + '</div>' +
+            '</div>' +
+            '<div class="activity-time">' + timeAgo + '</div>' +
+          '</div>';
+        });
+        panel.innerHTML = html;
+      }
+
+      function getTimeAgo(dateStr) {
+        if (!dateStr) return '';
+        var now = new Date();
+        var date = new Date(dateStr);
+        var diff = Math.floor((now - date) / 1000);
+        if (diff < 60) return 'just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+        return date.toLocaleDateString();
+      }
+
+      // Quick Generate
+      document.getElementById('btnQuickGen').addEventListener('click', function() {
+        var prompt = document.getElementById('quickPrompt').value.trim();
+        if (!prompt) return alert('Enter a prompt to generate a video.');
+        var btn = this;
+        btn.disabled = true;
+        var statusEl = document.getElementById('quickGenStatus');
+        var statusText = document.getElementById('quickGenStatusText');
+        statusEl.style.display = 'block';
+        statusText.textContent = 'Submitting your video...';
+
+        fetch('/api/videos/generate', {
+          method: 'POST',
+          headers: jsonHeaders,
+          body: JSON.stringify({ model: 'kling-text', prompt: prompt, type: 'text2video', duration: '5', aspectRatio: '16:9' })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) {
+            alert(data.error);
+            statusEl.style.display = 'none';
+            btn.disabled = false;
+            return;
+          }
+          statusText.textContent = 'Video submitted! Processing in background...';
+          document.getElementById('quickPrompt').value = '';
+          setTimeout(function() {
+            statusEl.style.display = 'none';
+            btn.disabled = false;
+          }, 3000);
+        })
+        .catch(function() {
+          alert('Failed to generate. Try again.');
+          statusEl.style.display = 'none';
+          btn.disabled = false;
+        });
+      });
+
+      // Allow Enter key on quick prompt
+      document.getElementById('quickPrompt').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          document.getElementById('btnQuickGen').click();
+        }
+      });
     })();
   </script>
 </body>

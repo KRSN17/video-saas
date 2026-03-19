@@ -9,6 +9,23 @@ const MODELS = {
   'kling-image': 'fal-ai/kling-video/v2/master/image-to-video',
   'minimax-text': 'fal-ai/minimax/video-01/text-to-video',
   'wan-text': 'fal-ai/wan/v2.1/text-to-video',
+  'runway-gen4': 'fal-ai/runway-gen4/turbo/image-to-video',
+  'luma-ray2': 'fal-ai/luma-dream-machine/ray-2',
+  'hunyuan': 'fal-ai/hunyuan-video',
+  'ltx-video': 'fal-ai/ltx-video/v0.9.1',
+  'veo2': 'fal-ai/veo2',
+};
+
+const MODEL_INFO = {
+  'kling-text': { name: 'Kling V2', type: 'text-to-video', credits: 2, maxDuration: '10s', quality: 'High' },
+  'kling-image': { name: 'Kling V2', type: 'image-to-video', credits: 2, maxDuration: '10s', quality: 'High' },
+  'minimax-text': { name: 'MiniMax Video', type: 'text-to-video', credits: 1, maxDuration: '6s', quality: 'Medium' },
+  'wan-text': { name: 'Wan 2.1', type: 'text-to-video', credits: 1, maxDuration: '5s', quality: 'Medium' },
+  'runway-gen4': { name: 'Runway Gen-4', type: 'image-to-video', credits: 3, maxDuration: '10s', quality: 'Premium' },
+  'luma-ray2': { name: 'Luma Ray 2', type: 'text-to-video', credits: 2, maxDuration: '5s', quality: 'High' },
+  'hunyuan': { name: 'Hunyuan', type: 'text-to-video', credits: 1, maxDuration: '5s', quality: 'Medium' },
+  'ltx-video': { name: 'LTX Video', type: 'text-to-video', credits: 1, maxDuration: '5s', quality: 'Fast' },
+  'veo2': { name: 'Veo 2', type: 'text-to-video', credits: 3, maxDuration: '8s', quality: 'Premium' },
 };
 
 const getModelId = (shortName) => MODELS[shortName] || shortName;
@@ -129,4 +146,4 @@ const getResult = async (modelId, requestId) => {
   return result;
 };
 
-module.exports = { submitTextToVideo, submitImageToVideo, checkStatus, getResult, MODELS, getModelId };
+module.exports = { submitTextToVideo, submitImageToVideo, checkStatus, getResult, MODELS, MODEL_INFO, getModelId };

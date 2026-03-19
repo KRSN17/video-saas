@@ -115,6 +115,173 @@
     .progress-status { color: rgba(255,255,255,0.6); font-size: 14px; }
     .progress-status strong { color: #fff; }
     #videoPreview { display: none; margin-top: 16px; max-width: 480px; border-radius: 12px; }
+
+    /* Prompt Enhancer */
+    .prompt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .btn-enhance {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      border: none;
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-enhance:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-enhance:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-enhance .enhance-spinner {
+      width: 12px; height: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    .enhance-preview {
+      display: none;
+      margin-top: 12px;
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.15);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .enhance-preview-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #f59e0b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .enhance-preview-text {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .btn-use-enhanced {
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: #f59e0b;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-right: 8px;
+    }
+    .btn-use-enhanced:hover { background: rgba(245,158,11,0.25); }
+    .btn-dismiss-enhanced {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4);
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-dismiss-enhanced:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+
+    /* Model selector card style */
+    .model-select-wrapper { position: relative; }
+    .model-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .model-card-option {
+      background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .model-card-option:hover {
+      border-color: rgba(123,92,255,0.3);
+      background: rgba(123,92,255,0.04);
+    }
+    .model-card-option.selected {
+      border-color: rgba(123,92,255,0.5);
+      background: rgba(123,92,255,0.08);
+      box-shadow: 0 0 20px rgba(123,92,255,0.1);
+    }
+    .model-card-option .model-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .model-card-option .model-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .model-type-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .type-text { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .type-image { background: rgba(168,85,247,0.15); color: #a855f7; }
+    .model-credit-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      background: rgba(245,158,11,0.12);
+      color: #f59e0b;
+    }
+    .model-quality-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .quality-high { background: rgba(16,185,129,0.15); color: #10b981; }
+    .quality-standard { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); }
+    .quality-premium { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .model-card-check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #fff;
+    }
+    .model-card-option.selected .model-card-check { display: flex; }
+    .models-loading {
+      text-align: center;
+      padding: 24px;
+      color: rgba(255,255,255,0.3);
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -132,21 +299,46 @@
     <div class="dash-content">
       <div class="form-panel">
         <form id="generateForm" autocomplete="off">
+          <!-- Model Selector -->
           <div class="mb-3">
             <label class="form-label">AI Model</label>
-            <select class="form-select" id="modelSelect" name="model">
-              <option value="kling-text">Kling Text-to-Video</option>
-              <option value="kling-image">Kling Image-to-Video</option>
-              <option value="minimax-text">MiniMax</option>
-              <option value="wan-text">Wan</option>
-            </select>
+            <input type="hidden" id="modelSelect" name="model" value="">
+            <div class="models-loading" id="modelsLoading">
+              <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+              <span style="margin-left: 8px;">Loading models...</span>
+            </div>
+            <div class="model-cards-grid" id="modelCardsGrid"></div>
           </div>
 
+          <!-- Prompt with Enhance Button -->
           <div class="mb-3">
-            <label class="form-label">Prompt</label>
+            <div class="prompt-header">
+              <label class="form-label" style="margin-bottom: 0;">Prompt</label>
+              <button type="button" class="btn-enhance" id="btnEnhance">
+                <span class="enhance-spinner" id="enhanceSpinner"></span>
+                <i class="fa-solid fa-wand-magic-sparkles" id="enhanceIcon"></i>
+                Enhance Prompt
+              </button>
+            </div>
             <textarea class="form-control" id="prompt" name="prompt" maxlength="2000"
               placeholder="Describe the video you want to generate..."></textarea>
             <div class="char-counter"><span id="charCount">0</span> / 2000</div>
+
+            <!-- Enhanced Prompt Preview -->
+            <div class="enhance-preview" id="enhancePreview">
+              <div class="enhance-preview-label">
+                <i class="fa-solid fa-sparkles"></i> Enhanced Prompt
+              </div>
+              <div class="enhance-preview-text" id="enhancedText"></div>
+              <div>
+                <button type="button" class="btn-use-enhanced" id="btnUseEnhanced">
+                  <i class="fa-solid fa-check me-1"></i>Use Enhanced
+                </button>
+                <button type="button" class="btn-dismiss-enhanced" id="btnDismissEnhanced">
+                  <i class="fa-solid fa-xmark me-1"></i>Dismiss
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="mb-3 image-url-row" id="imageUrlRow">
@@ -173,9 +365,9 @@
           </div>
 
           <div class="d-flex align-items-center justify-content-between mt-4">
-            <div class="credit-cost">
+            <div class="credit-cost" id="creditCostDisplay">
               <i class="fa-solid fa-coins"></i>
-              <span>1 credit</span>
+              <span id="creditCostText">1 credit</span>
             </div>
             <button type="submit" class="btn-generate" id="btnGenerate">
               <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Video
@@ -214,19 +406,95 @@
           }
         });
 
+      // --- Load ALL models from API ---
+      var allModels = [];
+      var selectedModel = '';
+      var modelCreditMap = {};
+
+      var fallbackModels = [
+        { id: 'kling-text', name: 'Kling Text-to-Video', type: 'text', credits: 1, quality: 'high' },
+        { id: 'kling-image', name: 'Kling Image-to-Video', type: 'image', credits: 1, quality: 'high' },
+        { id: 'minimax-text', name: 'MiniMax', type: 'text', credits: 1, quality: 'standard' },
+        { id: 'wan-text', name: 'Wan', type: 'text', credits: 1, quality: 'standard' }
+      ];
+
+      function renderModelCards(models) {
+        var grid = document.getElementById('modelCardsGrid');
+        document.getElementById('modelsLoading').style.display = 'none';
+        grid.innerHTML = '';
+        models.forEach(function(m, idx) {
+          var typeClass = (m.type === 'image' || m.type === 'img2video') ? 'type-image' : 'type-text';
+          var typeLabel = (m.type === 'image' || m.type === 'img2video') ? 'Image' : 'Text';
+          var qualClass = m.quality === 'premium' ? 'quality-premium' : (m.quality === 'high' ? 'quality-high' : 'quality-standard');
+          var qualLabel = m.quality ? (m.quality.charAt(0).toUpperCase() + m.quality.slice(1)) : 'Standard';
+          var credits = m.credits || m.creditCost || 1;
+          modelCreditMap[m.id || m.value || m.name] = credits;
+
+          var card = document.createElement('div');
+          card.className = 'model-card-option' + (idx === 0 ? ' selected' : '');
+          card.setAttribute('data-model', m.id || m.value || m.name);
+          card.setAttribute('data-type', m.type || 'text');
+          card.setAttribute('data-credits', credits);
+          card.innerHTML =
+            '<div class="model-card-check"><i class="fa-solid fa-check"></i></div>' +
+            '<div class="model-name">' +
+              '<i class="fa-solid ' + ((m.type === 'image' || m.type === 'img2video') ? 'fa-image' : 'fa-font') + '" style="font-size: 12px; color: rgba(255,255,255,0.3);"></i> ' +
+              (m.name || m.id || m.value) +
+            '</div>' +
+            '<div class="model-meta">' +
+              '<span class="model-type-badge ' + typeClass + '">' + typeLabel + '</span>' +
+              '<span class="model-credit-badge"><i class="fa-solid fa-coins" style="margin-right: 3px;"></i>' + credits + ' cr</span>' +
+              '<span class="model-quality-badge ' + qualClass + '">' + qualLabel + '</span>' +
+            '</div>';
+          card.addEventListener('click', function() {
+            document.querySelectorAll('.model-card-option').forEach(function(c) { c.classList.remove('selected'); });
+            card.classList.add('selected');
+            selectedModel = card.getAttribute('data-model');
+            document.getElementById('modelSelect').value = selectedModel;
+            updateCreditCost();
+            toggleImageUrl();
+          });
+          grid.appendChild(card);
+
+          if (idx === 0) {
+            selectedModel = m.id || m.value || m.name;
+            document.getElementById('modelSelect').value = selectedModel;
+          }
+        });
+        updateCreditCost();
+        toggleImageUrl();
+      }
+
+      fetch('/api/videos/models', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var models = data.models || data || [];
+          if (!Array.isArray(models) || models.length === 0) models = fallbackModels;
+          allModels = models;
+          renderModelCards(models);
+        })
+        .catch(function() {
+          allModels = fallbackModels;
+          renderModelCards(fallbackModels);
+        });
+
+      function updateCreditCost() {
+        var sel = document.querySelector('.model-card-option.selected');
+        var cost = sel ? sel.getAttribute('data-credits') : 1;
+        document.getElementById('creditCostText').textContent = cost + ' credit' + (cost > 1 ? 's' : '');
+      }
+
       // Show/hide image URL for image-to-video models
-      var modelSelect = document.getElementById('modelSelect');
       var imageUrlRow = document.getElementById('imageUrlRow');
       function toggleImageUrl() {
-        var val = modelSelect.value;
-        if (val === 'kling-image') {
+        var sel = document.querySelector('.model-card-option.selected');
+        var mtype = sel ? sel.getAttribute('data-type') : 'text';
+        if (mtype === 'image' || mtype === 'img2video' || (selectedModel && selectedModel.indexOf('image') !== -1)) {
           imageUrlRow.classList.add('visible');
         } else {
           imageUrlRow.classList.remove('visible');
         }
       }
-      modelSelect.addEventListener('change', toggleImageUrl);
-      toggleImageUrl();
 
       // Option buttons
       document.querySelectorAll('.option-group').forEach(function(group) {
@@ -249,13 +517,65 @@
         return active ? active.getAttribute('data-value') : null;
       }
 
+      // --- Prompt Enhancer ---
+      document.getElementById('btnEnhance').addEventListener('click', function() {
+        var promptVal = promptEl.value.trim();
+        if (!promptVal) return alert('Please enter a prompt first.');
+
+        var btn = this;
+        btn.disabled = true;
+        document.getElementById('enhanceSpinner').style.display = 'inline-block';
+        document.getElementById('enhanceIcon').style.display = 'none';
+
+        fetch('/api/videos/enhance-prompt', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ prompt: promptVal })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          btn.disabled = false;
+          document.getElementById('enhanceSpinner').style.display = 'none';
+          document.getElementById('enhanceIcon').style.display = 'inline';
+
+          var enhanced = data.enhancedPrompt || data.enhanced || data.prompt || '';
+          if (enhanced) {
+            document.getElementById('enhancedText').textContent = enhanced;
+            document.getElementById('enhancePreview').style.display = 'block';
+          } else {
+            alert('Could not enhance prompt. Try again.');
+          }
+        })
+        .catch(function() {
+          btn.disabled = false;
+          document.getElementById('enhanceSpinner').style.display = 'none';
+          document.getElementById('enhanceIcon').style.display = 'inline';
+          alert('Failed to enhance prompt. Please try again.');
+        });
+      });
+
+      document.getElementById('btnUseEnhanced').addEventListener('click', function() {
+        var enhanced = document.getElementById('enhancedText').textContent;
+        if (enhanced) {
+          promptEl.value = enhanced;
+          document.getElementById('charCount').textContent = enhanced.length;
+        }
+        document.getElementById('enhancePreview').style.display = 'none';
+      });
+
+      document.getElementById('btnDismissEnhanced').addEventListener('click', function() {
+        document.getElementById('enhancePreview').style.display = 'none';
+      });
+
       // Form submit
       document.getElementById('generateForm').addEventListener('submit', function(e) {
         e.preventDefault();
         var promptVal = promptEl.value.trim();
         if (!promptVal) return alert('Please enter a prompt.');
 
-        var model = modelSelect.value;
+        var model = document.getElementById('modelSelect').value;
+        if (!model) return alert('Please select a model.');
+
         var body = {
           model: model,
           prompt: promptVal,
@@ -264,7 +584,9 @@
         };
 
         // Determine type from model
-        if (model === 'kling-image') {
+        var selCard = document.querySelector('.model-card-option.selected');
+        var mtype = selCard ? selCard.getAttribute('data-type') : 'text';
+        if (mtype === 'image' || mtype === 'img2video' || model.indexOf('image') !== -1) {
           body.type = 'img2video';
           body.imageUrl = document.getElementById('imageUrl').value.trim();
           if (!body.imageUrl) return alert('Please provide an image URL for Image-to-Video.');
@@ -320,7 +642,6 @@
                   preview.src = videoUrl;
                   preview.style.display = 'block';
                 }
-                // Refresh sidebar credits
                 fetch('/api/auth/profile', { headers: { 'Authorization': 'Bearer ' + token } })
                   .then(function(r) { return r.json(); })
                   .then(function(d) {
