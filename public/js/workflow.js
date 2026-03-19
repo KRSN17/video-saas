@@ -122,7 +122,7 @@ class WorkflowCanvas {
 
     // SVG layer for connections
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+    this.svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;transform-origin:0 0;';
     this.svg.setAttribute('width', '100%');
     this.svg.setAttribute('height', '100%');
     this.container.appendChild(this.svg);
@@ -953,13 +953,17 @@ class WorkflowCanvas {
     );
     if (!portEl) return { x: node.x, y: node.y };
 
+    // Get port offset relative to the node element (unaffected by zoom/pan)
     const nodeRect = node.el.getBoundingClientRect();
     const portRect = portEl.getBoundingClientRect();
 
-    // Position in canvas space
-    const px = node.x + (portRect.left + portRect.width / 2 - nodeRect.left) / this.zoom;
-    const py = node.y + (portRect.top + portRect.height / 2 - nodeRect.top) / this.zoom;
-    return { x: px, y: py };
+    // Both rects are in screen space (already scaled by zoom),
+    // so the difference gives screen-pixel offset within the node.
+    // Divide by zoom to get canvas-space offset.
+    const offsetX = (portRect.left + portRect.width / 2 - nodeRect.left) / this.zoom;
+    const offsetY = (portRect.top + portRect.height / 2 - nodeRect.top) / this.zoom;
+
+    return { x: node.x + offsetX, y: node.y + offsetY };
   }
 
   _drawTempConnection(mx, my) {

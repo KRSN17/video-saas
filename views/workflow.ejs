@@ -535,9 +535,14 @@
       canvas.connections.push({ fromNode: p1, fromPort: 'text', toNode: p2, toPort: 'text', type: 'text' });
       canvas.connections.push({ fromNode: p2, fromPort: 'enhanced', toNode: t2v, toPort: 'prompt', type: 'text' });
       canvas.connections.push({ fromNode: t2v, fromPort: 'video', toNode: out, toPort: 'video', type: 'video' });
-      canvas.render();
-      canvas.fitView();
-      toast('Starter workflow loaded — edit nodes and hit Run All!');
+      // Defer render to next frame so getBoundingClientRect() returns correct port positions
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          canvas.render();
+          canvas.fitView();
+          toast('Starter workflow loaded — edit nodes and hit Run All!');
+        });
+      });
     })();
 
     // ── Run All ──
