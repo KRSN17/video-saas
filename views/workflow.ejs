@@ -14,6 +14,7 @@
       padding: 0 16px;
       gap: 8px;
       z-index: 100;
+      flex-shrink: 0;
     }
     .workflow-toolbar .toolbar-title {
       font-size: 16px;
@@ -29,6 +30,7 @@
       height: 24px;
       background: rgba(255,255,255,0.08);
       margin: 0 4px;
+      flex-shrink: 0;
     }
     .toolbar-spacer { flex: 1; }
     .wf-toolbar-btn {
@@ -127,221 +129,12 @@
       flex-shrink: 0;
     }
 
-    /* ── Canvas ── */
-    .workflow-canvas {
+    /* ── Canvas Container ── */
+    .workflow-canvas-wrap {
       flex: 1;
       position: relative;
       overflow: hidden;
-      background: #0a0a14;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-      background-size: 20px 20px;
-      cursor: grab;
     }
-    .workflow-canvas.panning {
-      cursor: grabbing;
-    }
-    .workflow-canvas.connecting {
-      cursor: crosshair;
-    }
-
-    /* ── Canvas transform layer ── */
-    #canvasTransform {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transform-origin: 0 0;
-    }
-
-    /* ── Connections SVG ── */
-    .wf-connections {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: visible;
-    }
-    .wf-connection {
-      stroke-width: 2;
-      fill: none;
-      pointer-events: stroke;
-      cursor: pointer;
-    }
-    .wf-connection:hover {
-      stroke-width: 3;
-    }
-    .wf-connection.text { stroke: #9b59b6; }
-    .wf-connection.image { stroke: #27ae60; }
-    .wf-connection.video { stroke: #e74c3c; }
-    .wf-connection.active { stroke-dasharray: 8 4; animation: flowDash 0.6s linear infinite; }
-    @keyframes flowDash { to { stroke-dashoffset: -12; } }
-    .wf-temp-connection {
-      stroke-width: 2;
-      fill: none;
-      stroke-dasharray: 6 3;
-      opacity: 0.6;
-    }
-
-    /* ── Nodes ── */
-    .wf-node {
-      position: absolute;
-      width: 220px;
-      background: rgba(20,20,40,0.95);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      overflow: visible;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      cursor: move;
-      user-select: none;
-      transition: box-shadow 0.15s, border-color 0.15s;
-      z-index: 1;
-    }
-    .wf-node:hover {
-      border-color: rgba(255,255,255,0.18);
-    }
-    .wf-node.selected {
-      border-color: #667eea;
-      box-shadow: 0 0 20px rgba(102,126,234,0.3);
-      z-index: 2;
-    }
-    .wf-node.running {
-      border-color: #f59e0b;
-      box-shadow: 0 0 24px rgba(245,158,11,0.25);
-    }
-    .wf-node-header {
-      height: 32px;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-radius: 11px 11px 0 0;
-    }
-    .wf-node-body {
-      padding: 8px 12px 10px;
-    }
-    .wf-port-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 4px 0;
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-    }
-    .wf-port-row.input-only { justify-content: flex-start; gap: 8px; }
-    .wf-port-row.output-only { justify-content: flex-end; gap: 8px; }
-    .wf-port {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      border: 2px solid;
-      cursor: crosshair;
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-    .wf-port:hover {
-      transform: scale(1.3);
-    }
-    .wf-port.text { border-color: #9b59b6; background: rgba(155,89,182,0.3); }
-    .wf-port.image { border-color: #27ae60; background: rgba(39,174,96,0.3); }
-    .wf-port.video { border-color: #e74c3c; background: rgba(231,76,60,0.3); }
-    .wf-port.compatible {
-      box-shadow: 0 0 10px currentColor;
-      animation: portPulse 1s ease-in-out infinite;
-    }
-    @keyframes portPulse {
-      50% { transform: scale(1.35); }
-    }
-
-    /* ── Node parameter inputs ── */
-    .wf-param {
-      margin: 6px 0;
-    }
-    .wf-param label {
-      font-size: 10px;
-      color: rgba(255,255,255,0.4);
-      display: block;
-      margin-bottom: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .wf-param input,
-    .wf-param select,
-    .wf-param textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
-      color: #fff;
-      font-size: 11px;
-      padding: 6px 8px;
-      outline: none;
-      font-family: 'Manrope', sans-serif;
-      transition: border-color 0.15s;
-    }
-    .wf-param input:focus,
-    .wf-param select:focus,
-    .wf-param textarea:focus {
-      border-color: rgba(102,126,234,0.5);
-    }
-    .wf-param textarea {
-      min-height: 50px;
-      resize: vertical;
-    }
-    .wf-param select option {
-      background: #1a1a3e;
-    }
-
-    /* ── Run button on AI nodes ── */
-    .wf-run-btn {
-      width: 100%;
-      margin-top: 6px;
-      padding: 6px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Manrope', sans-serif;
-      transition: filter 0.15s;
-    }
-    .wf-run-btn:hover {
-      filter: brightness(1.15);
-    }
-    .wf-run-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .wf-credit-cost {
-      font-size: 10px;
-      color: rgba(245,158,11,0.8);
-      text-align: center;
-      margin-top: 4px;
-    }
-
-    /* ── Status badge on node ── */
-    .wf-node-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-top: 4px;
-    }
-    .wf-node-status.idle { color: rgba(255,255,255,0.3); }
-    .wf-node-status.running { color: #f59e0b; }
-    .wf-node-status.done { color: #27ae60; }
-    .wf-node-status.error { color: #e74c3c; }
 
     /* ── Properties Panel ── */
     .properties-panel {
@@ -353,7 +146,7 @@
       background: #12122a;
       border-left: 1px solid rgba(255,255,255,0.08);
       transition: right 0.3s ease;
-      z-index: 1000;
+      z-index: 1100;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -427,6 +220,7 @@
     .pp-field select,
     .pp-field textarea {
       width: 100%;
+      box-sizing: border-box;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
@@ -497,138 +291,23 @@
       color: rgba(245,158,11,0.7);
       margin-top: 6px;
     }
-
-    /* ── Node Picker Modal ── */
-    .node-picker-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
+    .pp-delete-btn {
       width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 2000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .node-picker-overlay.open {
-      display: flex;
-    }
-    .node-picker {
-      width: 360px;
-      max-height: 500px;
-      background: #1a1a3e;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-    .node-picker-search {
-      width: 100%;
-      padding: 14px 16px;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-      font-family: 'Manrope', sans-serif;
-    }
-    .node-picker-search::placeholder {
-      color: rgba(255,255,255,0.25);
-    }
-    .node-picker-list {
-      max-height: 420px;
-      overflow-y: auto;
-      padding-bottom: 8px;
-    }
-    .node-picker-category {
-      padding: 10px 16px 4px;
-      font-size: 10px;
-      color: rgba(255,255,255,0.3);
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .node-picker-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .node-picker-item:hover {
-      background: rgba(255,255,255,0.05);
-    }
-    .node-picker-item.hidden {
-      display: none;
-    }
-    .node-picker-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .node-picker-name {
-      font-size: 13px;
-      color: rgba(255,255,255,0.8);
-    }
-    .node-picker-desc {
-      font-size: 11px;
-      color: rgba(255,255,255,0.3);
-      margin-left: auto;
-    }
-
-    /* ── Canvas empty state ── */
-    .canvas-empty-state {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .canvas-empty-state i {
-      font-size: 48px;
-      color: rgba(255,255,255,0.06);
-      margin-bottom: 16px;
-    }
-    .canvas-empty-state p {
-      color: rgba(255,255,255,0.12);
-      font-size: 14px;
-      margin: 0;
-    }
-    .canvas-empty-state .shortcut-hint {
-      font-size: 11px;
-      color: rgba(255,255,255,0.08);
-      margin-top: 6px;
-    }
-
-    /* ── Minimap ── */
-    .wf-minimap {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      width: 160px;
-      height: 100px;
-      background: rgba(13,13,26,0.85);
-      border: 1px solid rgba(255,255,255,0.08);
+      padding: 8px;
+      background: rgba(231,76,60,0.1);
+      border: 1px solid rgba(231,76,60,0.2);
       border-radius: 8px;
-      z-index: 50;
-      overflow: hidden;
+      color: rgba(231,76,60,0.7);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Manrope', sans-serif;
+      margin-top: 8px;
+      transition: all 0.15s;
     }
-    .wf-minimap-viewport {
-      position: absolute;
-      border: 1px solid rgba(102,126,234,0.5);
-      background: rgba(102,126,234,0.05);
-      border-radius: 2px;
-    }
-    .wf-minimap-node {
-      position: absolute;
-      border-radius: 2px;
-      opacity: 0.6;
+    .pp-delete-btn:hover {
+      background: rgba(231,76,60,0.2);
+      color: #e74c3c;
     }
 
     /* ── Zoom display ── */
@@ -642,16 +321,13 @@
     }
 
     /* ── Scrollbar styling ── */
-    .properties-panel::-webkit-scrollbar,
-    .node-picker-list::-webkit-scrollbar {
+    .properties-panel::-webkit-scrollbar {
       width: 4px;
     }
-    .properties-panel::-webkit-scrollbar-track,
-    .node-picker-list::-webkit-scrollbar-track {
+    .properties-panel::-webkit-scrollbar-track {
       background: transparent;
     }
-    .properties-panel::-webkit-scrollbar-thumb,
-    .node-picker-list::-webkit-scrollbar-thumb {
+    .properties-panel::-webkit-scrollbar-thumb {
       background: rgba(255,255,255,0.1);
       border-radius: 2px;
     }
@@ -667,6 +343,7 @@
       flex-direction: column;
       gap: 8px;
       align-items: center;
+      pointer-events: none;
     }
     .wf-toast {
       padding: 8px 16px;
@@ -706,15 +383,15 @@
         <div class="add-node-dropdown" id="addNodeDropdown">
           <div class="dropdown-category">Text</div>
           <div class="dropdown-item" data-type="prompt"><span class="dropdown-dot" style="background:#9b59b6;"></span> Prompt</div>
-          <div class="dropdown-item" data-type="prompt_enhancer"><span class="dropdown-dot" style="background:#8e44ad;"></span> Prompt Enhancer</div>
+          <div class="dropdown-item" data-type="prompt-enhancer"><span class="dropdown-dot" style="background:#8e44ad;"></span> Prompt Enhancer</div>
           <div class="dropdown-category">Image</div>
-          <div class="dropdown-item" data-type="image_input"><span class="dropdown-dot" style="background:#27ae60;"></span> Image Input</div>
+          <div class="dropdown-item" data-type="image-input"><span class="dropdown-dot" style="background:#27ae60;"></span> Image Input</div>
           <div class="dropdown-category">Video</div>
-          <div class="dropdown-item" data-type="text_to_video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video</div>
-          <div class="dropdown-item" data-type="image_to_video"><span class="dropdown-dot" style="background:#c0392b;"></span> Image to Video</div>
+          <div class="dropdown-item" data-type="text-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video</div>
+          <div class="dropdown-item" data-type="image-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Image to Video</div>
           <div class="dropdown-category">Utility</div>
-          <div class="dropdown-item" data-type="merge_videos"><span class="dropdown-dot" style="background:#3498db;"></span> Merge Videos</div>
-          <div class="dropdown-item" data-type="output"><span class="dropdown-dot" style="background:#f39c12;"></span> Output / Download</div>
+          <div class="dropdown-item" data-type="video-merge"><span class="dropdown-dot" style="background:#3498db;"></span> Merge Videos</div>
+          <div class="dropdown-item" data-type="video-output"><span class="dropdown-dot" style="background:#1abc9c;"></span> Output / Download</div>
         </div>
       </div>
 
@@ -723,20 +400,20 @@
       <button class="wf-toolbar-btn success" id="btnRunAll" title="Run entire workflow">
         <i class="fa-solid fa-play"></i> Run All
       </button>
-      <button class="wf-toolbar-btn" id="btnSave" title="Save workflow (Ctrl+S)">
+      <button class="wf-toolbar-btn" id="btnSave" title="Export workflow (Ctrl+S)">
         <i class="fa-solid fa-floppy-disk"></i> Save
       </button>
-      <button class="wf-toolbar-btn" id="btnLoad" title="Load workflow">
+      <button class="wf-toolbar-btn" id="btnLoad" title="Import workflow">
         <i class="fa-solid fa-folder-open"></i> Load
       </button>
 
       <div class="toolbar-spacer"></div>
 
-      <button class="wf-toolbar-btn" id="btnZoomOut" title="Zoom Out (-)">
+      <button class="wf-toolbar-btn" id="btnZoomOut" title="Zoom Out">
         <i class="fa-solid fa-minus"></i>
       </button>
       <span class="zoom-display" id="zoomDisplay">100%</span>
-      <button class="wf-toolbar-btn" id="btnZoomIn" title="Zoom In (+)">
+      <button class="wf-toolbar-btn" id="btnZoomIn" title="Zoom In">
         <i class="fa-solid fa-plus"></i>
       </button>
       <button class="wf-toolbar-btn" id="btnFitView" title="Fit all nodes in view">
@@ -749,21 +426,7 @@
     </div>
 
     <!-- ═══════ Canvas ═══════ -->
-    <div id="workflowCanvas" class="workflow-canvas">
-      <div id="canvasTransform">
-        <svg class="wf-connections" id="svgConnections"></svg>
-      </div>
-
-      <!-- Empty state -->
-      <div class="canvas-empty-state" id="canvasEmpty">
-        <i class="fa-solid fa-diagram-project"></i>
-        <p>Double-click to add a node</p>
-        <p class="shortcut-hint">or press <kbd style="padding:1px 5px;border-radius:3px;background:rgba(255,255,255,0.06);font-size:10px;">Space</kbd> to search</p>
-      </div>
-
-      <!-- Minimap -->
-      <div class="wf-minimap" id="minimap"></div>
-    </div>
+    <div id="workflowCanvas" class="workflow-canvas-wrap"></div>
 
     <!-- ═══════ Properties Panel ═══════ -->
     <div id="propertiesPanel" class="properties-panel">
@@ -786,54 +449,6 @@
     </div>
   </div>
 
-  <!-- ═══════ Node Picker Modal ═══════ -->
-  <div class="node-picker-overlay" id="nodePickerOverlay">
-    <div class="node-picker">
-      <input type="text" class="node-picker-search" id="nodePickerSearch" placeholder="Search nodes..." autofocus>
-      <div class="node-picker-list" id="nodePickerList">
-        <div class="node-picker-category">Text</div>
-        <div class="node-picker-item" data-type="prompt">
-          <span class="node-picker-dot" style="background:#9b59b6;"></span>
-          <span class="node-picker-name">Prompt</span>
-          <span class="node-picker-desc">Text input</span>
-        </div>
-        <div class="node-picker-item" data-type="prompt_enhancer">
-          <span class="node-picker-dot" style="background:#8e44ad;"></span>
-          <span class="node-picker-name">Prompt Enhancer</span>
-          <span class="node-picker-desc">AI rewrite</span>
-        </div>
-        <div class="node-picker-category">Image</div>
-        <div class="node-picker-item" data-type="image_input">
-          <span class="node-picker-dot" style="background:#27ae60;"></span>
-          <span class="node-picker-name">Image Input</span>
-          <span class="node-picker-desc">Upload image</span>
-        </div>
-        <div class="node-picker-category">Video</div>
-        <div class="node-picker-item" data-type="text_to_video">
-          <span class="node-picker-dot" style="background:#e74c3c;"></span>
-          <span class="node-picker-name">Text to Video</span>
-          <span class="node-picker-desc">AI generate</span>
-        </div>
-        <div class="node-picker-item" data-type="image_to_video">
-          <span class="node-picker-dot" style="background:#c0392b;"></span>
-          <span class="node-picker-name">Image to Video</span>
-          <span class="node-picker-desc">AI animate</span>
-        </div>
-        <div class="node-picker-category">Utility</div>
-        <div class="node-picker-item" data-type="merge_videos">
-          <span class="node-picker-dot" style="background:#3498db;"></span>
-          <span class="node-picker-name">Merge Videos</span>
-          <span class="node-picker-desc">Combine clips</span>
-        </div>
-        <div class="node-picker-item" data-type="output">
-          <span class="node-picker-dot" style="background:#f39c12;"></span>
-          <span class="node-picker-name">Output / Download</span>
-          <span class="node-picker-desc">Export result</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ═══════ Toast Container ═══════ -->
   <div class="wf-toast-container" id="toastContainer"></div>
 
@@ -842,11 +457,335 @@
 
   <script src="/public/js/workflow.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof WorkflowEditor !== 'undefined') {
-        window.workflowEditor = new WorkflowEditor('workflowCanvas');
+  (function() {
+    'use strict';
+
+    // ── Toast helper ──
+    function toast(msg, type) {
+      var c = document.getElementById('toastContainer');
+      if (!c) return;
+      var t = document.createElement('div');
+      t.className = 'wf-toast ' + (type || '');
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; }, 2200);
+      setTimeout(function() { t.remove(); }, 2600);
+    }
+
+    // ── Initialize canvas ──
+    var canvas = new WorkflowCanvas('workflowCanvas');
+    window._wfCanvas = canvas;
+
+    // ── Zoom display sync ──
+    var zoomEl = document.getElementById('zoomDisplay');
+    function syncZoom() {
+      if (zoomEl) zoomEl.textContent = Math.round(canvas.zoom * 100) + '%';
+      requestAnimationFrame(syncZoom);
+    }
+    syncZoom();
+
+    // ── Add Node dropdown ──
+    var btnAdd = document.getElementById('btnAddNode');
+    var dropdown = document.getElementById('addNodeDropdown');
+
+    btnAdd.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.add-node-wrapper')) {
+        dropdown.classList.remove('open');
       }
     });
+
+    dropdown.querySelectorAll('.dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var type = item.getAttribute('data-type');
+        // Place at center of canvas
+        var rect = canvas.container.getBoundingClientRect();
+        var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom;
+        var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom;
+        cx += (Math.random() - 0.5) * 80;
+        cy += (Math.random() - 0.5) * 80;
+        var id = canvas.addNode(type, cx, cy);
+        dropdown.classList.remove('open');
+        toast(NODE_TYPES[type].label + ' added');
+        // Select & show properties
+        canvas.selectedNodes.clear();
+        canvas.selectedNodes.add(id);
+        canvas._updateSelectionVisuals();
+        showProperties(id);
+      });
+    });
+
+    // ── Run All ──
+    document.getElementById('btnRunAll').addEventListener('click', function() {
+      if (canvas.nodes.size === 0) {
+        toast('No nodes on canvas', 'error');
+        return;
+      }
+      toast('Running workflow...');
+      canvas.runWorkflow().then(function(results) {
+        toast('Workflow complete!', 'success');
+        console.log('[Workflow] Results:', results);
+      }).catch(function(err) {
+        toast('Workflow error: ' + err.message, 'error');
+      });
+    });
+
+    // ── Save (export) ──
+    document.getElementById('btnSave').addEventListener('click', function() {
+      var json = canvas.exportWorkflow();
+      var blob = new Blob([json], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'workflow_' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Workflow saved', 'success');
+    });
+
+    // ── Load (import) ──
+    document.getElementById('btnLoad').addEventListener('click', function() {
+      document.getElementById('fileLoadInput').click();
+    });
+    document.getElementById('fileLoadInput').addEventListener('change', function(e) {
+      if (!e.target.files.length) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          canvas.importWorkflow(ev.target.result);
+          toast('Workflow loaded', 'success');
+        } catch (err) {
+          toast('Invalid workflow file', 'error');
+        }
+      };
+      reader.readAsText(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    // ── Clear ──
+    document.getElementById('btnClear').addEventListener('click', function() {
+      if (canvas.nodes.size === 0) return;
+      if (!confirm('Clear all nodes and connections?')) return;
+      canvas.nodes.forEach(function(n) { if (n.el && n.el.parentNode) n.el.parentNode.removeChild(n.el); });
+      canvas.nodes.clear();
+      canvas.connections = [];
+      canvas.selectedNodes.clear();
+      canvas.render();
+      closeProperties();
+      toast('Canvas cleared');
+    });
+
+    // ── Zoom controls ──
+    document.getElementById('btnZoomIn').addEventListener('click', function() {
+      canvas.zoom = Math.min(3, canvas.zoom + 0.15);
+      canvas._updateTransform();
+      canvas._drawGrid();
+      canvas.render();
+    });
+    document.getElementById('btnZoomOut').addEventListener('click', function() {
+      canvas.zoom = Math.max(0.25, canvas.zoom - 0.15);
+      canvas._updateTransform();
+      canvas._drawGrid();
+      canvas.render();
+    });
+    document.getElementById('btnFitView').addEventListener('click', function() {
+      canvas.fitView();
+    });
+
+    // ── Keyboard shortcut: Ctrl+S ──
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.getElementById('btnSave').click();
+      }
+    });
+
+    // ── Properties Panel ──
+    var panel = document.getElementById('propertiesPanel');
+    var ppBody = document.getElementById('ppBody');
+    var ppRunSection = document.getElementById('ppRunSection');
+    var ppCreditInfo = document.getElementById('ppCreditInfo');
+    var currentPropNodeId = null;
+
+    document.getElementById('ppClose').addEventListener('click', closeProperties);
+
+    function closeProperties() {
+      panel.classList.remove('open');
+      currentPropNodeId = null;
+    }
+
+    function showProperties(nodeId) {
+      var node = canvas.nodes.get(nodeId);
+      if (!node) { closeProperties(); return; }
+      var def = NODE_TYPES[node.type];
+      if (!def) { closeProperties(); return; }
+
+      currentPropNodeId = nodeId;
+
+      // Header
+      document.getElementById('ppColorBar').style.background = def.color;
+      document.getElementById('ppNodeName').textContent = def.label;
+
+      // Build body
+      ppBody.innerHTML = '';
+
+      // Parameters
+      if (def.params && def.params.length) {
+        var title = document.createElement('div');
+        title.className = 'pp-section-title';
+        title.textContent = 'Parameters';
+        ppBody.appendChild(title);
+
+        def.params.forEach(function(p) {
+          var field = document.createElement('div');
+          field.className = 'pp-field';
+          var lbl = document.createElement('label');
+          lbl.textContent = p.name;
+          field.appendChild(lbl);
+
+          var input;
+          if (p.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.placeholder = p.placeholder || '';
+            input.value = node.values[p.name] || '';
+          } else if (p.type === 'select') {
+            input = document.createElement('select');
+            (p.options || []).forEach(function(opt) {
+              var o = document.createElement('option');
+              o.value = opt; o.textContent = opt;
+              if (node.values[p.name] === opt) o.selected = true;
+              input.appendChild(o);
+            });
+          } else {
+            input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = p.placeholder || '';
+            input.value = node.values[p.name] || '';
+          }
+
+          input.addEventListener('input', function() {
+            node.values[p.name] = this.value;
+            // Sync inline param on node card
+            var inlineInput = node.el.querySelector('[data-param-name="' + p.name + '"]');
+            if (inlineInput) inlineInput.value = this.value;
+          });
+          field.appendChild(input);
+          ppBody.appendChild(field);
+        });
+      }
+
+      // Connections info
+      var inConns = canvas.connections.filter(function(c) { return c.toNode === nodeId; });
+      var outConns = canvas.connections.filter(function(c) { return c.fromNode === nodeId; });
+
+      if (inConns.length || outConns.length) {
+        var connTitle = document.createElement('div');
+        connTitle.className = 'pp-section-title';
+        connTitle.textContent = 'Connections';
+        ppBody.appendChild(connTitle);
+
+        if (inConns.length) {
+          var inLbl = document.createElement('div');
+          inLbl.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:4px;';
+          inLbl.textContent = 'Inputs';
+          ppBody.appendChild(inLbl);
+          var ul = document.createElement('ul');
+          ul.className = 'pp-connection-list';
+          inConns.forEach(function(c) {
+            var li = document.createElement('li');
+            var dot = document.createElement('span');
+            dot.className = 'pp-connection-dot';
+            dot.style.background = TYPE_COLORS[c.type] || '#888';
+            li.appendChild(dot);
+            var fromNode = canvas.nodes.get(c.fromNode);
+            var fromLabel = fromNode ? NODE_TYPES[fromNode.type].label : '?';
+            li.appendChild(document.createTextNode(fromLabel + '.' + c.fromPort + ' \u2192 ' + c.toPort));
+            ul.appendChild(li);
+          });
+          ppBody.appendChild(ul);
+        }
+        if (outConns.length) {
+          var outLbl = document.createElement('div');
+          outLbl.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.3);margin:8px 0 4px;';
+          outLbl.textContent = 'Outputs';
+          ppBody.appendChild(outLbl);
+          var ul2 = document.createElement('ul');
+          ul2.className = 'pp-connection-list';
+          outConns.forEach(function(c) {
+            var li = document.createElement('li');
+            var dot = document.createElement('span');
+            dot.className = 'pp-connection-dot';
+            dot.style.background = TYPE_COLORS[c.type] || '#888';
+            li.appendChild(dot);
+            var toNode = canvas.nodes.get(c.toNode);
+            var toLabel = toNode ? NODE_TYPES[toNode.type].label : '?';
+            li.appendChild(document.createTextNode(c.fromPort + ' \u2192 ' + toLabel + '.' + c.toPort));
+            ul2.appendChild(li);
+          });
+          ppBody.appendChild(ul2);
+        }
+      }
+
+      // Node ID
+      var idInfo = document.createElement('div');
+      idInfo.style.cssText = 'margin-top:16px;font-size:10px;color:rgba(255,255,255,0.15);';
+      idInfo.textContent = 'Node ID: ' + nodeId;
+      ppBody.appendChild(idInfo);
+
+      // Delete button
+      var delBtn = document.createElement('button');
+      delBtn.className = 'pp-delete-btn';
+      delBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Delete Node';
+      delBtn.addEventListener('click', function() {
+        canvas.removeNode(nodeId);
+        closeProperties();
+        toast('Node deleted');
+      });
+      ppBody.appendChild(delBtn);
+
+      // Run section (AI nodes only)
+      if (def.aiNode) {
+        ppRunSection.style.display = 'block';
+        ppCreditInfo.textContent = 'This node uses AI credits to run';
+      } else {
+        ppRunSection.style.display = 'none';
+      }
+
+      panel.classList.add('open');
+    }
+
+    // Run button in properties panel
+    document.getElementById('ppRunBtn').addEventListener('click', function() {
+      if (currentPropNodeId == null) return;
+      toast('Running node...');
+      canvas.runNode(currentPropNodeId).then(function(result) {
+        toast('Node complete!', 'success');
+      }).catch(function(err) {
+        toast('Node error: ' + err.message, 'error');
+      });
+    });
+
+    // ── Listen for node selection via click ──
+    // The WorkflowCanvas selects nodes internally; poll selectedNodes
+    var lastSelectedStr = '';
+    function pollSelection() {
+      var ids = Array.from(canvas.selectedNodes);
+      var str = ids.join(',');
+      if (str !== lastSelectedStr) {
+        lastSelectedStr = str;
+        if (ids.length === 1) {
+          showProperties(ids[0]);
+        } else {
+          closeProperties();
+        }
+      }
+      requestAnimationFrame(pollSelection);
+    }
+    pollSelection();
+
+  })();
   </script>
 </body>
 </html>
