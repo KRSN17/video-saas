@@ -112,7 +112,7 @@ class WorkflowCanvas {
     this.container.style.width = '100%';
     this.container.style.height = '100%';
     this.container.style.userSelect = 'none';
-    this.container.style.cursor = 'default';
+    this.container.style.cursor = 'grab';
     this.container.tabIndex = 0;
 
     // Grid canvas (background)
@@ -639,10 +639,16 @@ class WorkflowCanvas {
         return;
       }
 
-      // Click on empty canvas -> deselect
-      if (e.button === 0 && e.target === el || e.target === this.gridCanvas || e.target === this.svg || e.target === this.nodeLayer) {
+      // Left click on empty canvas -> pan (not on a node)
+      const clickedOnNode = e.target.closest('.wf-node');
+      if (e.button === 0 && !clickedOnNode) {
+        this.panning = true;
+        this.panStart = { x: e.clientX - this.pan.x, y: e.clientY - this.pan.y };
+        el.style.cursor = 'grabbing';
         this.selectedNodes.clear();
         this._updateSelectionVisuals();
+        e.preventDefault();
+        return;
       }
     });
 
@@ -684,7 +690,7 @@ class WorkflowCanvas {
     window.addEventListener('mouseup', (e) => {
       if (this.panning) {
         this.panning = false;
-        el.style.cursor = this.spaceHeld ? 'grab' : 'default';
+        el.style.cursor = 'grab';
         return;
       }
 
@@ -714,19 +720,25 @@ class WorkflowCanvas {
       }
     });
 
-    // --- Wheel / zoom ---
+    // --- Wheel: zoom (pinch/ctrl+scroll) or pan (two-finger scroll) ---
     el.addEventListener('wheel', (e) => {
       e.preventDefault();
-      const delta = -e.deltaY * 0.001;
-      const newZoom = Math.max(0.25, Math.min(3, this.zoom + delta * this.zoom));
-      const cr = this.container.getBoundingClientRect();
-      const mx = e.clientX - cr.left;
-      const my = e.clientY - cr.top;
 
-      // Zoom centered on cursor
-      this.pan.x = mx - (mx - this.pan.x) * (newZoom / this.zoom);
-      this.pan.y = my - (my - this.pan.y) * (newZoom / this.zoom);
-      this.zoom = newZoom;
+      if (e.ctrlKey || e.metaKey) {
+        // Pinch zoom or Ctrl+scroll = zoom
+        const delta = -e.deltaY * 0.005;
+        const newZoom = Math.max(0.25, Math.min(3, this.zoom + delta * this.zoom));
+        const cr = this.container.getBoundingClientRect();
+        const mx = e.clientX - cr.left;
+        const my = e.clientY - cr.top;
+        this.pan.x = mx - (mx - this.pan.x) * (newZoom / this.zoom);
+        this.pan.y = my - (my - this.pan.y) * (newZoom / this.zoom);
+        this.zoom = newZoom;
+      } else {
+        // Two-finger scroll = pan in all directions
+        this.pan.x -= e.deltaX;
+        this.pan.y -= e.deltaY;
+      }
 
       this._updateTransform();
       this._drawGrid();
