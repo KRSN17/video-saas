@@ -593,49 +593,71 @@
       }
     });
 
-    // ── Drag ghost element ──
+    // ── Custom drag-and-drop (mousedown/mousemove/mouseup) ──
     var dragGhost = document.createElement('div');
-    dragGhost.style.cssText = 'position:fixed;pointer-events:none;z-index:99999;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;color:#fff;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;white-space:nowrap;';
+    dragGhost.style.cssText = 'position:fixed;pointer-events:none;z-index:99999;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.6);display:none;white-space:nowrap;transform:translate(-50%,-50%);';
     document.body.appendChild(dragGhost);
 
     var dragNodeType = null;
-    var isDraggingNode = false;
+    var dragStartX = 0, dragStartY = 0;
+    var isDragging = false;
+    var hasDragged = false;
 
     dropdown.querySelectorAll('.dropdown-item').forEach(function(item) {
-      // Make draggable
-      item.setAttribute('draggable', 'true');
       item.style.cursor = 'grab';
+      item.style.userSelect = 'none';
 
-      // Drag start
-      item.addEventListener('dragstart', function(e) {
-        dragNodeType = item.getAttribute('data-type');
-        isDraggingNode = true;
-        var dot = item.querySelector('.dropdown-dot');
-        var color = dot ? dot.style.background : '#667eea';
-        dragGhost.textContent = item.textContent.trim();
-        dragGhost.style.background = color.replace(')', ',0.85)').replace('rgb', 'rgba');
-        dragGhost.style.display = 'block';
-        // Use transparent drag image (we show our own ghost)
-        var blank = document.createElement('canvas');
-        blank.width = 1; blank.height = 1;
-        e.dataTransfer.setDragImage(blank, 0, 0);
-        e.dataTransfer.effectAllowed = 'copy';
-        dropdown.classList.remove('open');
-      });
-
-      // Click still works as before
-      item.addEventListener('click', function(e) {
-        if (isDraggingNode) return;
-        e.stopPropagation();
+      item.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
         e.preventDefault();
-        var type = item.getAttribute('data-type');
+        dragNodeType = item.getAttribute('data-type');
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        isDragging = true;
+        hasDragged = false;
+
+        var dot = item.querySelector('.dropdown-dot');
+        var color = dot ? dot.style.background : 'rgba(102,126,234,0.85)';
+        dragGhost.textContent = item.textContent.trim();
+        dragGhost.style.background = color;
+      });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      var dx = e.clientX - dragStartX;
+      var dy = e.clientY - dragStartY;
+
+      // Start showing ghost after 5px of movement
+      if (!hasDragged && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        hasDragged = true;
+        dragGhost.style.display = 'block';
+        dropdown.classList.remove('open');
+      }
+
+      if (hasDragged) {
+        dragGhost.style.left = e.clientX + 'px';
+        dragGhost.style.top = e.clientY + 'px';
+      }
+    });
+
+    document.addEventListener('mouseup', function(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      dragGhost.style.display = 'none';
+
+      if (!hasDragged) {
+        // Was a click, not a drag — use original click behavior
+        var type = dragNodeType;
+        dragNodeType = null;
+        if (!type) return;
+
         var rect = canvas.container.getBoundingClientRect();
         var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom;
         var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom;
         cx += (Math.random() - 0.5) * 80;
         cy += (Math.random() - 0.5) * 80;
 
-        // Show model picker for AI nodes, or add directly
         if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
           dropdown.classList.remove('open');
           canvas._showModelPicker(type, cx, cy);
@@ -643,58 +665,36 @@
           var id = canvas.addNode(type, cx, cy);
           dropdown.classList.remove('open');
           toast(NODE_TYPES[type].label + ' added');
-          // Select & show properties
           canvas.selectedNodes.clear();
           canvas.selectedNodes.add(id);
           canvas._updateSelectionVisuals();
-          showProperties(id);
         }
-      });
-    });
-
-    // ── Drag: move ghost with cursor ──
-    document.addEventListener('drag', function(e) {
-      if (!isDraggingNode || !e.clientX) return;
-      dragGhost.style.left = (e.clientX + 12) + 'px';
-      dragGhost.style.top = (e.clientY + 12) + 'px';
-    });
-
-    // ── Drag: allow drop on canvas ──
-    var canvasEl = document.getElementById('workflowCanvas');
-    canvasEl.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy';
-    });
-
-    // ── Drop: create node at drop position ──
-    canvasEl.addEventListener('drop', function(e) {
-      e.preventDefault();
-      if (!dragNodeType) return;
-
-      var type = dragNodeType;
-      var pos = canvas._screenToCanvas(e.clientX, e.clientY);
-
-      // Show model picker for AI nodes, or add directly
-      if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
-        canvas._showModelPicker(type, pos.x, pos.y);
-      } else {
-        var id = canvas.addNode(type, pos.x, pos.y);
-        toast(NODE_TYPES[type].label + ' added');
-        canvas.selectedNodes.clear();
-        canvas.selectedNodes.add(id);
-        canvas._updateSelectionVisuals();
+        return;
       }
 
+      // Was a drag — check if dropped on canvas
+      var type = dragNodeType;
       dragNodeType = null;
-      isDraggingNode = false;
-      dragGhost.style.display = 'none';
-    });
+      if (!type) return;
 
-    // ── Drag end: cleanup ──
-    document.addEventListener('dragend', function() {
-      dragNodeType = null;
-      isDraggingNode = false;
-      dragGhost.style.display = 'none';
+      var canvasRect = canvas.container.getBoundingClientRect();
+      var inCanvas = e.clientX >= canvasRect.left && e.clientX <= canvasRect.right &&
+                     e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom;
+
+      if (inCanvas) {
+        var pos = canvas._screenToCanvas(e.clientX, e.clientY);
+        if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
+          canvas._showModelPicker(type, pos.x, pos.y);
+        } else {
+          var id = canvas.addNode(type, pos.x, pos.y);
+          toast(NODE_TYPES[type].label + ' added');
+          canvas.selectedNodes.clear();
+          canvas.selectedNodes.add(id);
+          canvas._updateSelectionVisuals();
+        }
+      } else {
+        toast('Drop on the canvas to add node', 'error');
+      }
     });
 
     // ── Load workflow from server ──
