@@ -460,6 +460,10 @@
   (function() {
     'use strict';
 
+    // ── Auth guard ──
+    var token = localStorage.getItem('token');
+    if (!token) { window.location.href = '/login'; return; }
+
     // ── Toast helper ──
     function toast(msg, type) {
       var c = document.getElementById('toastContainer');
