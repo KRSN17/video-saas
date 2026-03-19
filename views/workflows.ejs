@@ -167,6 +167,7 @@
       overflow: hidden;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      cursor: pointer;
     }
     .wf-card:hover {
       transform: translateY(-3px);
@@ -774,10 +775,17 @@
         return;
       }
 
-      if (!btn || !card) return;
+      if (!card) return;
       var id = card.getAttribute('data-id');
-      var action = btn.getAttribute('data-action');
+      var action = btn ? btn.getAttribute('data-action') : null;
       closeAllMenus();
+
+      // Click anywhere on card (not a button) = open
+      if (!action) {
+        localStorage.setItem('activeWorkflowId', id);
+        window.location.href = '/workflow?id=' + id;
+        return;
+      }
 
       if (action === 'open') {
         localStorage.setItem('activeWorkflowId', id);
