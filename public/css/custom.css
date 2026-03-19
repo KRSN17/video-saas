@@ -5,29 +5,29 @@
 
 /* --- Root Variables --- */
 :root {
-  --bg-primary: #0c0c0c;
-  --bg-secondary: #141414;
-  --bg-card: #1c1c1c;
-  --bg-sidebar: #0a0a0a;
-  --accent-gradient: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #f0f0f0 0%, #b0b0b0 100%);
-  --accent-blue: #e0e0e0;
-  --accent-purple: #a0a0a0;
-  --accent-green: #34d399;
-  --accent-red: #f87171;
-  --accent-yellow: #fbbf24;
-  --accent-cyan: #22d3ee;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0b8;
-  --text-muted: #6b6b80;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-bg-hover: rgba(255, 255, 255, 0.08);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.15);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-card: #ffffff;
+  --bg-sidebar: #1a1a1a;
+  --accent-gradient: linear-gradient(135deg, #333333 0%, #111111 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #444444 0%, #222222 100%);
+  --accent-blue: #333333;
+  --accent-purple: #111111;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --accent-cyan: #06b6d4;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 30px rgba(0, 0, 0, 0.05);
   --sidebar-width: 260px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -41,8 +41,8 @@
 /* --- Body & Base --- */
 body {
   background: var(--bg-primary);
-  background-image: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.02) 0%, transparent 50%),
-                    radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.015) 0%, transparent 50%);
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(0,0,0,0.015) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 20%, rgba(0,0,0,0.01) 0%, transparent 50%);
   color: var(--text-primary);
   font-family: 'Gordita', 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
@@ -51,62 +51,65 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- Global Glass Effect --- */
+/* --- Global Glass Effect (White Theme) --- */
 .glass, .panel, .stat-card, .pricing-card, .glass-card, .admin-panel, .history-panel, .pkg-form, .balance-hero {
-  background: rgba(255,255,255,0.03) !important;
+  background: rgba(255,255,255,0.8) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8) !important;
 }
 .glass:hover, .panel:hover, .stat-card:hover, .pricing-card:hover, .glass-card:hover {
-  border-color: rgba(102,126,234,0.2) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(102,126,234,0.08), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9) !important;
   transform: translateY(-2px);
   transition: all 0.25s ease;
 }
 
-/* --- Dashboard main glass body --- */
+/* --- Dashboard main body --- */
 .dash-main {
-  background: rgba(10,10,26,0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: #f8f8fa;
 }
 
-/* --- Topbar glass --- */
+/* --- Topbar --- */
 .dash-topbar {
-  background: rgba(13,13,26,0.7) !important;
+  background: rgba(255,255,255,0.85) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
 }
 
-/* --- Form inputs glass effect --- */
+/* --- Form inputs --- */
 .form-control, .form-select {
-  background: rgba(255,255,255,0.04) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  color: #111 !important;
   transition: all 0.2s ease;
 }
 .form-control:focus, .form-select:focus {
-  background: rgba(255,255,255,0.07) !important;
-  border-color: rgba(102,126,234,0.4) !important;
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.1), 0 0 20px rgba(102,126,234,0.05) !important;
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.25) !important;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.05) !important;
 }
+.form-control::placeholder { color: #aaa !important; }
 
-/* --- Table glass rows --- */
+/* --- Table rows --- */
 .admin-table tr:hover td, .history-table tr:hover td {
-  background: rgba(255,255,255,0.03) !important;
+  background: rgba(0,0,0,0.02) !important;
 }
 
-/* --- Modal glass --- */
+/* --- Modal --- */
 .modal-content {
-  background: rgba(20,20,37,0.95) !important;
+  background: #ffffff !important;
   backdrop-filter: blur(24px) !important;
   -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.6) !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.15) !important;
 }
+
+/* --- Override dark text for white bg --- */
+a { color: #333; }
+a:hover { color: #000; }
 
 a {
   color: var(--accent-blue);
