@@ -230,6 +230,87 @@ const NODE_TYPES = {
   }
 };
 
+const MODEL_CATALOG = {
+  'text-to-image': {
+    title: 'Image Models',
+    subtitle: 'Generate from text',
+    models: [
+      { id: 'flux-pro', name: 'Flux 2 Pro', icon: '\u25b3', iconStyle: 'font-size:28px;' },
+      { id: 'flux-dev-lora', name: 'Flux 2 Dev LoRA', icon: '\u25b3', iconStyle: 'font-size:28px;' },
+      { id: 'stable-diffusion-3.5', name: 'Stable Diffusion 3.5', icon: '\u25ce', iconStyle: 'font-size:28px;' },
+      { id: 'ideogram-v3', name: 'Ideogram V3', icon: '\u2726', iconStyle: 'font-size:28px;color:#ff6b35;' },
+      { id: 'imagen-3', name: 'Imagen 3', icon: 'G', iconStyle: 'font-size:24px;font-weight:800;color:#4285f4;font-family:sans-serif;' },
+      { id: 'gpt-image', name: 'GPT Image 1.5', icon: '\u25c8', iconStyle: 'font-size:26px;color:#10a37f;' },
+      { id: 'recraft-v3', name: 'Recraft V3', icon: '\u2b21', iconStyle: 'font-size:28px;' },
+      { id: 'nano-banana', name: 'Nano Banana', icon: '\ud83c\udf4c', iconStyle: 'font-size:24px;' },
+    ]
+  },
+  'image-to-image': {
+    title: 'Image Models',
+    subtitle: 'Generate from image',
+    models: [
+      { id: 'flux-kontext', name: 'Flux Kontext', icon: '\u25b3', iconStyle: 'font-size:28px;' },
+      { id: 'stable-diffusion-3.5', name: 'SD 3.5 img2img', icon: '\u25ce', iconStyle: 'font-size:28px;' },
+    ]
+  },
+  'text-to-video': {
+    title: 'Video Models',
+    subtitle: 'Generate from text',
+    models: [
+      { id: 'kling-text', name: 'Kling 3', icon: '\u26a1', iconStyle: 'font-size:26px;color:#7c3aed;' },
+      { id: 'minimax-text', name: 'MiniMax Video', icon: '\u25a3', iconStyle: 'font-size:26px;color:#06b6d4;' },
+      { id: 'wan-text', name: 'Wan 2.5', icon: '\u25d0', iconStyle: 'font-size:26px;' },
+      { id: 'luma-ray2', name: 'Luma Ray 2', icon: '\u25c9', iconStyle: 'font-size:26px;color:#8b5cf6;' },
+      { id: 'hunyuan', name: 'Hunyuan Video', icon: '\u2b22', iconStyle: 'font-size:26px;color:#ef4444;' },
+      { id: 'ltx-video', name: 'LTX Video', icon: '\u25b2', iconStyle: 'font-size:26px;color:#f59e0b;' },
+      { id: 'veo2', name: 'Veo 3.1', icon: 'G', iconStyle: 'font-size:24px;font-weight:800;color:#4285f4;font-family:sans-serif;' },
+      { id: 'sora2', name: 'Sora 2', icon: '\u25cb', iconStyle: 'font-size:28px;color:#fff;' },
+    ]
+  },
+  'image-to-video': {
+    title: 'Video Models',
+    subtitle: 'Generate from image',
+    models: [
+      { id: 'kling-image', name: 'Kling 3 i2v', icon: '\u26a1', iconStyle: 'font-size:26px;color:#7c3aed;' },
+      { id: 'runway-gen4', name: 'Runway Gen-4', icon: '\u25b6', iconStyle: 'font-size:24px;color:#22d3ee;' },
+      { id: 'veo-3.1', name: 'Veo 3.1 i2v', icon: 'G', iconStyle: 'font-size:24px;font-weight:800;color:#4285f4;font-family:sans-serif;' },
+    ]
+  },
+  'video-to-video': {
+    title: 'Video Models',
+    subtitle: 'Transform video',
+    models: [
+      { id: 'runway-gen4', name: 'Runway Gen-4', icon: '\u25b6', iconStyle: 'font-size:24px;color:#22d3ee;' },
+      { id: 'kling-text', name: 'Kling 3 v2v', icon: '\u26a1', iconStyle: 'font-size:26px;color:#7c3aed;' },
+    ]
+  },
+  'upscale': {
+    title: 'Upscale Models',
+    subtitle: 'Enhance resolution',
+    models: [
+      { id: 'real-esrgan', name: 'Real-ESRGAN', icon: '\u2b06', iconStyle: 'font-size:28px;color:#22c55e;' },
+      { id: 'aura-sr', name: 'Aura SR', icon: '\u2727', iconStyle: 'font-size:28px;color:#8b5cf6;' },
+    ]
+  },
+  'inpaint': {
+    title: 'Inpaint Models',
+    subtitle: 'Edit regions',
+    models: [
+      { id: 'flux-inpaint', name: 'Flux Inpaint', icon: '\u25b3', iconStyle: 'font-size:28px;' },
+      { id: 'sd-inpaint', name: 'SD Inpaint', icon: '\u25ce', iconStyle: 'font-size:28px;' },
+    ]
+  },
+  'relight': {
+    title: 'Relight Models',
+    subtitle: 'Change lighting',
+    models: [
+      { id: 'product', name: 'Product Relight', icon: '\u2600', iconStyle: 'font-size:26px;color:#f59e0b;' },
+      { id: 'human', name: 'Human Relight', icon: '\ud83d\udc64', iconStyle: 'font-size:22px;' },
+      { id: 'scene', name: 'Scene Relight', icon: '\ud83c\udf05', iconStyle: 'font-size:22px;' },
+    ]
+  }
+};
+
 const TYPE_COLORS = {
   text: '#9b59b6',
   image: '#27ae60',
@@ -660,6 +741,56 @@ class WorkflowCanvas {
         transition: stroke-width 0.12s;
       }
       .wf-connection-path:hover { stroke-width: 4px !important; }
+
+      /* Model Picker Modal */
+      .wf-model-picker-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+        z-index: 9999; display: flex; align-items: center; justify-content: center;
+      }
+      .wf-model-picker {
+        width: 520px; max-height: 600px; background: rgba(30,30,40,0.97);
+        border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+        overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+        backdrop-filter: blur(24px);
+      }
+      .wf-model-picker-header {
+        padding: 24px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .wf-model-picker-title {
+        font-size: 20px; font-weight: 800; color: #fff; margin: 0;
+      }
+      .wf-model-picker-subtitle {
+        font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 4px;
+        font-family: monospace;
+      }
+      .wf-model-picker-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 12px; padding: 20px 24px; overflow-y: auto; max-height: 460px;
+      }
+      .wf-model-card {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; padding: 24px 16px; text-align: center;
+        cursor: pointer; transition: all 0.2s;
+      }
+      .wf-model-card:hover {
+        background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2);
+        transform: translateY(-2px);
+      }
+      .wf-model-card-icon {
+        display: block; margin: 0 auto 12px; height: 40px; line-height: 40px;
+        color: rgba(255,255,255,0.7); user-select: none;
+      }
+      .wf-model-card-name {
+        font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
+      }
+      .wf-model-picker-close {
+        position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+        border-radius: 8px; border: none; background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.4); font-size: 18px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .wf-model-picker-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
     `;
     document.head.appendChild(style);
   }
@@ -1585,8 +1716,12 @@ class WorkflowCanvas {
           item.appendChild(name);
 
           item.addEventListener('click', () => {
-            this.addNode(t, canvasX, canvasY);
             this._closeMenus();
+            if (MODEL_CATALOG[t]) {
+              this._showModelPicker(t, canvasX, canvasY);
+            } else {
+              this.addNode(t, canvasX, canvasY);
+            }
           });
           list.appendChild(item);
         });
@@ -1628,8 +1763,12 @@ class WorkflowCanvas {
         item.style.paddingLeft = '24px';
         item.textContent = def.label;
         item.addEventListener('click', () => {
-          this.addNode(t, canvasX, canvasY);
           this._closeMenus();
+          if (MODEL_CATALOG[t]) {
+            this._showModelPicker(t, canvasX, canvasY);
+          } else {
+            this.addNode(t, canvasX, canvasY);
+          }
         });
         menu.appendChild(item);
       });
@@ -1742,6 +1881,73 @@ class WorkflowCanvas {
       if (clearBtn) clearBtn.style.opacity = '0.3';
       if (dlBtn) dlBtn.style.opacity = '0.3';
     }
+  }
+
+  _showModelPicker(nodeType, x, y) {
+    const catalog = MODEL_CATALOG[nodeType];
+    if (!catalog) {
+      // No model picker needed, just add node directly
+      return this.addNode(nodeType, x, y);
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'wf-model-picker-overlay';
+
+    const picker = document.createElement('div');
+    picker.className = 'wf-model-picker';
+    picker.style.position = 'relative';
+
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'wf-model-picker-close';
+    closeBtn.innerHTML = '\u2715';
+    closeBtn.addEventListener('click', () => overlay.remove());
+    picker.appendChild(closeBtn);
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'wf-model-picker-header';
+    header.innerHTML = `<div class="wf-model-picker-title">${catalog.title}</div><div class="wf-model-picker-subtitle">${catalog.subtitle}</div>`;
+    picker.appendChild(header);
+
+    // Grid
+    const grid = document.createElement('div');
+    grid.className = 'wf-model-picker-grid';
+
+    catalog.models.forEach(model => {
+      const card = document.createElement('div');
+      card.className = 'wf-model-card';
+      card.innerHTML = `<span class="wf-model-card-icon" style="${model.iconStyle || ''}">${model.icon}</span><div class="wf-model-card-name">${model.name}</div>`;
+      card.addEventListener('click', () => {
+        overlay.remove();
+        const id = this.addNode(nodeType, x, y);
+        // Set the selected model on the node
+        const node = this.nodes.get(id);
+        if (node) {
+          node.values.model = model.id;
+          node.selectedModelName = model.name;
+          node.selectedModelIcon = model.icon;
+          node.selectedModelIconStyle = model.iconStyle || '';
+          // Update the node header to show model name
+          const titleEl = node.el.querySelector('.wf-title');
+          if (titleEl) titleEl.textContent = model.name;
+          // Add model badge under header
+          const badge = document.createElement('div');
+          badge.style.cssText = 'padding:4px 12px;font-size:10px;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:6px;';
+          badge.innerHTML = `<span style="${model.iconStyle || ''}font-size:14px;">${model.icon}</span><span>${model.name}</span>`;
+          node.el.querySelector('.wf-node-header').after(badge);
+        }
+      });
+      grid.appendChild(card);
+    });
+
+    picker.appendChild(grid);
+    overlay.appendChild(picker);
+
+    // Click overlay to close
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+    document.body.appendChild(overlay);
   }
 
   async runNode(id) {
@@ -1976,10 +2182,11 @@ class WorkflowCanvas {
 // Export for module systems or attach to window
 // ---------------------------------------------------------------------------
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { WorkflowCanvas, NODE_TYPES, TYPE_COLORS, CATEGORIES };
+  module.exports = { WorkflowCanvas, NODE_TYPES, TYPE_COLORS, CATEGORIES, MODEL_CATALOG };
 } else {
   window.WorkflowCanvas = WorkflowCanvas;
   window.NODE_TYPES = NODE_TYPES;
   window.TYPE_COLORS = TYPE_COLORS;
   window.CATEGORIES = CATEGORIES;
+  window.MODEL_CATALOG = MODEL_CATALOG;
 }

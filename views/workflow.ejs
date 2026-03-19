@@ -543,20 +543,26 @@
         e.stopPropagation();
         e.preventDefault();
         var type = item.getAttribute('data-type');
-        // Place at center of canvas
         var rect = canvas.container.getBoundingClientRect();
         var cx = (rect.width / 2 - canvas.pan.x) / canvas.zoom;
         var cy = (rect.height / 2 - canvas.pan.y) / canvas.zoom;
         cx += (Math.random() - 0.5) * 80;
         cy += (Math.random() - 0.5) * 80;
-        var id = canvas.addNode(type, cx, cy);
-        dropdown.classList.remove('open');
-        toast(NODE_TYPES[type].label + ' added');
-        // Select & show properties
-        canvas.selectedNodes.clear();
-        canvas.selectedNodes.add(id);
-        canvas._updateSelectionVisuals();
-        showProperties(id);
+
+        // Show model picker for AI nodes, or add directly
+        if (typeof MODEL_CATALOG !== 'undefined' && MODEL_CATALOG[type]) {
+          dropdown.classList.remove('open');
+          canvas._showModelPicker(type, cx, cy);
+        } else {
+          var id = canvas.addNode(type, cx, cy);
+          dropdown.classList.remove('open');
+          toast(NODE_TYPES[type].label + ' added');
+          // Select & show properties
+          canvas.selectedNodes.clear();
+          canvas.selectedNodes.add(id);
+          canvas._updateSelectionVisuals();
+          showProperties(id);
+        }
       });
     });
 
