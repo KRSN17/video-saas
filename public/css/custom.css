@@ -41,12 +41,71 @@
 /* --- Body & Base --- */
 body {
   background: var(--bg-primary);
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(102,126,234,0.04) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 20%, rgba(118,75,162,0.04) 0%, transparent 50%);
   color: var(--text-primary);
   font-family: 'Gordita', 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Global Glass Effect --- */
+.glass, .panel, .stat-card, .pricing-card, .glass-card, .admin-panel, .history-panel, .pkg-form, .balance-hero {
+  background: rgba(255,255,255,0.03) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+.glass:hover, .panel:hover, .stat-card:hover, .pricing-card:hover, .glass-card:hover {
+  border-color: rgba(102,126,234,0.2) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(102,126,234,0.08), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  transform: translateY(-2px);
+  transition: all 0.25s ease;
+}
+
+/* --- Dashboard main glass body --- */
+.dash-main {
+  background: rgba(10,10,26,0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* --- Topbar glass --- */
+.dash-topbar {
+  background: rgba(13,13,26,0.7) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* --- Form inputs glass effect --- */
+.form-control, .form-select {
+  background: rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  transition: all 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+  background: rgba(255,255,255,0.07) !important;
+  border-color: rgba(102,126,234,0.4) !important;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1), 0 0 20px rgba(102,126,234,0.05) !important;
+}
+
+/* --- Table glass rows --- */
+.admin-table tr:hover td, .history-table tr:hover td {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+/* --- Modal glass --- */
+.modal-content {
+  background: rgba(20,20,37,0.95) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6) !important;
 }
 
 a {
