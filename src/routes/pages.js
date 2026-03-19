@@ -12,6 +12,7 @@ router.get('/merge', (req, res) => res.render('merge'));
 router.get('/buy-credits', (req, res) => res.render('credits'));
 router.get('/credits', (req, res) => res.render('credits'));
 router.get('/workflow', (req, res) => res.render('workflow'));
+router.get('/workflows', (req, res) => res.render('workflows'));
 router.get('/admin', (req, res) => res.render('admin/index'));
 
 module.exports = router;

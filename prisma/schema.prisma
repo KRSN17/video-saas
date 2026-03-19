@@ -19,6 +19,7 @@ model User {
   videos       Video[]
   transactions Transaction[]
   mergeJobs    MergeJob[]
+  workflows    Workflow[]
 }
 
 model Video {
@@ -86,4 +87,16 @@ model ApiKey {
   usageCount Int       @default(0)
   lastUsed   DateTime?
   createdAt  DateTime  @default(now())
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String   @default("Untitled Workflow")
+  data        Json?
+  thumbnail   String?
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

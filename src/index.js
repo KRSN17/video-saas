@@ -10,6 +10,7 @@ const videoRoutes = require('./routes/video');
 const mergeRoutes = require('./routes/merge');
 const creditRoutes = require('./routes/credits');
 const adminRoutes = require('./routes/admin');
+const workflowRoutes = require('./routes/workflow');
 const pageRoutes = require('./routes/pages');
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/merge', mergeRoutes);
 app.use('/api/credits', creditRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/workflows', workflowRoutes);
 
 // Page Routes
 app.use('/', pageRoutes);

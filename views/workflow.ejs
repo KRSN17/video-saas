@@ -381,6 +381,9 @@
 
     <!-- ═══════ Toolbar ═══════ -->
     <div class="workflow-toolbar">
+      <a href="/workflows" class="wf-toolbar-btn" title="Back to projects" style="text-decoration:none;">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
       <span class="toolbar-title"><i class="fa-solid fa-diagram-project" style="margin-right:6px;"></i> Workflow</span>
       <div class="toolbar-divider"></div>
 
@@ -500,6 +503,10 @@
     var token = localStorage.getItem('token');
     if (!token) { window.location.href = '/login'; return; }
 
+    // ── Read workflow ID from URL ──
+    var urlParams = new URLSearchParams(window.location.search);
+    var workflowId = urlParams.get('id');
+
     // ── Toast helper ──
     function toast(msg, type) {
       var c = document.getElementById('toastContainer');
@@ -515,6 +522,25 @@
     // ── Initialize canvas ──
     var canvas = new WorkflowCanvas('workflowCanvas');
     window._wfCanvas = canvas;
+
+    // ── Override auto-save to save to server ──
+    var originalAutoSave = canvas._autoSave.bind(canvas);
+    canvas._autoSave = function() {
+      // Still save to localStorage as backup
+      originalAutoSave();
+      // Also save to server
+      if (workflowId) {
+        clearTimeout(canvas._serverSaveTimer);
+        canvas._serverSaveTimer = setTimeout(function() {
+          var workflowData = JSON.parse(canvas.exportWorkflow());
+          fetch('/api/workflows/' + workflowId, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: workflowData })
+          }).catch(function() {});
+        }, 1500);
+      }
+    };
 
     // ── Zoom display sync ──
     var zoomEl = document.getElementById('zoomDisplay');
@@ -566,35 +592,49 @@
       });
     });
 
-    // ── Load saved workflow or create starter ──
-    (function() {
-      var loaded = canvas._autoLoad();
-      if (loaded) {
+    // ── Load workflow from server ──
+    if (workflowId) {
+      fetch('/api/workflows/' + workflowId, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.workflow && res.workflow.data) {
+          canvas.importWorkflow(res.workflow.data);
+          // Update toolbar title to show workflow name
+          var titleEl = document.querySelector('.toolbar-title');
+          if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-diagram-project" style="margin-right:6px;"></i> ' + (res.workflow.name || 'Workflow');
+          // Make title editable on double-click
+          if (titleEl) {
+            titleEl.style.cursor = 'pointer';
+            titleEl.addEventListener('dblclick', function() {
+              var currentName = res.workflow.name || 'Untitled';
+              var newName = prompt('Rename workflow:', currentName);
+              if (newName && newName !== currentName) {
+                fetch('/api/workflows/' + workflowId, {
+                  method: 'PUT',
+                  headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ name: newName })
+                }).then(function() {
+                  titleEl.innerHTML = '<i class="fa-solid fa-diagram-project" style="margin-right:6px;"></i> ' + newName;
+                  res.workflow.name = newName;
+                  toast('Renamed to "' + newName + '"');
+                });
+              }
+            });
+          }
+        }
         requestAnimationFrame(function() {
           requestAnimationFrame(function() {
             canvas.render();
-            toast('Workflow restored');
+            toast('Workflow loaded');
           });
         });
-      } else {
-        // First time — load starter workflow
-        var p1 = canvas.addNode('prompt', 80, 120);
-        var p2 = canvas.addNode('prompt-enhancer', 380, 80);
-        var t2v = canvas.addNode('text-to-video', 700, 100);
-        var out = canvas.addNode('video-output', 1020, 120);
-        canvas.connections.push({ fromNode: p1, fromPort: 'text', toNode: p2, toPort: 'text', type: 'text' });
-        canvas.connections.push({ fromNode: p2, fromPort: 'enhanced', toNode: t2v, toPort: 'prompt', type: 'text' });
-        canvas.connections.push({ fromNode: t2v, fromPort: 'video', toNode: out, toPort: 'video', type: 'video' });
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            canvas.render();
-            canvas.fitView();
-            canvas._autoSave();
-            toast('Starter workflow loaded');
-          });
-        });
-      }
-    })();
+      });
+    } else {
+      // No ID — redirect to workflows dashboard
+      window.location.href = '/workflows';
+    }
 
     // ── Run All ──
     document.getElementById('btnRunAll').addEventListener('click', function() {
@@ -611,16 +651,24 @@
       });
     });
 
-    // ── Save (export) ──
+    // ── Save to server ──
     document.getElementById('btnSave').addEventListener('click', function() {
-      var json = canvas.exportWorkflow();
-      var blob = new Blob([json], { type: 'application/json' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'workflow_' + new Date().toISOString().slice(0,10) + '.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast('Workflow saved', 'success');
+      if (!workflowId) { toast('No workflow loaded', 'error'); return; }
+      var btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      var workflowData = JSON.parse(canvas.exportWorkflow());
+      fetch('/api/workflows/' + workflowId, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: workflowData })
+      })
+      .then(function() { toast('Saved!', 'success'); })
+      .catch(function() { toast('Save failed', 'error'); })
+      .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save';
+      });
     });
 
     // ── Load (import) ──
