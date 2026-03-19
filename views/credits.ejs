@@ -1,62 +1,322 @@
-<%- include('partials/head') %>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <%- include('partials/head') %>
+  <style>
+    body {
+      background: #0a0a14;
+      margin: 0;
+      font-family: 'Manrope', 'Gordita', sans-serif;
+    }
+    .dash-main { margin-left: 260px; min-height: 100vh; }
+    .dash-topbar {
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+    .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
+    .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
+    .dash-content { padding: 28px 32px; }
+
+    .balance-hero {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      margin-bottom: 36px;
+    }
+    .balance-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+      color: #fff;
+      animation: coin-glow 2s ease-in-out infinite;
+    }
+    @keyframes coin-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(245,158,11,0.2); }
+      50% { box-shadow: 0 0 40px rgba(245,158,11,0.4); }
+    }
+    .balance-value { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .balance-label { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 500; }
+
+    .section-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+    .pricing-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card:hover {
+      border-color: rgba(123,92,255,0.3);
+      transform: translateY(-4px);
+    }
+    .pricing-card.popular {
+      border-color: rgba(123,92,255,0.3);
+      background: rgba(123,92,255,0.06);
+    }
+    .pricing-card.popular::before {
+      content: 'POPULAR';
+      position: absolute;
+      top: 14px;
+      right: -28px;
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 32px;
+      transform: rotate(45deg);
+      letter-spacing: 1px;
+    }
+    .pricing-card .pkg-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .pricing-card .pkg-credits { font-size: 40px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .pricing-card .pkg-credits-label { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+    .pricing-card .pkg-price { font-size: 28px; font-weight: 800; color: #7b5cff; margin-bottom: 4px; }
+    .pricing-card .pkg-per { font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 24px; }
+    .btn-buy {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid rgba(123,92,255,0.3);
+      background: rgba(123,92,255,0.1);
+      color: #fff;
+      transition: all 0.2s ease;
+    }
+    .btn-buy:hover {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border-color: transparent;
+    }
+    .pricing-card.popular .btn-buy {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border-color: transparent;
+    }
+
+    .history-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .history-table th {
+      text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .history-table td {
+      padding: 14px 16px; font-size: 13px; color: rgba(255,255,255,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .history-table tr:last-child td { border-bottom: none; }
+    .history-table .type-purchase { color: #10b981; }
+    .history-table .type-usage { color: #f59e0b; }
+    .history-table .credit-plus { color: #10b981; font-weight: 600; }
+    .history-table .credit-minus { color: #ef4444; font-weight: 600; }
+    .history-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .empty-history { text-align: center; padding: 40px; color: rgba(255,255,255,0.25); font-size: 14px; }
+  </style>
+</head>
 <body>
-<div class="dashboard-wrapper">
   <%- include('partials/sidebar') %>
-  <div class="main-content">
-    <div class="content-header">
-      <h2 class="gradient-text">Credits</h2>
-      <p class="text-secondary">Purchase credits to generate videos</p>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1>Credits</h1>
+      <div class="user-info">
+        <span id="topbarUserName"></span>
+        <div class="user-avatar" id="topbarAvatar"></div>
+      </div>
     </div>
-    <div class="content-body">
-      <div class="glass-card p-4 mb-4 text-center">
-        <p class="text-secondary mb-1">Your Balance</p>
-        <h1 class="gradient-text display-3 fw-bold" id="creditBalance">0</h1>
-        <p class="text-secondary">credits available</p>
+
+    <div class="dash-content">
+      <!-- Balance Hero -->
+      <div class="balance-hero">
+        <div class="balance-icon">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="balance-value" id="creditBalance">--</div>
+        <div class="balance-label">Credits Available</div>
       </div>
-      <h4 class="mb-3">Buy Credits</h4>
-      <div class="row g-4 mb-5" id="packages">
-        <div class="col-md-4">
-          <div class="glass-card p-4 text-center pricing-card">
-            <h5>Starter</h5>
-            <div class="display-5 fw-bold my-3">$9</div>
-            <p class="text-secondary">50 Credits</p>
-            <p class="small text-secondary">$0.18 per credit</p>
-            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('starter')">Buy Now</button>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="glass-card p-4 text-center pricing-card popular">
-            <span class="badge bg-gradient-accent mb-2">Most Popular</span>
-            <h5>Pro</h5>
-            <div class="display-5 fw-bold my-3 gradient-text">$29</div>
-            <p class="text-secondary">200 Credits</p>
-            <p class="small text-secondary">$0.145 per credit</p>
-            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('pro')">Buy Now</button>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="glass-card p-4 text-center pricing-card">
-            <h5>Enterprise</h5>
-            <div class="display-5 fw-bold my-3">$79</div>
-            <p class="text-secondary">600 Credits</p>
-            <p class="small text-secondary">$0.13 per credit</p>
-            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('enterprise')">Buy Now</button>
-          </div>
+
+      <!-- Pricing Cards -->
+      <div class="section-title">Buy Credits</div>
+      <div class="row g-4 mb-5" id="packagesRow">
+        <div class="col-12 text-center py-4">
+          <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
         </div>
       </div>
-      <h4 class="mb-3">Transaction History</h4>
-      <div class="glass-card p-4">
-        <div class="table-responsive">
-          <table class="table table-dark-custom">
-            <thead><tr><th>Date</th><th>Type</th><th>Credits</th><th>Amount</th><th>Description</th></tr></thead>
-            <tbody id="transactionHistory"><tr><td colspan="5" class="text-center text-secondary">Loading...</td></tr></tbody>
-          </table>
+
+      <!-- Transaction History -->
+      <div class="section-title">Transaction History</div>
+      <div class="history-panel">
+        <div id="historyContainer">
+          <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-<%- include('partials/footer') %>
-<script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/public/js/app.js"></script>
-</body></html>
+
+  <script src="/assets/vendor/jquery.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      var headers = { 'Authorization': 'Bearer ' + token };
+      var jsonHeaders = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+
+      // Profile
+      fetch('/api/auth/profile', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.user) {
+            var name = data.user.name || data.user.email || 'User';
+            document.getElementById('topbarUserName').textContent = name;
+            document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('creditBalance').textContent = data.user.credits != null ? data.user.credits : 0;
+          }
+        });
+
+      // Load credit balance
+      fetch('/api/credits/balance', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.credits != null) {
+            document.getElementById('creditBalance').textContent = data.credits;
+          }
+        })
+        .catch(function() {});
+
+      // Load packages
+      fetch('/api/credits/packages', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var packages = data.packages || data || [];
+          if (!Array.isArray(packages)) packages = [];
+          var row = document.getElementById('packagesRow');
+
+          if (packages.length === 0) {
+            packages = [
+              { id: 'starter', name: 'Starter', credits: 10, price: 9.99 },
+              { id: 'pro', name: 'Pro', credits: 50, price: 39.99, popular: true },
+              { id: 'enterprise', name: 'Enterprise', credits: 200, price: 99.99 }
+            ];
+          }
+
+          row.innerHTML = '';
+          packages.forEach(function(pkg, idx) {
+            var isPopular = pkg.popular || idx === 1;
+            var perCredit = (pkg.price / pkg.credits).toFixed(2);
+            var pkgId = pkg.id || pkg._id;
+            var col = document.createElement('div');
+            col.className = 'col-lg-4 col-md-6';
+            col.innerHTML =
+              '<div class="pricing-card' + (isPopular ? ' popular' : '') + '">' +
+              '<div class="pkg-name">' + (pkg.name || 'Package') + '</div>' +
+              '<div class="pkg-credits">' + pkg.credits + '</div>' +
+              '<div class="pkg-credits-label">credits</div>' +
+              '<div class="pkg-price">$' + (pkg.price || 0).toFixed(2) + '</div>' +
+              '<div class="pkg-per">$' + perCredit + ' per credit</div>' +
+              '<button class="btn-buy" data-pkg="' + pkgId + '" data-name="' + (pkg.name || '') + '">Buy Now</button>' +
+              '</div>';
+            row.appendChild(col);
+          });
+
+          row.querySelectorAll('.btn-buy').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var pkgId = this.getAttribute('data-pkg');
+              var pkgName = this.getAttribute('data-name');
+              if (!confirm('Purchase ' + pkgName + ' package?')) return;
+              this.disabled = true;
+              this.textContent = 'Processing...';
+              var self = this;
+              fetch('/api/credits/purchase', {
+                method: 'POST',
+                headers: jsonHeaders,
+                body: JSON.stringify({ packageId: pkgId })
+              })
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                if (data.error) {
+                  alert(data.error);
+                } else {
+                  alert('Purchase successful! Credits added.');
+                  var newCredits = data.credits != null ? data.credits : (data.user && data.user.credits != null ? data.user.credits : null);
+                  if (newCredits != null) {
+                    document.getElementById('creditBalance').textContent = newCredits;
+                    document.getElementById('sidebarCredits').textContent = newCredits;
+                  }
+                  loadHistory();
+                }
+                self.disabled = false;
+                self.textContent = 'Buy Now';
+              })
+              .catch(function() {
+                alert('Purchase failed. Please try again.');
+                self.disabled = false;
+                self.textContent = 'Buy Now';
+              });
+            });
+          });
+        });
+
+      function loadHistory() {
+        fetch('/api/credits/history', { headers: headers })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            var history = data.history || data.transactions || data || [];
+            if (!Array.isArray(history)) history = [];
+            var container = document.getElementById('historyContainer');
+
+            if (history.length === 0) {
+              container.innerHTML = '<div class="empty-history"><i class="fa-solid fa-clock-rotate-left" style="font-size: 28px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>No transactions yet</div>';
+              return;
+            }
+
+            var html = '<table class="history-table"><thead><tr>' +
+              '<th>Date</th><th>Type</th><th>Credits</th><th>Amount</th><th>Description</th>' +
+              '</tr></thead><tbody>';
+            history.forEach(function(tx) {
+              var date = tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : '--';
+              var type = tx.type || 'unknown';
+              var typeClass = type === 'purchase' ? 'type-purchase' : 'type-usage';
+              var credits = tx.credits || 0;
+              var creditClass = credits > 0 ? 'credit-plus' : 'credit-minus';
+              var creditStr = credits > 0 ? '+' + credits : '' + credits;
+              var amount = tx.amount ? '$' + parseFloat(tx.amount).toFixed(2) : '--';
+              html += '<tr>' +
+                '<td>' + date + '</td>' +
+                '<td class="' + typeClass + '">' + type + '</td>' +
+                '<td class="' + creditClass + '">' + creditStr + '</td>' +
+                '<td>' + amount + '</td>' +
+                '<td>' + (tx.description || '--') + '</td>' +
+                '</tr>';
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+          })
+          .catch(function() {
+            document.getElementById('historyContainer').innerHTML = '<div class="empty-history">Failed to load history</div>';
+          });
+      }
+
+      loadHistory();
+    })();
+  </script>
+</body>
+</html>
