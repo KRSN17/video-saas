@@ -293,6 +293,96 @@ class WorkflowCanvas {
       .wf-params input:focus, .wf-params select:focus, .wf-params textarea:focus {
         border-color: rgba(59,130,246,0.5);
       }
+
+      /* Preview area in AI nodes */
+      .wf-preview {
+        margin-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 8px;
+      }
+      .wf-preview-content {
+        width: 100%;
+        aspect-ratio: 16/9;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.06);
+        position: relative;
+      }
+      .wf-preview-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: rgba(255,255,255,0.15);
+        gap: 6px;
+        font-size: 11px;
+        user-select: none;
+      }
+      .wf-preview-icon {
+        font-size: 24px;
+        font-style: normal;
+        opacity: 0.3;
+      }
+      .wf-preview-content video, .wf-preview-content img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .wf-preview-actions {
+        display: flex;
+        gap: 4px;
+        margin-top: 6px;
+      }
+      .wf-preview-btn {
+        flex: 1;
+        padding: 5px 0;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        color: rgba(255,255,255,0.5);
+        font-size: 10px;
+        font-weight: 600;
+        font-family: inherit;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      }
+      .wf-preview-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border-color: rgba(255,255,255,0.2);
+      }
+      .wf-preview-clear:hover { border-color: rgba(239,68,68,0.4); color: #f87171; }
+      .wf-preview-download:hover { border-color: rgba(52,211,153,0.4); color: #34d399; }
+      .wf-preview-generating {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        gap: 8px;
+      }
+      .wf-preview-spinner {
+        width: 28px; height: 28px;
+        border: 2px solid rgba(255,255,255,0.1);
+        border-top-color: rgba(255,255,255,0.6);
+        border-radius: 50%;
+        animation: wf-spin 0.8s linear infinite;
+      }
+      .wf-preview-status {
+        font-size: 10px;
+        color: rgba(255,255,255,0.35);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
       .wf-node-picker {
         position: absolute;
         width: 240px;
@@ -895,6 +985,61 @@ class WorkflowCanvas {
       body.appendChild(paramsDiv);
     }
 
+    // Preview area for AI nodes (video/image generation)
+    if (def.aiNode || type === 'video-output' || type === 'video-merge') {
+      const preview = document.createElement('div');
+      preview.className = 'wf-preview';
+      preview.dataset.nodeId = id;
+
+      // Blank output slide
+      const previewContent = document.createElement('div');
+      previewContent.className = 'wf-preview-content';
+      previewContent.innerHTML = '<div class="wf-preview-placeholder"><i class="wf-preview-icon">▶</i><span>No output yet</span></div>';
+      preview.appendChild(previewContent);
+
+      // Action buttons row
+      const actions = document.createElement('div');
+      actions.className = 'wf-preview-actions';
+
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'wf-preview-btn wf-preview-clear';
+      clearBtn.innerHTML = '✕ Clear';
+      clearBtn.title = 'Remove current generation';
+      clearBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+      clearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = this.nodes.get(id);
+        if (node) {
+          node.outputUrl = null;
+          node.outputType = null;
+          previewContent.innerHTML = '<div class="wf-preview-placeholder"><i class="wf-preview-icon">▶</i><span>No output yet</span></div>';
+          clearBtn.style.opacity = '0.3';
+          dlBtn.style.opacity = '0.3';
+        }
+      });
+      actions.appendChild(clearBtn);
+
+      const dlBtn = document.createElement('button');
+      dlBtn.className = 'wf-preview-btn wf-preview-download';
+      dlBtn.innerHTML = '↓ Download';
+      dlBtn.title = 'Download output';
+      dlBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+      dlBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const node = this.nodes.get(id);
+        if (node && node.outputUrl) {
+          const a = document.createElement('a');
+          a.href = node.outputUrl;
+          a.download = (node.values.filename || 'output') + '.mp4';
+          a.click();
+        }
+      });
+      actions.appendChild(dlBtn);
+
+      preview.appendChild(actions);
+      body.appendChild(preview);
+    }
+
     el.appendChild(body);
 
     // Node drag
@@ -1324,6 +1469,33 @@ class WorkflowCanvas {
   // -----------------------------------------------------------------------
   // Workflow execution
   // -----------------------------------------------------------------------
+  _setNodePreview(node, state, url) {
+    const previewContent = node.el.querySelector('.wf-preview-content');
+    const clearBtn = node.el.querySelector('.wf-preview-clear');
+    const dlBtn = node.el.querySelector('.wf-preview-download');
+    if (!previewContent) return;
+
+    if (state === 'generating') {
+      previewContent.innerHTML = '<div class="wf-preview-generating"><div class="wf-preview-spinner"></div><span class="wf-preview-status">Generating...</span></div>';
+      if (clearBtn) clearBtn.style.opacity = '0.3';
+      if (dlBtn) dlBtn.style.opacity = '0.3';
+    } else if (state === 'completed' && url) {
+      node.outputUrl = url;
+      node.outputType = 'video';
+      previewContent.innerHTML = `<video src="${url}" controls muted preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:7px;"></video>`;
+      if (clearBtn) clearBtn.style.opacity = '1';
+      if (dlBtn) dlBtn.style.opacity = '1';
+    } else if (state === 'failed') {
+      previewContent.innerHTML = '<div class="wf-preview-placeholder" style="color:rgba(239,68,68,0.5);"><i class="wf-preview-icon" style="opacity:0.6;">✕</i><span>Generation failed</span></div>';
+      if (clearBtn) clearBtn.style.opacity = '1';
+      if (dlBtn) dlBtn.style.opacity = '0.3';
+    } else {
+      previewContent.innerHTML = '<div class="wf-preview-placeholder"><i class="wf-preview-icon">▶</i><span>No output yet</span></div>';
+      if (clearBtn) clearBtn.style.opacity = '0.3';
+      if (dlBtn) dlBtn.style.opacity = '0.3';
+    }
+  }
+
   async runNode(id) {
     const node = this.nodes.get(id);
     if (!node) return;
@@ -1332,6 +1504,9 @@ class WorkflowCanvas {
 
     const runBtn = node.el.querySelector('.wf-run-btn');
     if (runBtn) runBtn.classList.add('running');
+
+    // Show generating state in preview
+    this._setNodePreview(node, 'generating');
 
     // Collect input values from connections
     const inputValues = {};
@@ -1354,19 +1529,29 @@ class WorkflowCanvas {
       // Try to call the API if available
       if (typeof window.workflowRunNode === 'function') {
         node.result = await window.workflowRunNode(payload);
+        const videoUrl = node.result?.video || node.result?.merged || node.result?.videoUrl;
+        this._setNodePreview(node, videoUrl ? 'completed' : 'failed', videoUrl);
       } else {
-        // Simulated execution
+        // Simulated execution — show demo preview
         console.log(`[Workflow] Running node ${id} (${node.type}):`, payload);
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         node.result = {};
         def.outputs.forEach(o => {
           node.result[o.name] = `[${o.type}:generated_${id}]`;
         });
+        // Show a simulated "completed" state with placeholder
+        const previewContent = node.el.querySelector('.wf-preview-content');
+        if (previewContent) {
+          previewContent.innerHTML = '<div class="wf-preview-placeholder" style="color:rgba(52,211,153,0.5);"><i class="wf-preview-icon" style="opacity:0.6;">✓</i><span>Simulated output</span></div>';
+          const clearBtn = node.el.querySelector('.wf-preview-clear');
+          if (clearBtn) clearBtn.style.opacity = '1';
+        }
         console.log(`[Workflow] Node ${id} result:`, node.result);
       }
     } catch (err) {
       console.error(`[Workflow] Node ${id} error:`, err);
       node.result = { error: err.message };
+      this._setNodePreview(node, 'failed');
     } finally {
       if (runBtn) runBtn.classList.remove('running');
     }
