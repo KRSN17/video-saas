@@ -7,6 +7,7 @@
 // Node type definitions
 // ---------------------------------------------------------------------------
 const NODE_TYPES = {
+  // ── TEXT NODES (purple) ──
   'prompt': {
     color: '#9b59b6', label: 'Prompt', category: 'text',
     inputs: [],
@@ -14,19 +15,62 @@ const NODE_TYPES = {
     params: [{ name: 'text', type: 'textarea', placeholder: 'Enter your prompt...' }]
   },
   'prompt-enhancer': {
-    color: '#8e44ad', label: 'Prompt Enhancer', category: 'text',
+    color: '#8e44ad', label: 'Prompt Enhancer', category: 'text', aiNode: true,
     inputs: [{ name: 'text', type: 'text' }],
     outputs: [{ name: 'enhanced', type: 'text' }],
-    params: [{ name: 'style', type: 'select', options: ['Cinematic', 'Anime', 'Realistic', 'Abstract'] }]
+    params: [{ name: 'style', type: 'select', options: ['Cinematic', 'Anime', 'Realistic', 'Abstract', 'Photographic', 'Fantasy'] }]
   },
+  'prompt-concat': {
+    color: '#7d3c98', label: 'Prompt Concatenator', category: 'text',
+    inputs: [{ name: 'text_a', type: 'text' }, { name: 'text_b', type: 'text' }],
+    outputs: [{ name: 'combined', type: 'text' }],
+    params: [{ name: 'separator', type: 'text', placeholder: ', ' }]
+  },
+  'run-llm': {
+    color: '#6c3483', label: 'Run LLM', category: 'text', aiNode: true,
+    inputs: [{ name: 'prompt', type: 'text' }, { name: 'image', type: 'image' }],
+    outputs: [{ name: 'response', type: 'text' }],
+    params: [{ name: 'model', type: 'select', options: ['gpt-4o', 'claude-sonnet', 'gemini-pro'] }]
+  },
+
+  // ── IMAGE INPUT NODES (green) ──
   'image-input': {
     color: '#27ae60', label: 'Image Input', category: 'image',
     inputs: [],
     outputs: [{ name: 'image', type: 'image' }],
-    params: [{ name: 'url', type: 'dropzone', placeholder: 'Drop image here or click to upload' }]
+    params: [{ name: 'url', type: 'dropzone', placeholder: 'Drop image here' }]
   },
+  'video-input': {
+    color: '#e74c3c', label: 'Video Input', category: 'input',
+    inputs: [],
+    outputs: [{ name: 'video', type: 'video' }],
+    params: [{ name: 'url', type: 'dropzone', placeholder: 'Drop video here' }]
+  },
+
+  // ── IMAGE GENERATION (green, AI) ──
+  'text-to-image': {
+    color: '#2ecc71', label: 'Text to Image', category: 'image-gen', aiNode: true,
+    inputs: [{ name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'image', type: 'image' }],
+    params: [
+      { name: 'model', type: 'select', options: ['flux-pro', 'stable-diffusion-3.5', 'ideogram-v3', 'imagen-3'] },
+      { name: 'size', type: 'select', options: ['1024x1024', '1024x768', '768x1024', '1920x1080'] },
+      { name: 'negative_prompt', type: 'textarea', placeholder: 'What to avoid...' }
+    ]
+  },
+  'image-to-image': {
+    color: '#2ecc71', label: 'Image to Image', category: 'image-gen', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }, { name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'result', type: 'image' }],
+    params: [
+      { name: 'model', type: 'select', options: ['flux-kontext', 'stable-diffusion-3.5'] },
+      { name: 'strength', type: 'select', options: ['0.3', '0.5', '0.7', '0.9'] }
+    ]
+  },
+
+  // ── VIDEO GENERATION (red, AI) ──
   'text-to-video': {
-    color: '#e74c3c', label: 'Text to Video', category: 'video', aiNode: true,
+    color: '#e74c3c', label: 'Text to Video', category: 'video-gen', aiNode: true,
     inputs: [{ name: 'prompt', type: 'text' }],
     outputs: [{ name: 'video', type: 'video' }],
     params: [
@@ -36,40 +80,172 @@ const NODE_TYPES = {
     ]
   },
   'image-to-video': {
-    color: '#e74c3c', label: 'Image to Video', category: 'video', aiNode: true,
+    color: '#c0392b', label: 'Image to Video', category: 'video-gen', aiNode: true,
     inputs: [{ name: 'image', type: 'image' }, { name: 'prompt', type: 'text' }],
     outputs: [{ name: 'video', type: 'video' }],
     params: [
-      { name: 'model', type: 'select', options: ['kling-image', 'runway-gen4'] },
+      { name: 'model', type: 'select', options: ['kling-image', 'runway-gen4', 'veo-3.1'] },
       { name: 'duration', type: 'select', options: ['5', '10'] }
     ]
   },
+  'video-to-video': {
+    color: '#c0392b', label: 'Video to Video', category: 'video-gen', aiNode: true,
+    inputs: [{ name: 'video', type: 'video' }, { name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'result', type: 'video' }],
+    params: [
+      { name: 'model', type: 'select', options: ['runway-gen4', 'kling-text'] },
+      { name: 'strength', type: 'select', options: ['0.3', '0.5', '0.7'] }
+    ]
+  },
+
+  // ── EDITING TOOLS (blue) ──
+  'upscale': {
+    color: '#3498db', label: 'Upscale', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'upscaled', type: 'image' }],
+    params: [{ name: 'scale', type: 'select', options: ['2x', '4x'] }]
+  },
+  'inpaint': {
+    color: '#2980b9', label: 'Inpaint', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }, { name: 'mask', type: 'image' }, { name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'result', type: 'image' }],
+    params: [{ name: 'model', type: 'select', options: ['flux-inpaint', 'sd-inpaint'] }]
+  },
+  'outpaint': {
+    color: '#2980b9', label: 'Outpaint', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }, { name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'result', type: 'image' }],
+    params: [
+      { name: 'direction', type: 'select', options: ['all', 'left', 'right', 'top', 'bottom'] },
+      { name: 'pixels', type: 'select', options: ['128', '256', '512'] }
+    ]
+  },
+  'blur': {
+    color: '#3498db', label: 'Blur', category: 'editing',
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'blurred', type: 'image' }],
+    params: [{ name: 'radius', type: 'select', options: ['5', '10', '20', '50'] }]
+  },
+  'crop': {
+    color: '#3498db', label: 'Crop', category: 'editing',
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'cropped', type: 'image' }],
+    params: [{ name: 'aspect', type: 'select', options: ['16:9', '9:16', '1:1', '4:3', '3:2'] }]
+  },
+  'relight': {
+    color: '#2471a3', label: 'Relight', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }, { name: 'prompt', type: 'text' }],
+    outputs: [{ name: 'relit', type: 'image' }],
+    params: [{ name: 'mode', type: 'select', options: ['product', 'human', 'scene'] }]
+  },
+  'remove-bg': {
+    color: '#3498db', label: 'Remove Background', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'result', type: 'image' }, { name: 'mask', type: 'image' }],
+    params: []
+  },
+  'depth-map': {
+    color: '#2980b9', label: 'Depth Map', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'depth', type: 'image' }],
+    params: []
+  },
+  'describe-image': {
+    color: '#5b2c6f', label: 'Describe Image', category: 'editing', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [{ name: 'description', type: 'text' }],
+    params: [{ name: 'detail', type: 'select', options: ['brief', 'detailed', 'technical'] }]
+  },
+
+  // ── CONTROL NODES (lime/yellow) ──
+  'controlnet': {
+    color: '#f39c12', label: 'ControlNet', category: 'control', aiNode: true,
+    inputs: [{ name: 'image', type: 'image' }, { name: 'prompt', type: 'text' }, { name: 'control', type: 'image' }],
+    outputs: [{ name: 'result', type: 'image' }],
+    params: [
+      { name: 'type', type: 'select', options: ['canny', 'depth', 'pose', 'normal', 'line-art'] },
+      { name: 'strength', type: 'select', options: ['0.3', '0.5', '0.7', '1.0'] }
+    ]
+  },
+  'lora': {
+    color: '#d4ac0d', label: 'LoRA', category: 'control',
+    inputs: [],
+    outputs: [{ name: 'lora', type: 'text' }],
+    params: [
+      { name: 'url', type: 'text', placeholder: 'LoRA URL or CivitAI link' },
+      { name: 'weight', type: 'select', options: ['0.5', '0.7', '0.8', '1.0', '1.2'] }
+    ]
+  },
+
+  // ── UTILITY (teal/grey) ──
   'video-merge': {
-    color: '#3498db', label: 'Merge Videos', category: 'utility',
+    color: '#16a085', label: 'Merge Videos', category: 'utility',
     inputs: [{ name: 'video_a', type: 'video' }, { name: 'video_b', type: 'video' }],
     outputs: [{ name: 'merged', type: 'video' }],
     params: []
   },
+  'layer-composite': {
+    color: '#17a2b8', label: 'Layer Composite', category: 'utility',
+    inputs: [{ name: 'foreground', type: 'image' }, { name: 'background', type: 'image' }, { name: 'mask', type: 'image' }],
+    outputs: [{ name: 'composited', type: 'image' }],
+    params: [{ name: 'blend', type: 'select', options: ['normal', 'multiply', 'screen', 'overlay', 'soft-light'] }]
+  },
+  'compare': {
+    color: '#95a5a6', label: 'Compare', category: 'utility',
+    inputs: [{ name: 'image_a', type: 'image' }, { name: 'image_b', type: 'image' }],
+    outputs: [{ name: 'comparison', type: 'image' }],
+    params: [{ name: 'mode', type: 'select', options: ['slider', 'side-by-side', 'overlay'] }]
+  },
+  'router': {
+    color: '#7f8c8d', label: 'Router', category: 'utility',
+    inputs: [{ name: 'input', type: 'image' }],
+    outputs: [{ name: 'out_1', type: 'image' }, { name: 'out_2', type: 'image' }, { name: 'out_3', type: 'image' }],
+    params: []
+  },
+  'preview': {
+    color: '#95a5a6', label: 'Preview', category: 'utility',
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [],
+    params: []
+  },
+
+  // ── OUTPUT (teal) ──
   'video-output': {
-    color: '#1abc9c', label: 'Output / Download', category: 'output',
+    color: '#1abc9c', label: 'Export Video', category: 'output',
     inputs: [{ name: 'video', type: 'video' }],
     outputs: [],
     params: [{ name: 'filename', type: 'text', placeholder: 'output.mp4' }]
+  },
+  'image-output': {
+    color: '#1abc9c', label: 'Export Image', category: 'output',
+    inputs: [{ name: 'image', type: 'image' }],
+    outputs: [],
+    params: [{ name: 'filename', type: 'text', placeholder: 'output.png' }, { name: 'format', type: 'select', options: ['png', 'jpg', 'webp'] }]
+  },
+  'sticky-note': {
+    color: '#f1c40f', label: 'Sticky Note', category: 'utility',
+    inputs: [],
+    outputs: [],
+    params: [{ name: 'note', type: 'textarea', placeholder: 'Add a note...' }]
   }
 };
 
 const TYPE_COLORS = {
   text: '#9b59b6',
   image: '#27ae60',
-  video: '#e74c3c'
+  video: '#e74c3c',
+  lora: '#d4ac0d'
 };
 
 const CATEGORIES = {
-  text: { label: 'Text', types: ['prompt', 'prompt-enhancer'] },
-  image: { label: 'Image', types: ['image-input'] },
-  video: { label: 'Video AI', types: ['text-to-video', 'image-to-video'] },
-  utility: { label: 'Utility', types: ['video-merge'] },
-  output: { label: 'Output', types: ['video-output'] }
+  text: { label: 'Text', types: ['prompt', 'prompt-enhancer', 'prompt-concat', 'run-llm'] },
+  input: { label: 'Input', types: ['image-input', 'video-input'] },
+  'image-gen': { label: 'Image Generation', types: ['text-to-image', 'image-to-image'] },
+  'video-gen': { label: 'Video Generation', types: ['text-to-video', 'image-to-video', 'video-to-video'] },
+  editing: { label: 'Editing Tools', types: ['upscale', 'inpaint', 'outpaint', 'blur', 'crop', 'relight', 'remove-bg', 'depth-map', 'describe-image'] },
+  control: { label: 'Control', types: ['controlnet', 'lora'] },
+  utility: { label: 'Utility', types: ['video-merge', 'layer-composite', 'compare', 'router', 'preview', 'sticky-note'] },
+  output: { label: 'Output', types: ['video-output', 'image-output'] }
 };
 
 // ---------------------------------------------------------------------------

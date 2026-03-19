@@ -389,18 +389,45 @@
         <button class="wf-toolbar-btn primary" id="btnAddNode">
           <i class="fa-solid fa-plus"></i> Add Node
         </button>
-        <div class="add-node-dropdown" id="addNodeDropdown">
+        <div class="add-node-dropdown" id="addNodeDropdown" style="max-height:480px;overflow-y:auto;">
           <div class="dropdown-category">Text</div>
           <div class="dropdown-item" data-type="prompt"><span class="dropdown-dot" style="background:#9b59b6;"></span> Prompt</div>
           <div class="dropdown-item" data-type="prompt-enhancer"><span class="dropdown-dot" style="background:#8e44ad;"></span> Prompt Enhancer</div>
-          <div class="dropdown-category">Image</div>
+          <div class="dropdown-item" data-type="prompt-concat"><span class="dropdown-dot" style="background:#7d3c98;"></span> Prompt Concatenator</div>
+          <div class="dropdown-item" data-type="run-llm"><span class="dropdown-dot" style="background:#6c3483;"></span> Run LLM</div>
+          <div class="dropdown-category">Input</div>
           <div class="dropdown-item" data-type="image-input"><span class="dropdown-dot" style="background:#27ae60;"></span> Image Input</div>
-          <div class="dropdown-category">Video</div>
+          <div class="dropdown-item" data-type="video-input"><span class="dropdown-dot" style="background:#e74c3c;"></span> Video Input</div>
+          <div class="dropdown-category">Image Generation</div>
+          <div class="dropdown-item" data-type="text-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Text to Image</div>
+          <div class="dropdown-item" data-type="image-to-image"><span class="dropdown-dot" style="background:#2ecc71;"></span> Image to Image</div>
+          <div class="dropdown-category">Video Generation</div>
           <div class="dropdown-item" data-type="text-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Text to Video</div>
-          <div class="dropdown-item" data-type="image-to-video"><span class="dropdown-dot" style="background:#e74c3c;"></span> Image to Video</div>
+          <div class="dropdown-item" data-type="image-to-video"><span class="dropdown-dot" style="background:#c0392b;"></span> Image to Video</div>
+          <div class="dropdown-item" data-type="video-to-video"><span class="dropdown-dot" style="background:#c0392b;"></span> Video to Video</div>
+          <div class="dropdown-category">Editing Tools</div>
+          <div class="dropdown-item" data-type="upscale"><span class="dropdown-dot" style="background:#3498db;"></span> Upscale</div>
+          <div class="dropdown-item" data-type="inpaint"><span class="dropdown-dot" style="background:#2980b9;"></span> Inpaint</div>
+          <div class="dropdown-item" data-type="outpaint"><span class="dropdown-dot" style="background:#2980b9;"></span> Outpaint</div>
+          <div class="dropdown-item" data-type="blur"><span class="dropdown-dot" style="background:#3498db;"></span> Blur</div>
+          <div class="dropdown-item" data-type="crop"><span class="dropdown-dot" style="background:#3498db;"></span> Crop</div>
+          <div class="dropdown-item" data-type="relight"><span class="dropdown-dot" style="background:#2471a3;"></span> Relight</div>
+          <div class="dropdown-item" data-type="remove-bg"><span class="dropdown-dot" style="background:#3498db;"></span> Remove Background</div>
+          <div class="dropdown-item" data-type="depth-map"><span class="dropdown-dot" style="background:#2980b9;"></span> Depth Map</div>
+          <div class="dropdown-item" data-type="describe-image"><span class="dropdown-dot" style="background:#5b2c6f;"></span> Describe Image</div>
+          <div class="dropdown-category">Control</div>
+          <div class="dropdown-item" data-type="controlnet"><span class="dropdown-dot" style="background:#f39c12;"></span> ControlNet</div>
+          <div class="dropdown-item" data-type="lora"><span class="dropdown-dot" style="background:#d4ac0d;"></span> LoRA</div>
           <div class="dropdown-category">Utility</div>
-          <div class="dropdown-item" data-type="video-merge"><span class="dropdown-dot" style="background:#3498db;"></span> Merge Videos</div>
-          <div class="dropdown-item" data-type="video-output"><span class="dropdown-dot" style="background:#1abc9c;"></span> Output / Download</div>
+          <div class="dropdown-item" data-type="video-merge"><span class="dropdown-dot" style="background:#16a085;"></span> Merge Videos</div>
+          <div class="dropdown-item" data-type="layer-composite"><span class="dropdown-dot" style="background:#17a2b8;"></span> Layer Composite</div>
+          <div class="dropdown-item" data-type="compare"><span class="dropdown-dot" style="background:#95a5a6;"></span> Compare</div>
+          <div class="dropdown-item" data-type="router"><span class="dropdown-dot" style="background:#7f8c8d;"></span> Router</div>
+          <div class="dropdown-item" data-type="preview"><span class="dropdown-dot" style="background:#95a5a6;"></span> Preview</div>
+          <div class="dropdown-item" data-type="sticky-note"><span class="dropdown-dot" style="background:#f1c40f;"></span> Sticky Note</div>
+          <div class="dropdown-category">Output</div>
+          <div class="dropdown-item" data-type="video-output"><span class="dropdown-dot" style="background:#1abc9c;"></span> Export Video</div>
+          <div class="dropdown-item" data-type="image-output"><span class="dropdown-dot" style="background:#1abc9c;"></span> Export Image</div>
         </div>
       </div>
 
