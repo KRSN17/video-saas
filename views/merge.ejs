@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <%- include('partials/head') %>
+  <style>
+    body {
+      background: #0a0a14;
+      margin: 0;
+      font-family: 'Manrope', 'Gordita', sans-serif;
+    }
+    .dash-main { margin-left: 260px; min-height: 100vh; }
+    .dash-topbar {
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+    .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
+    .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
+    .dash-content { padding: 28px 32px; max-width: 1000px; }
+    .section-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 48px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: rgba(255,255,255,0.35);
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: rgba(123,92,255,0.4);
+      background: rgba(123,92,255,0.04);
+      color: rgba(255,255,255,0.6);
+    }
+    .upload-zone i { font-size: 40px; margin-bottom: 12px; display: block; }
+    .upload-zone .upload-label { font-size: 15px; font-weight: 600; }
+    .upload-zone .upload-hint { font-size: 12px; margin-top: 6px; }
+    .divider-or {
+      text-align: center;
+      color: rgba(255,255,255,0.25);
+      font-size: 13px;
+      font-weight: 600;
+      margin: 20px 0;
+      position: relative;
+    }
+    .divider-or::before, .divider-or::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: calc(50% - 20px);
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+    .divider-or::before { left: 0; }
+    .divider-or::after { right: 0; }
+    .existing-video-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .existing-video-item:hover { border-color: rgba(123,92,255,0.2); }
+    .existing-video-item.selected {
+      border-color: rgba(123,92,255,0.4);
+      background: rgba(123,92,255,0.08);
+    }
+    .existing-video-item input[type="checkbox"] { accent-color: #7b5cff; width: 16px; height: 16px; }
+    .existing-video-item .ev-thumb {
+      width: 60px; height: 36px; border-radius: 6px;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      overflow: hidden; flex-shrink: 0;
+    }
+    .existing-video-item .ev-thumb video { width: 100%; height: 100%; object-fit: cover; }
+    .existing-video-item .ev-info { flex: 1; min-width: 0; }
+    .existing-video-item .ev-prompt { font-size: 12px; color: rgba(255,255,255,0.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .existing-video-item .ev-meta { font-size: 11px; color: rgba(255,255,255,0.25); }
+    .selected-list {
+      min-height: 60px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .selected-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 6px; cursor: grab;
+    }
+    .selected-item .drag-handle { color: rgba(255,255,255,0.2); cursor: grab; font-size: 14px; }
+    .selected-item .si-name { flex: 1; font-size: 13px; color: rgba(255,255,255,0.6); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .selected-item .si-remove {
+      color: rgba(239,68,68,0.6); cursor: pointer; font-size: 14px;
+      padding: 2px 6px; border-radius: 4px; transition: all 0.15s ease;
+    }
+    .selected-item .si-remove:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+    .selected-empty { text-align: center; padding: 16px; color: rgba(255,255,255,0.2); font-size: 13px; }
+    .btn-merge {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border: none; color: #fff; padding: 12px 32px;
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .btn-merge:hover { opacity: 0.9; }
+    .btn-merge:disabled { opacity: 0.5; cursor: not-allowed; }
+    .merge-progress { display: none; text-align: center; padding: 28px; }
+    .merge-spinner {
+      width: 56px; height: 56px;
+      border: 3px solid rgba(123,92,255,0.15);
+      border-top-color: #7b5cff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .merge-status { color: rgba(255,255,255,0.6); font-size: 14px; }
+    .merge-status strong { color: #fff; }
+  </style>
+</head>
+<body>
+  <%- include('partials/sidebar') %>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1>Merge Videos</h1>
+      <div class="user-info">
+        <span id="topbarUserName"></span>
+        <div class="user-avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <!-- Upload Zone -->
+      <div class="panel">
+        <div class="section-title">Upload Videos</div>
+        <div class="upload-zone" id="uploadZone">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <div class="upload-label">Drop videos here or click to upload</div>
+          <div class="upload-hint">MP4, MOV, WebM supported</div>
+          <input type="file" id="fileInput" multiple accept="video/*" style="display: none;">
+        </div>
+      </div>
+
+      <div class="divider-or">OR</div>
+
+      <!-- Select from existing -->
+      <div class="panel">
+        <div class="section-title">Select from Existing Videos</div>
+        <div id="existingVideos">
+          <div class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected videos list -->
+      <div class="panel">
+        <div class="section-title">Selected Videos <span style="font-size: 13px; color: rgba(255,255,255,0.3); font-weight: 400;">(drag to reorder)</span></div>
+        <div class="selected-list" id="selectedList">
+          <div class="selected-empty">No videos selected</div>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn-merge" id="btnMerge" disabled>
+            <i class="fa-solid fa-object-group me-2"></i>Merge Videos
+          </button>
+        </div>
+      </div>
+
+      <!-- Merge Progress -->
+      <div class="panel merge-progress" id="mergeProgress">
+        <div class="merge-spinner"></div>
+        <div class="merge-status">
+          <strong id="mergeStatusText">Merging videos...</strong>
+          <div style="margin-top: 6px; font-size: 13px;" id="mergeDetail">This may take a few minutes</div>
+        </div>
+        <a href="/videos" id="mergeViewLink" class="btn btn-sm btn-outline-light mt-3" style="display: none;">View Result</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/vendor/jquery.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      var headers = { 'Authorization': 'Bearer ' + token };
+
+      var selectedVideos = [];
+
+      // Profile
+      fetch('/api/auth/profile', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.user) {
+            var name = data.user.name || data.user.email || 'User';
+            document.getElementById('topbarUserName').textContent = name;
+            document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+          }
+        });
+
+      // Upload zone
+      var uploadZone = document.getElementById('uploadZone');
+      var fileInput = document.getElementById('fileInput');
+      uploadZone.addEventListener('click', function() { fileInput.click(); });
+      uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
+      uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
+      uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+      });
+      fileInput.addEventListener('change', function() { handleFiles(this.files); });
+
+      function handleFiles(files) {
+        for (var i = 0; i < files.length; i++) {
+          selectedVideos.push({
+            id: 'upload_' + Date.now() + '_' + i,
+            name: files[i].name,
+            source: 'upload',
+            file: files[i]
+          });
+        }
+        renderSelected();
+      }
+
+      // Load existing videos
+      fetch('/api/videos', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var videos = data.videos || data || [];
+          if (!Array.isArray(videos)) videos = [];
+          var completed = videos.filter(function(v) { return v.status === 'completed'; });
+          var container = document.getElementById('existingVideos');
+
+          if (completed.length === 0) {
+            container.innerHTML = '<p style="color: rgba(255,255,255,0.3); font-size: 13px; text-align: center; padding: 16px;">No completed videos available</p>';
+            return;
+          }
+
+          container.innerHTML = '';
+          completed.forEach(function(v) {
+            var id = v._id || v.id;
+            var div = document.createElement('div');
+            div.className = 'existing-video-item';
+            div.setAttribute('data-id', id);
+            var thumbContent = v.videoUrl ? '<video src="' + v.videoUrl + '" muted preload="metadata"></video>' : '';
+            div.innerHTML =
+              '<input type="checkbox" data-id="' + id + '">' +
+              '<div class="ev-thumb">' + thumbContent + '</div>' +
+              '<div class="ev-info">' +
+              '<div class="ev-prompt">' + (v.prompt || 'Untitled') + '</div>' +
+              '<div class="ev-meta">' + (v.model || '') + '</div>' +
+              '</div>';
+            div.addEventListener('click', function(e) {
+              if (e.target.tagName === 'INPUT') return;
+              var cb = div.querySelector('input[type="checkbox"]');
+              cb.checked = !cb.checked;
+              cb.dispatchEvent(new Event('change'));
+            });
+            div.querySelector('input').addEventListener('change', function() {
+              div.classList.toggle('selected', this.checked);
+              if (this.checked) {
+                selectedVideos.push({ id: id, name: v.prompt || 'Video', source: 'existing', url: v.videoUrl });
+              } else {
+                selectedVideos = selectedVideos.filter(function(s) { return s.id !== id; });
+              }
+              renderSelected();
+            });
+            container.appendChild(div);
+          });
+        });
+
+      function renderSelected() {
+        var list = document.getElementById('selectedList');
+        var btn = document.getElementById('btnMerge');
+        if (selectedVideos.length === 0) {
+          list.innerHTML = '<div class="selected-empty">No videos selected</div>';
+          btn.disabled = true;
+          return;
+        }
+        btn.disabled = false;
+        list.innerHTML = '';
+        selectedVideos.forEach(function(v, idx) {
+          var item = document.createElement('div');
+          item.className = 'selected-item';
+          item.draggable = true;
+          item.setAttribute('data-idx', idx);
+          item.innerHTML =
+            '<span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>' +
+            '<span class="si-name">' + (idx + 1) + '. ' + v.name + '</span>' +
+            '<span class="si-remove" data-idx="' + idx + '"><i class="fa-solid fa-xmark"></i></span>';
+          item.addEventListener('dragstart', function(e) { e.dataTransfer.setData('text/plain', idx); });
+          item.addEventListener('dragover', function(e) { e.preventDefault(); });
+          item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            var from = parseInt(e.dataTransfer.getData('text/plain'));
+            var to = idx;
+            if (from === to) return;
+            var moved = selectedVideos.splice(from, 1)[0];
+            selectedVideos.splice(to, 0, moved);
+            renderSelected();
+          });
+          item.querySelector('.si-remove').addEventListener('click', function() {
+            var removeId = selectedVideos[idx].id;
+            selectedVideos.splice(idx, 1);
+            var cb = document.querySelector('.existing-video-item[data-id="' + removeId + '"] input');
+            if (cb) { cb.checked = false; cb.closest('.existing-video-item').classList.remove('selected'); }
+            renderSelected();
+          });
+          list.appendChild(item);
+        });
+      }
+
+      // Merge
+      document.getElementById('btnMerge').addEventListener('click', function() {
+        if (selectedVideos.length < 2) return alert('Select at least 2 videos to merge.');
+        var btn = this;
+        btn.disabled = true;
+        var progress = document.getElementById('mergeProgress');
+        progress.style.display = 'block';
+        document.getElementById('mergeStatusText').textContent = 'Merging videos...';
+        document.getElementById('mergeDetail').textContent = 'This may take a few minutes';
+        document.getElementById('mergeViewLink').style.display = 'none';
+
+        var formData = new FormData();
+        var videoIds = [];
+        selectedVideos.forEach(function(v) {
+          if (v.source === 'upload' && v.file) formData.append('videos', v.file);
+          else if (v.source === 'existing') videoIds.push(v.id);
+        });
+        formData.append('videoIds', JSON.stringify(videoIds));
+        formData.append('order', JSON.stringify(selectedVideos.map(function(v) { return v.id; })));
+
+        fetch('/api/merge', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+          body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) {
+            alert(data.error);
+            progress.style.display = 'none';
+            btn.disabled = false;
+            return;
+          }
+          var mergeId = data.mergeId || data.id || data._id;
+          if (mergeId) pollMerge(mergeId);
+          else {
+            document.getElementById('mergeStatusText').textContent = 'Complete!';
+            document.getElementById('mergeDetail').textContent = 'Your merged video is ready.';
+            document.querySelector('.merge-spinner').style.display = 'none';
+            document.getElementById('mergeViewLink').style.display = 'inline-block';
+          }
+        })
+        .catch(function() {
+          alert('Merge failed. Please try again.');
+          progress.style.display = 'none';
+          btn.disabled = false;
+        });
+      });
+
+      function pollMerge(mergeId) {
+        var interval = setInterval(function() {
+          fetch('/api/merge/' + mergeId + '/status', { headers: headers })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.status === 'completed') {
+                clearInterval(interval);
+                document.getElementById('mergeStatusText').textContent = 'Complete!';
+                document.getElementById('mergeDetail').textContent = 'Your merged video is ready.';
+                document.querySelector('.merge-spinner').style.display = 'none';
+                document.getElementById('mergeViewLink').style.display = 'inline-block';
+                document.getElementById('btnMerge').disabled = false;
+              } else if (data.status === 'failed') {
+                clearInterval(interval);
+                document.getElementById('mergeStatusText').textContent = 'Failed';
+                document.getElementById('mergeDetail').textContent = data.error || 'Merge failed.';
+                document.querySelector('.merge-spinner').style.display = 'none';
+                document.getElementById('btnMerge').disabled = false;
+              }
+            });
+        }, 3000);
+      }
+    })();
+  </script>
+</body>
+</html>

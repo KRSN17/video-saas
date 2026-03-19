@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Videos - VideoForge AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/fonts/bootstrap-icons-1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/assets/fonts/font-awesome-6.4.2/css/all.css">
+  <link rel="stylesheet" href="/assets/fonts/gordita/stylesheet.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="dark-bg-two">
+<div class="dashboard-wrapper d-flex">
+  <%- include('partials/sidebar', { active: 'videos' }) %>
+
+  <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+    <i class="bi bi-list fs-24"></i>
+  </button>
+
+  <main class="dashboard-main flex-grow-1">
+    <div class="dashboard-header d-flex align-items-center justify-content-between p-25">
+      <div>
+        <h4 class="font-manrope fw-600 text-white m0">My Videos</h4>
+        <p class="fs-14 opacity-50 m0 mt-5">View and manage your generated videos</p>
+      </div>
+      <div class="d-flex gap-2 align-items-center">
+        <div class="view-toggle d-flex bg-wrapper border-20 overflow-hidden">
+          <button class="view-btn active" data-view="grid" onclick="VideoForge.setVideoView('grid')">
+            <i class="bi bi-grid-3x3-gap"></i>
+          </button>
+          <button class="view-btn" data-view="list" onclick="VideoForge.setVideoView('list')">
+            <i class="bi bi-list-ul"></i>
+          </button>
+        </div>
+        <a href="/generate" class="btn-three tran3s fs-14" style="line-height: 40px; padding: 0 20px;">
+          <i class="bi bi-plus-lg me-1"></i> New Video
+        </a>
+      </div>
+    </div>
+
+    <div class="dashboard-content p-25">
+      <!-- Filters -->
+      <div class="d-flex gap-2 mb-25 flex-wrap">
+        <button class="filter-btn active" onclick="VideoForge.filterVideos('all')" data-filter="all">All</button>
+        <button class="filter-btn" onclick="VideoForge.filterVideos('completed')" data-filter="completed">Completed</button>
+        <button class="filter-btn" onclick="VideoForge.filterVideos('processing')" data-filter="processing">Processing</button>
+        <button class="filter-btn" onclick="VideoForge.filterVideos('pending')" data-filter="pending">Pending</button>
+        <button class="filter-btn" onclick="VideoForge.filterVideos('failed')" data-filter="failed">Failed</button>
+      </div>
+
+      <!-- Videos Grid -->
+      <div class="row g-4" id="videosGrid">
+        <div class="col-12 text-center py-5">
+          <div class="status-spinner mb-15" style="margin: 0 auto;"></div>
+          <p class="opacity-40 fs-14">Loading videos...</p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="text-center py-5 d-none" id="videosEmpty">
+        <i class="bi bi-camera-video" style="font-size: 48px; color: rgba(255,255,255,0.1);"></i>
+        <h5 class="font-manrope fw-600 text-white mt-20 mb-10">No videos yet</h5>
+        <p class="fs-14 opacity-40 mb-25">Start creating amazing AI-generated videos</p>
+        <a href="/generate" class="btn-three tran3s fs-14" style="line-height: 44px; padding: 0 30px;">Generate Your First Video</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Video Preview Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content bg-wrapper border-20" style="border: 1px solid rgba(255,255,255,0.08);">
+      <div class="modal-header border-0 p-25 pb-0">
+        <h6 class="modal-title font-manrope fw-600 text-white">Video Preview</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-25">
+        <video controls class="w-100 border-20" id="modalVideo" style="max-height: 500px; background: #000;">
+          <source src="" type="video/mp4">
+        </video>
+        <div class="mt-15">
+          <p class="fs-14 fw-500 text-white mb-5" id="modalPrompt"></p>
+          <p class="fs-12 opacity-40 m0" id="modalMeta"></p>
+        </div>
+      </div>
+      <div class="modal-footer border-0 p-25 pt-0">
+        <a href="#" class="btn-three tran3s fs-14" style="line-height: 40px; padding: 0 20px;" id="modalDownload" download>
+          <i class="bi bi-download me-1"></i> Download
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/vendor/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    VideoForge.requireAuth();
+    VideoForge.loadVideos();
+  });
+</script>
+</body>
+</html>

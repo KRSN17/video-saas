@@ -1,0 +1,235 @@
+<style>
+  .dash-sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: #0d0d1a;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    font-family: 'Manrope', 'Gordita', sans-serif;
+  }
+  .dash-sidebar .sidebar-logo {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .dash-sidebar .sidebar-logo a {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dash-sidebar .sidebar-logo a span.logo-gradient {
+    background: linear-gradient(135deg, #7b5cff, #c86dd7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .dash-sidebar .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+  .dash-sidebar .sidebar-nav .nav-item {
+    margin-bottom: 4px;
+  }
+  .dash-sidebar .sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .dash-sidebar .sidebar-nav .nav-link:hover {
+    color: #fff;
+    background: rgba(123,92,255,0.1);
+  }
+  .dash-sidebar .sidebar-nav .nav-link.active {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(123,92,255,0.25), rgba(200,109,215,0.15));
+    box-shadow: 0 0 20px rgba(123,92,255,0.1);
+  }
+  .dash-sidebar .sidebar-nav .nav-link.active i {
+    color: #a78bfa;
+  }
+  .dash-sidebar .sidebar-nav .nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 15px;
+  }
+  .dash-sidebar .sidebar-bottom {
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .dash-sidebar .credit-display {
+    background: rgba(123,92,255,0.1);
+    border: 1px solid rgba(123,92,255,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dash-sidebar .credit-display .credit-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+  }
+  .dash-sidebar .credit-display .credit-info {
+    flex: 1;
+  }
+  .dash-sidebar .credit-display .credit-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .dash-sidebar .credit-display .credit-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .dash-sidebar .btn-logout {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.15);
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .dash-sidebar .btn-logout:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.3);
+  }
+</style>
+
+<aside class="dash-sidebar">
+  <div class="sidebar-logo">
+    <a href="/dashboard">
+      <i class="fa-solid fa-play-circle" style="color: #7b5cff;"></i>
+      <span class="logo-gradient">VideoGen AI</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="list-unstyled mb-0">
+      <li class="nav-item">
+        <a href="/dashboard" class="nav-link" data-page="dashboard">
+          <i class="fa-solid fa-grid-2"></i>
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/generate" class="nav-link" data-page="generate">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Generate
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/videos" class="nav-link" data-page="videos">
+          <i class="fa-solid fa-film"></i>
+          My Videos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/merge" class="nav-link" data-page="merge">
+          <i class="fa-solid fa-object-group"></i>
+          Merge Videos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/credits" class="nav-link" data-page="credits">
+          <i class="fa-solid fa-coins"></i>
+          Buy Credits
+        </a>
+      </li>
+      <li class="nav-item nav-admin" style="display: none;">
+        <a href="/admin" class="nav-link" data-page="admin">
+          <i class="fa-solid fa-shield"></i>
+          Admin Panel
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="credit-display">
+      <div class="credit-icon">
+        <i class="fa-solid fa-coins"></i>
+      </div>
+      <div class="credit-info">
+        <div class="credit-label">Credits</div>
+        <div class="credit-value" id="sidebarCredits">--</div>
+      </div>
+    </div>
+    <button class="btn-logout" id="btnLogout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<script>
+(function() {
+  // Highlight active nav
+  var path = window.location.pathname.replace(/\/$/, '') || '/dashboard';
+  document.querySelectorAll('.dash-sidebar .nav-link').forEach(function(link) {
+    var page = link.getAttribute('data-page');
+    if (path === '/' + page || (page === 'dashboard' && path === '/dashboard') ||
+        (page === 'admin' && path.startsWith('/admin'))) {
+      link.classList.add('active');
+    }
+  });
+
+  // Load profile & credits
+  var token = localStorage.getItem('token');
+  if (token) {
+    fetch('/api/auth/profile', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.user) {
+        var credits = data.user.credits != null ? data.user.credits : 0;
+        document.getElementById('sidebarCredits').textContent = credits;
+        if (data.user.role === 'admin') {
+          var adminNav = document.querySelector('.nav-admin');
+          if (adminNav) adminNav.style.display = 'block';
+        }
+      }
+    })
+    .catch(function() {});
+  }
+
+  // Logout
+  document.getElementById('btnLogout').addEventListener('click', function() {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  });
+})();
+</script>

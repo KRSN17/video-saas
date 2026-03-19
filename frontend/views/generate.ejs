@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Video - VideoForge AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/fonts/bootstrap-icons-1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/assets/fonts/font-awesome-6.4.2/css/all.css">
+  <link rel="stylesheet" href="/assets/fonts/gordita/stylesheet.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="dark-bg-two">
+<div class="dashboard-wrapper d-flex">
+  <%- include('partials/sidebar', { active: 'generate' }) %>
+
+  <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+    <i class="bi bi-list fs-24"></i>
+  </button>
+
+  <main class="dashboard-main flex-grow-1">
+    <div class="dashboard-header p-25">
+      <h4 class="font-manrope fw-600 text-white m0">Generate Video</h4>
+      <p class="fs-14 opacity-50 m0 mt-5">Create a new AI-generated video</p>
+    </div>
+
+    <div class="dashboard-content p-25">
+      <div class="row g-4">
+        <!-- Generation Form -->
+        <div class="col-lg-8">
+          <div class="bg-wrapper border-20 p-30">
+            <div id="generate-error" class="alert alert-danger d-none fs-14" role="alert"></div>
+            <div id="generate-success" class="alert alert-success d-none fs-14" role="alert"></div>
+
+            <form id="generateForm">
+              <!-- Model Selector -->
+              <div class="mb-25">
+                <label class="fs-14 fw-500 text-white mb-10">AI Model</label>
+                <select name="model" class="form-select vf-select" id="modelSelect">
+                  <option value="kling" selected>Kling Video - High Quality</option>
+                  <option value="kling-pro">Kling Video Pro - Ultra Quality</option>
+                </select>
+              </div>
+
+              <!-- Generation Mode -->
+              <div class="mb-25">
+                <label class="fs-14 fw-500 text-white mb-15">Generation Mode</label>
+                <div class="d-flex gap-3">
+                  <button type="button" class="mode-btn active" data-mode="text" onclick="VideoForge.setGenerateMode('text')">
+                    <i class="bi bi-chat-text me-2"></i>Text to Video
+                  </button>
+                  <button type="button" class="mode-btn" data-mode="image" onclick="VideoForge.setGenerateMode('image')">
+                    <i class="bi bi-image me-2"></i>Image to Video
+                  </button>
+                </div>
+              </div>
+
+              <!-- Text Prompt -->
+              <div class="mb-25" id="promptSection">
+                <label class="fs-14 fw-500 text-white mb-10 d-flex justify-content-between">
+                  <span>Text Prompt</span>
+                  <span class="opacity-40" id="charCount">0 / 2000</span>
+                </label>
+                <textarea name="prompt" class="form-control vf-textarea" id="promptInput" rows="5"
+                  placeholder="Describe the video you want to create. Be specific about motion, camera angles, lighting, and style..."
+                  maxlength="2000"></textarea>
+                <div class="fs-12 opacity-30 mt-10">Tip: More detailed prompts produce better results. Describe camera movement, lighting, style, and subject action.</div>
+              </div>
+
+              <!-- Image Upload -->
+              <div class="mb-25 d-none" id="imageSection">
+                <label class="fs-14 fw-500 text-white mb-10">Reference Image</label>
+                <div class="upload-zone border-20" id="imageDropZone">
+                  <input type="file" id="imageInput" accept="image/*" class="d-none">
+                  <div class="upload-placeholder text-center" id="imagePlaceholder">
+                    <i class="bi bi-cloud-arrow-up fs-28 d-block mb-10" style="color: #8A42FF;"></i>
+                    <p class="fs-14 opacity-50 m0">Drag & drop an image here or <span style="color: #8A42FF; cursor: pointer;">browse</span></p>
+                    <p class="fs-12 opacity-30 m0 mt-5">PNG, JPG up to 10MB</p>
+                  </div>
+                  <div class="upload-preview d-none text-center" id="imagePreview">
+                    <img src="" alt="Preview" class="border-20 mb-10" style="max-height: 200px;">
+                    <button type="button" class="btn fs-12 text-danger" onclick="VideoForge.clearImage()">
+                      <i class="bi bi-trash me-1"></i>Remove
+                    </button>
+                  </div>
+                </div>
+                <div class="mb-20 mt-15">
+                  <label class="fs-14 fw-500 text-white mb-10">Animation Prompt (optional)</label>
+                  <textarea name="imagePrompt" class="form-control vf-textarea" rows="3"
+                    placeholder="Describe how the image should be animated..."></textarea>
+                </div>
+              </div>
+
+              <!-- Advanced Settings -->
+              <div class="mb-25">
+                <button type="button" class="btn d-flex align-items-center gap-2 fs-14 opacity-50 p-0"
+                  data-bs-toggle="collapse" data-bs-target="#advancedSettings">
+                  <i class="bi bi-sliders"></i> Advanced Settings
+                  <i class="bi bi-chevron-down fs-12"></i>
+                </button>
+                <div class="collapse mt-15" id="advancedSettings">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="fs-14 fw-500 text-white mb-10">Duration</label>
+                      <select name="duration" class="form-select vf-select">
+                        <option value="5" selected>5 seconds</option>
+                        <option value="10">10 seconds</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="fs-14 fw-500 text-white mb-10">Aspect Ratio</label>
+                      <select name="aspectRatio" class="form-select vf-select">
+                        <option value="16:9" selected>16:9 (Landscape)</option>
+                        <option value="9:16">9:16 (Portrait)</option>
+                        <option value="1:1">1:1 (Square)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="d-flex align-items-center justify-content-between pt-10">
+                <div class="credit-cost fs-14">
+                  <span class="opacity-50">Cost:</span>
+                  <span class="fw-600 text-white" id="creditCost">10 credits</span>
+                </div>
+                <button type="submit" class="btn-three tran3s fs-16 fw-500" style="line-height: 50px; padding: 0 35px;" id="generateBtn">
+                  <i class="bi bi-stars me-2"></i>Generate Video
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Status & Info Panel -->
+        <div class="col-lg-4">
+          <!-- Active Generation Status -->
+          <div class="bg-wrapper border-20 p-25 mb-20 d-none" id="generationStatus">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Generation Status</h6>
+            <div class="status-card">
+              <div class="d-flex align-items-center gap-10 mb-15">
+                <div class="status-spinner"></div>
+                <span class="fs-14 fw-500 text-white" id="statusText">Processing...</span>
+              </div>
+              <div class="progress-bar-wrapper mb-15">
+                <div class="vf-progress">
+                  <div class="vf-progress-bar" id="statusProgress" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="fs-12 opacity-40" id="statusDetail">Your video is being generated...</div>
+            </div>
+          </div>
+
+          <!-- Credit Balance -->
+          <div class="bg-wrapper border-20 p-25 mb-20">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Your Credits</h6>
+            <div class="d-flex align-items-end gap-10 mb-15">
+              <span class="font-manrope fw-600 text-white" style="font-size: 36px;" id="genCredits">--</span>
+              <span class="fs-14 opacity-40 pb-5">credits</span>
+            </div>
+            <a href="/credits" class="fs-14 tran3s" style="color: #8A42FF;">
+              Buy more credits <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+
+          <!-- Credit Costs -->
+          <div class="bg-wrapper border-20 p-25">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Credit Costs</h6>
+            <ul class="style-none">
+              <li class="d-flex justify-content-between align-items-center py-10" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span class="fs-14 opacity-50">5s Standard</span>
+                <span class="fs-14 fw-500 text-white">10 credits</span>
+              </li>
+              <li class="d-flex justify-content-between align-items-center py-10" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span class="fs-14 opacity-50">10s Standard</span>
+                <span class="fs-14 fw-500 text-white">20 credits</span>
+              </li>
+              <li class="d-flex justify-content-between align-items-center py-10" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <span class="fs-14 opacity-50">5s Pro</span>
+                <span class="fs-14 fw-500 text-white">15 credits</span>
+              </li>
+              <li class="d-flex justify-content-between align-items-center py-10">
+                <span class="fs-14 opacity-50">10s Pro</span>
+                <span class="fs-14 fw-500 text-white">30 credits</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/assets/vendor/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    VideoForge.requireAuth();
+    VideoForge.initGenerate();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <%- include('partials/head') %>
+  <style>
+    body {
+      background: #0a0a14;
+      margin: 0;
+      font-family: 'Manrope', 'Gordita', sans-serif;
+    }
+    .dash-main {
+      margin-left: 260px;
+      min-height: 100vh;
+    }
+    .dash-topbar {
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dash-topbar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+    }
+    .dash-topbar .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+    }
+    .dash-topbar .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .dash-content {
+      padding: 28px 32px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.2s ease;
+    }
+    .stat-card:hover {
+      border-color: rgba(123,92,255,0.2);
+      background: rgba(123,92,255,0.04);
+    }
+    .stat-card .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+    .stat-card .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .stat-card .stat-label {
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      font-weight: 500;
+    }
+    .video-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .video-card:hover {
+      border-color: rgba(123,92,255,0.25);
+      transform: translateY(-2px);
+    }
+    .video-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.15);
+      font-size: 36px;
+      position: relative;
+    }
+    .video-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-card-body {
+      padding: 16px;
+    }
+    .video-card-body .prompt-text {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .video-card-body .meta {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+    .quick-action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 20px 24px;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .quick-action-btn:hover {
+      background: rgba(123,92,255,0.1);
+      border-color: rgba(123,92,255,0.25);
+      color: #fff;
+    }
+    .quick-action-btn .action-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .status-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .status-processing { background: rgba(59,130,246,0.15); color: #3b82f6; animation: pulse-badge 1.5s infinite; }
+    .status-completed { background: rgba(16,185,129,0.15); color: #10b981; }
+    .status-failed { background: rgba(239,68,68,0.15); color: #ef4444; }
+    @keyframes pulse-badge { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  </style>
+</head>
+<body>
+  <%- include('partials/sidebar') %>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1>Dashboard</h1>
+      <div class="user-info">
+        <span id="topbarUserName"></span>
+        <div class="user-avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <!-- Stats Row -->
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245,158,11,0.12); color: #f59e0b;">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div class="stat-value" id="statCredits">--</div>
+            <div class="stat-label">Credits Balance</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16,185,129,0.12); color: #10b981;">
+              <i class="fa-solid fa-film"></i>
+            </div>
+            <div class="stat-value" id="statVideos">--</div>
+            <div class="stat-label">Videos Generated</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59,130,246,0.12); color: #3b82f6;">
+              <i class="fa-solid fa-spinner"></i>
+            </div>
+            <div class="stat-value" id="statProcessing">--</div>
+            <div class="stat-label">Videos Processing</div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(168,85,247,0.12); color: #a855f7;">
+              <i class="fa-solid fa-object-group"></i>
+            </div>
+            <div class="stat-value" id="statMerges">--</div>
+            <div class="stat-label">Merge Jobs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-title">Quick Actions</div>
+      <div class="row g-3 mb-5">
+        <div class="col-md-4">
+          <a href="/generate" class="quick-action-btn">
+            <div class="action-icon" style="background: linear-gradient(135deg, #7b5cff, #c86dd7);">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            Generate New Video
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/videos" class="quick-action-btn">
+            <div class="action-icon" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+              <i class="fa-solid fa-upload"></i>
+            </div>
+            Upload Video
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/merge" class="quick-action-btn">
+            <div class="action-icon" style="background: linear-gradient(135deg, #f59e0b, #f97316);">
+              <i class="fa-solid fa-object-group"></i>
+            </div>
+            Merge Videos
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Videos -->
+      <div class="section-title">Recent Videos</div>
+      <div class="row g-4" id="recentVideosGrid">
+        <div class="col-12 text-center py-5" id="videosLoading">
+          <div class="spinner-border text-secondary" role="status"></div>
+        </div>
+      </div>
+      <div id="emptyVideos" style="display:none;" class="text-center py-5">
+        <i class="fa-solid fa-film" style="font-size: 48px; color: rgba(255,255,255,0.1); margin-bottom: 16px; display: block;"></i>
+        <p style="color: rgba(255,255,255,0.35); font-size: 15px;">No videos yet. <a href="/generate" style="color: #7b5cff;">Generate your first video!</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/vendor/jquery.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      var headers = { 'Authorization': 'Bearer ' + token };
+
+      // Load profile
+      fetch('/api/auth/profile', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.user) {
+            var u = data.user;
+            var name = u.name || u.email || 'User';
+            document.getElementById('topbarUserName').textContent = name;
+            document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('statCredits').textContent = u.credits != null ? u.credits : 0;
+          }
+        })
+        .catch(function() {});
+
+      // Load videos
+      fetch('/api/videos', { headers: headers })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var videos = data.videos || data || [];
+          if (!Array.isArray(videos)) videos = [];
+          document.getElementById('videosLoading').style.display = 'none';
+
+          var completed = videos.filter(function(v) { return v.status === 'completed'; }).length;
+          var processing = videos.filter(function(v) { return v.status === 'processing' || v.status === 'pending'; }).length;
+          document.getElementById('statVideos').textContent = completed;
+          document.getElementById('statProcessing').textContent = processing;
+
+          if (videos.length === 0) {
+            document.getElementById('emptyVideos').style.display = 'block';
+            return;
+          }
+
+          var recent = videos.slice(0, 4);
+          var grid = document.getElementById('recentVideosGrid');
+          grid.innerHTML = '';
+          recent.forEach(function(v) {
+            var statusClass = 'status-' + (v.status || 'pending');
+            var thumb = '';
+            if (v.status === 'completed' && v.videoUrl) {
+              thumb = '<video src="' + v.videoUrl + '" muted preload="metadata"></video>';
+            } else {
+              thumb = '<i class="fa-solid fa-film"></i>';
+            }
+            var card = '<div class="col-lg-3 col-md-6">' +
+              '<div class="video-card">' +
+              '<div class="video-thumb">' + thumb + '</div>' +
+              '<div class="video-card-body">' +
+              '<p class="prompt-text">' + (v.prompt || 'No prompt') + '</p>' +
+              '<div class="d-flex justify-content-between align-items-center">' +
+              '<span class="status-badge ' + statusClass + '">' + (v.status || 'pending') + '</span>' +
+              '<span class="meta">' + (v.model || '') + '</span>' +
+              '</div></div></div></div>';
+            grid.innerHTML += card;
+          });
+        })
+        .catch(function() {
+          document.getElementById('videosLoading').style.display = 'none';
+        });
+
+      // Merge jobs stat
+      document.getElementById('statMerges').textContent = '0';
+    })();
+  </script>
+</body>
+</html>

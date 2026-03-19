@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <%- include('partials/head') %>
+  <style>
+    body {
+      background: #0a0a14;
+      margin: 0;
+      font-family: 'Manrope', 'Gordita', sans-serif;
+    }
+    .dash-main {
+      margin-left: 260px;
+      min-height: 100vh;
+    }
+    .dash-topbar {
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+    .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
+    .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
+    .dash-content { padding: 28px 32px; max-width: 900px; }
+    .gen-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+    .gen-tab {
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+      transition: all 0.2s ease;
+    }
+    .gen-tab.active {
+      background: linear-gradient(135deg, rgba(123,92,255,0.25), rgba(200,109,215,0.15));
+      border-color: rgba(123,92,255,0.3);
+      color: #fff;
+    }
+    .gen-tab:hover { color: #fff; }
+    .form-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .form-label { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(123,92,255,0.4);
+      box-shadow: 0 0 0 3px rgba(123,92,255,0.1);
+      color: #fff;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,0.25); }
+    textarea.form-control { min-height: 120px; resize: vertical; }
+    .char-counter { font-size: 11px; color: rgba(255,255,255,0.3); text-align: right; margin-top: 4px; }
+    .option-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .option-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.5);
+      transition: all 0.2s ease;
+    }
+    .option-btn.active {
+      background: rgba(123,92,255,0.2);
+      border-color: rgba(123,92,255,0.4);
+      color: #fff;
+    }
+    .option-btn:hover { border-color: rgba(123,92,255,0.3); color: #fff; }
+    .credit-cost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 8px;
+      padding: 6px 14px;
+      color: #f59e0b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .btn-generate {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border: none;
+      color: #fff;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .progress-section {
+      display: none;
+      margin-top: 28px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+    }
+    .progress-spinner {
+      width: 56px;
+      height: 56px;
+      border: 3px solid rgba(123,92,255,0.15);
+      border-top-color: #7b5cff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-status { color: rgba(255,255,255,0.6); font-size: 14px; }
+    .progress-status strong { color: #fff; }
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: rgba(255,255,255,0.4);
+    }
+    .upload-zone:hover { border-color: rgba(123,92,255,0.3); background: rgba(123,92,255,0.04); }
+    .upload-zone i { font-size: 28px; margin-bottom: 8px; display: block; }
+    .image-preview { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <%- include('partials/sidebar') %>
+
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <h1>Generate Video</h1>
+      <div class="user-info">
+        <span id="topbarUserName"></span>
+        <div class="user-avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <!-- Tabs -->
+      <div class="gen-tabs">
+        <div class="gen-tab active" data-tab="text2video">
+          <i class="fa-solid fa-font me-2"></i>Text to Video
+        </div>
+        <div class="gen-tab" data-tab="img2video">
+          <i class="fa-solid fa-image me-2"></i>Image to Video
+        </div>
+      </div>
+
+      <!-- Text to Video -->
+      <div class="form-panel" id="tab-text2video">
+        <form id="formText2Video" autocomplete="off">
+          <div class="mb-3">
+            <label class="form-label">AI Model</label>
+            <select class="form-select" id="modelSelect" name="model">
+              <option value="kling">Kling Video</option>
+              <option value="minimax">MiniMax</option>
+              <option value="wan">Wan</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prompt</label>
+            <textarea class="form-control" id="promptText" name="prompt" maxlength="2000"
+              placeholder="Describe the video you want to generate..."></textarea>
+            <div class="char-counter"><span id="charCount">0</span> / 2000</div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Duration</label>
+              <div class="option-group" id="durationGroup">
+                <div class="option-btn active" data-value="5">5s</div>
+                <div class="option-btn" data-value="10">10s</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Aspect Ratio</label>
+              <div class="option-group" id="ratioGroup">
+                <div class="option-btn active" data-value="16:9">16:9</div>
+                <div class="option-btn" data-value="9:16">9:16</div>
+                <div class="option-btn" data-value="1:1">1:1</div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between mt-4">
+            <div class="credit-cost">
+              <i class="fa-solid fa-coins"></i>
+              <span>1 credit</span>
+            </div>
+            <button type="submit" class="btn-generate" id="btnGenerate">
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Video
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Image to Video -->
+      <div class="form-panel" id="tab-img2video" style="display: none;">
+        <form id="formImg2Video" autocomplete="off">
+          <div class="mb-3">
+            <label class="form-label">AI Model</label>
+            <select class="form-select" name="model">
+              <option value="kling">Kling Video</option>
+              <option value="minimax">MiniMax</option>
+              <option value="wan">Wan</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Source Image</label>
+            <input type="text" class="form-control mb-2" id="imageUrl" name="imageUrl" placeholder="Paste image URL...">
+            <div class="text-center my-2" style="color: rgba(255,255,255,0.3); font-size: 12px;">OR</div>
+            <div class="upload-zone" id="imageUploadZone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <div>Click or drag an image here</div>
+              <input type="file" id="imageFile" accept="image/*" style="display: none;">
+            </div>
+            <img id="imagePreview" class="image-preview" style="display: none;" alt="Preview">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prompt (optional)</label>
+            <textarea class="form-control" id="promptImg" name="prompt" maxlength="2000"
+              placeholder="Describe the motion or transformation..."></textarea>
+            <div class="char-counter"><span id="charCountImg">0</span> / 2000</div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Duration</label>
+              <div class="option-group" id="durationGroupImg">
+                <div class="option-btn active" data-value="5">5s</div>
+                <div class="option-btn" data-value="10">10s</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Aspect Ratio</label>
+              <div class="option-group" id="ratioGroupImg">
+                <div class="option-btn active" data-value="16:9">16:9</div>
+                <div class="option-btn" data-value="9:16">9:16</div>
+                <div class="option-btn" data-value="1:1">1:1</div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between mt-4">
+            <div class="credit-cost">
+              <i class="fa-solid fa-coins"></i>
+              <span>1 credit</span>
+            </div>
+            <button type="submit" class="btn-generate" id="btnGenerateImg">
+              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Video
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section" id="progressSection">
+        <div class="progress-spinner"></div>
+        <div class="progress-status">
+          <strong id="progressStatus">Submitting...</strong>
+          <div style="margin-top: 6px; font-size: 13px;" id="progressDetail">Your video is being generated</div>
+        </div>
+        <a href="#" id="progressViewLink" class="btn btn-sm btn-outline-light mt-3" style="display: none;">View Video</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/vendor/jquery.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      var token = localStorage.getItem('token');
+      if (!token) { window.location.href = '/login'; return; }
+      var headers = { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' };
+
+      // Profile
+      fetch('/api/auth/profile', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.user) {
+            var name = data.user.name || data.user.email || 'User';
+            document.getElementById('topbarUserName').textContent = name;
+            document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+          }
+        });
+
+      // Tabs
+      document.querySelectorAll('.gen-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.gen-tab').forEach(function(t) { t.classList.remove('active'); });
+          tab.classList.add('active');
+          var target = tab.getAttribute('data-tab');
+          document.getElementById('tab-text2video').style.display = target === 'text2video' ? 'block' : 'none';
+          document.getElementById('tab-img2video').style.display = target === 'img2video' ? 'block' : 'none';
+        });
+      });
+
+      // Option buttons
+      document.querySelectorAll('.option-group').forEach(function(group) {
+        group.querySelectorAll('.option-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            group.querySelectorAll('.option-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+          });
+        });
+      });
+
+      // Char counters
+      document.getElementById('promptText').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+      });
+      document.getElementById('promptImg').addEventListener('input', function() {
+        document.getElementById('charCountImg').textContent = this.value.length;
+      });
+
+      // Image upload zone
+      var uploadZone = document.getElementById('imageUploadZone');
+      var imageFile = document.getElementById('imageFile');
+      uploadZone.addEventListener('click', function() { imageFile.click(); });
+      uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#7b5cff'; });
+      uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = ''; });
+      uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.style.borderColor = '';
+        if (e.dataTransfer.files.length) { imageFile.files = e.dataTransfer.files; showPreview(e.dataTransfer.files[0]); }
+      });
+      imageFile.addEventListener('change', function() {
+        if (this.files.length) showPreview(this.files[0]);
+      });
+      function showPreview(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var preview = document.getElementById('imagePreview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function getSelectedValue(groupId) {
+        var active = document.querySelector('#' + groupId + ' .option-btn.active');
+        return active ? active.getAttribute('data-value') : null;
+      }
+
+      // Text-to-Video submit
+      document.getElementById('formText2Video').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var prompt = document.getElementById('promptText').value.trim();
+        if (!prompt) return alert('Please enter a prompt.');
+        var body = {
+          type: 'text2video',
+          model: document.getElementById('modelSelect').value,
+          prompt: prompt,
+          duration: getSelectedValue('durationGroup'),
+          aspectRatio: getSelectedValue('ratioGroup')
+        };
+        submitGeneration(body);
+      });
+
+      // Image-to-Video submit
+      document.getElementById('formImg2Video').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var imgUrl = document.getElementById('imageUrl').value.trim();
+        if (!imgUrl && !imageFile.files.length) return alert('Please provide an image.');
+        var body = {
+          type: 'img2video',
+          model: document.querySelector('#tab-img2video select[name="model"]').value,
+          prompt: document.getElementById('promptImg').value.trim(),
+          imageUrl: imgUrl,
+          duration: getSelectedValue('durationGroupImg'),
+          aspectRatio: getSelectedValue('ratioGroupImg')
+        };
+        submitGeneration(body);
+      });
+
+      function submitGeneration(body) {
+        document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = true; });
+        var section = document.getElementById('progressSection');
+        section.style.display = 'block';
+        document.getElementById('progressStatus').textContent = 'Submitting...';
+        document.getElementById('progressDetail').textContent = 'Sending request to AI model';
+        document.getElementById('progressViewLink').style.display = 'none';
+
+        fetch('/api/videos/generate', { method: 'POST', headers: headers, body: JSON.stringify(body) })
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.error) {
+              alert(data.error);
+              section.style.display = 'none';
+              document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+              return;
+            }
+            var videoId = data.video ? data.video._id || data.video.id : data.id || data._id;
+            if (videoId) pollStatus(videoId);
+          })
+          .catch(function(err) {
+            alert('Generation failed. Please try again.');
+            section.style.display = 'none';
+            document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+          });
+      }
+
+      function pollStatus(videoId) {
+        document.getElementById('progressStatus').textContent = 'Processing...';
+        document.getElementById('progressDetail').textContent = 'Your video is being generated. This may take a few minutes.';
+
+        var interval = setInterval(function() {
+          fetch('/api/videos/' + videoId + '/status', { headers: { 'Authorization': 'Bearer ' + token } })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              var status = data.status || (data.video && data.video.status);
+              if (status === 'completed') {
+                clearInterval(interval);
+                document.getElementById('progressStatus').textContent = 'Complete!';
+                document.getElementById('progressDetail').textContent = 'Your video is ready.';
+                document.querySelector('.progress-spinner').style.display = 'none';
+                var link = document.getElementById('progressViewLink');
+                link.href = '/videos';
+                link.style.display = 'inline-block';
+                document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+              } else if (status === 'failed') {
+                clearInterval(interval);
+                document.getElementById('progressStatus').textContent = 'Failed';
+                document.getElementById('progressDetail').textContent = data.error || 'Video generation failed. Please try again.';
+                document.querySelector('.progress-spinner').style.display = 'none';
+                document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+              } else {
+                document.getElementById('progressStatus').textContent = 'Processing...';
+              }
+            });
+        }, 3000);
+      }
+    })();
+  </script>
+</body>
+</html>

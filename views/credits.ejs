@@ -1,0 +1,62 @@
+<%- include('partials/head') %>
+<body>
+<div class="dashboard-wrapper">
+  <%- include('partials/sidebar') %>
+  <div class="main-content">
+    <div class="content-header">
+      <h2 class="gradient-text">Credits</h2>
+      <p class="text-secondary">Purchase credits to generate videos</p>
+    </div>
+    <div class="content-body">
+      <div class="glass-card p-4 mb-4 text-center">
+        <p class="text-secondary mb-1">Your Balance</p>
+        <h1 class="gradient-text display-3 fw-bold" id="creditBalance">0</h1>
+        <p class="text-secondary">credits available</p>
+      </div>
+      <h4 class="mb-3">Buy Credits</h4>
+      <div class="row g-4 mb-5" id="packages">
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center pricing-card">
+            <h5>Starter</h5>
+            <div class="display-5 fw-bold my-3">$9</div>
+            <p class="text-secondary">50 Credits</p>
+            <p class="small text-secondary">$0.18 per credit</p>
+            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('starter')">Buy Now</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center pricing-card popular">
+            <span class="badge bg-gradient-accent mb-2">Most Popular</span>
+            <h5>Pro</h5>
+            <div class="display-5 fw-bold my-3 gradient-text">$29</div>
+            <p class="text-secondary">200 Credits</p>
+            <p class="small text-secondary">$0.145 per credit</p>
+            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('pro')">Buy Now</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card p-4 text-center pricing-card">
+            <h5>Enterprise</h5>
+            <div class="display-5 fw-bold my-3">$79</div>
+            <p class="text-secondary">600 Credits</p>
+            <p class="small text-secondary">$0.13 per credit</p>
+            <button class="btn-gradient w-100 mt-3" onclick="Credits.purchase('enterprise')">Buy Now</button>
+          </div>
+        </div>
+      </div>
+      <h4 class="mb-3">Transaction History</h4>
+      <div class="glass-card p-4">
+        <div class="table-responsive">
+          <table class="table table-dark-custom">
+            <thead><tr><th>Date</th><th>Type</th><th>Credits</th><th>Amount</th><th>Description</th></tr></thead>
+            <tbody id="transactionHistory"><tr><td colspan="5" class="text-center text-secondary">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>
+<script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/public/js/app.js"></script>
+</body></html>

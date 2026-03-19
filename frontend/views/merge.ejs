@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge Videos - VideoForge AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/fonts/bootstrap-icons-1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/assets/fonts/font-awesome-6.4.2/css/all.css">
+  <link rel="stylesheet" href="/assets/fonts/gordita/stylesheet.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="dark-bg-two">
+<div class="dashboard-wrapper d-flex">
+  <%- include('partials/sidebar', { active: 'merge' }) %>
+
+  <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+    <i class="bi bi-list fs-24"></i>
+  </button>
+
+  <main class="dashboard-main flex-grow-1">
+    <div class="dashboard-header p-25">
+      <h4 class="font-manrope fw-600 text-white m0">Merge Videos</h4>
+      <p class="fs-14 opacity-50 m0 mt-5">Combine multiple clips into a single video</p>
+    </div>
+
+    <div class="dashboard-content p-25">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <!-- Upload Zone -->
+          <div class="bg-wrapper border-20 p-30 mb-20">
+            <h6 class="font-manrope fw-600 text-white mb-20 fs-16">Add Videos</h6>
+            <div class="upload-zone border-20" id="mergeDropZone">
+              <input type="file" id="mergeFileInput" accept="video/*" multiple class="d-none">
+              <div class="upload-placeholder text-center">
+                <i class="bi bi-cloud-arrow-up fs-28 d-block mb-10" style="color: #8A42FF;"></i>
+                <p class="fs-14 opacity-50 m0">Drag & drop video files here or <span style="color: #8A42FF; cursor: pointer;">browse</span></p>
+                <p class="fs-12 opacity-30 m0 mt-5">MP4, WebM up to 100MB each</p>
+              </div>
+            </div>
+
+            <!-- Or select from library -->
+            <div class="mt-20">
+              <button type="button" class="btn d-flex align-items-center gap-2 fs-14 opacity-50 p-0"
+                data-bs-toggle="collapse" data-bs-target="#librarySelect">
+                <i class="bi bi-collection-play"></i> Or select from your video library
+                <i class="bi bi-chevron-down fs-12"></i>
+              </button>
+              <div class="collapse mt-15" id="librarySelect">
+                <div class="row g-2" id="libraryVideos">
+                  <div class="col-12 text-center py-3">
+                    <p class="opacity-40 fs-14 m0">Loading your videos...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Merge Queue -->
+          <div class="bg-wrapper border-20 p-30">
+            <div class="d-flex align-items-center justify-content-between mb-20">
+              <h6 class="font-manrope fw-600 text-white m0 fs-16">Merge Queue</h6>
+              <span class="fs-12 opacity-40" id="mergeCount">0 videos</span>
+            </div>
+
+            <div id="mergeQueue" class="merge-queue">
+              <div class="text-center py-4 opacity-30" id="mergeEmpty">
+                <i class="bi bi-layers fs-28 d-block mb-10"></i>
+                <p class="fs-14 m0">Add videos above to start merging</p>
+              </div>
+            </div>
+
+            <!-- Upload progress -->
+            <div class="d-none mt-15" id="mergeUploadProgress">
+              <div class="d-flex align-items-center justify-content-between mb-5">
+                <span class="fs-12 opacity-50">Uploading...</span>
+                <span class="fs-12 opacity-50" id="mergeUploadPercent">0%</span>
+              </div>
+              <div class="vf-progress">
+                <div class="vf-progress-bar" id="mergeUploadBar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-20 pt-15" style="border-top: 1px solid rgba(255,255,255,0.06);">
+              <button type="button" class="btn-three tran3s fs-14 fw-500" style="line-height: 46px; padding: 0 30px;"
+                id="mergeBtn" onclick="VideoForge.mergeVideos()" disabled>
+                <i class="bi bi-layers me-2"></i>Merge Videos
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Merge Status & Results -->
+        <div class="col-lg-4">
+          <div class="bg-wrapper border-20 p-25 mb-20 d-none" id="mergeStatus">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Merge Status</h6>
+            <div class="d-flex align-items-center gap-10 mb-15">
+              <div class="status-spinner"></div>
+              <span class="fs-14 fw-500 text-white" id="mergeStatusText">Processing...</span>
+            </div>
+            <div class="vf-progress mb-10">
+              <div class="vf-progress-bar" id="mergeProgressBar" style="width: 0%"></div>
+            </div>
+            <div class="fs-12 opacity-40" id="mergeStatusDetail">Combining your videos...</div>
+          </div>
+
+          <div class="bg-wrapper border-20 p-25 d-none" id="mergeResult">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Merged Video</h6>
+            <video controls class="w-100 border-20 mb-15" id="mergedVideo" style="background: #000;">
+              <source src="" type="video/mp4">
+            </video>
+            <a href="#" class="btn-three tran3s w-100 fs-14 text-center" style="line-height: 44px;" id="mergeDownload" download>
+              <i class="bi bi-download me-1"></i> Download Merged Video
+            </a>
+          </div>
+
+          <div class="bg-wrapper border-20 p-25 mt-20">
+            <h6 class="font-manrope fw-600 text-white mb-15 fs-16">Tips</h6>
+            <ul class="style-none">
+              <li class="d-flex gap-10 mb-15">
+                <i class="bi bi-info-circle fs-14 mt-5" style="color: #8A42FF;"></i>
+                <span class="fs-13 opacity-50">Videos will be merged in the order shown. Drag to reorder.</span>
+              </li>
+              <li class="d-flex gap-10 mb-15">
+                <i class="bi bi-info-circle fs-14 mt-5" style="color: #8A42FF;"></i>
+                <span class="fs-13 opacity-50">All videos will be normalized to the same resolution and frame rate.</span>
+              </li>
+              <li class="d-flex gap-10">
+                <i class="bi bi-info-circle fs-14 mt-5" style="color: #8A42FF;"></i>
+                <span class="fs-13 opacity-50">Merging is free and does not consume credits.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/assets/vendor/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    VideoForge.requireAuth();
+    VideoForge.initMerge();
+  });
+</script>
+</body>
+</html>

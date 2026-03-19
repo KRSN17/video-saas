@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  name         String?
+  credits      Int           @default(10)
+  role         String        @default("user")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  videos       Video[]
+  transactions Transaction[]
+  mergeJobs    MergeJob[]
+}
+
+model Video {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  prompt       String
+  model        String   @default("fal-ai/kling-video/v2/master/text-to-video")
+  status       String   @default("pending")
+  falRequestId String?
+  videoUrl     String?
+  localPath    String?
+  thumbnailUrl String?
+  duration     Int?
+  creditsUsed  Int      @default(1)
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MergeJob {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  inputVideos Json
+  outputPath  String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String
+  credits     Int
+  amount      Float?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model CreditPackage {
+  id      String  @id @default(uuid())
+  name    String
+  credits Int
+  price   Float
+  popular Boolean @default(false)
+  active  Boolean @default(true)
+}
