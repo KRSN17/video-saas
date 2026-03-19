@@ -9,15 +9,16 @@
       --accent-gradient: linear-gradient(135deg, #6c5ce7, #a855f7, #ec4899);
       --glass-bg: rgba(255, 255, 255, 0.04);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --font-main: 'Manrope', 'Gordita', sans-serif;
+      --font-main: 'Manrope', sans-serif;
     }
 
-    * { font-family: var(--font-main); }
+    * { font-family: var(--font-main); box-sizing: border-box; }
 
     body {
       background: var(--bg-primary);
       color: #e2e8f0;
       overflow-x: hidden;
+      margin: 0;
     }
 
     /* ── Navbar ── */
@@ -118,6 +119,8 @@
       overflow: hidden;
       transition: all 0.4s ease;
       box-shadow: 0 0 30px rgba(168,85,247,0.35), 0 0 60px rgba(168,85,247,0.15);
+      text-decoration: none;
+      display: inline-block;
     }
     .btn-glow:hover {
       transform: translateY(-3px);
@@ -260,6 +263,9 @@
       color: #a855f7;
       background: transparent;
       transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
     }
     .btn-pricing:hover {
       background: rgba(168,85,247,0.15);
@@ -351,13 +357,13 @@
           <i class="fa-solid fa-sparkles me-1"></i> AI-Powered Video Generation
         </span>
         <h1 class="hero-title">
-          Create Stunning Videos<br><span class="gradient-text">with AI</span>
+          <span class="gradient-text">Create Stunning AI Videos</span>
         </h1>
         <p class="hero-subtitle">
           Powered by fal.ai &mdash; Generate, merge, and download professional videos in seconds.
           Transform your ideas into cinematic reality.
         </p>
-        <a href="/register" class="btn btn-glow">
+        <a href="/register" class="btn-glow">
           <i class="fa-solid fa-rocket me-2"></i>Get Started Free
         </a>
         <p class="mt-3" style="color:rgba(255,255,255,0.35); font-size:0.85rem;">No credit card required &bull; 5 free credits</p>
@@ -403,7 +409,7 @@
             <div class="feature-icon-wrap">
               <i class="fa-solid fa-layer-group"></i>
             </div>
-            <h5 style="font-weight:700; margin-bottom:0.75rem;">Video Merging</h5>
+            <h5 style="font-weight:700; margin-bottom:0.75rem;">Video Merge</h5>
             <p style="color:rgba(255,255,255,0.55); font-size:0.92rem; line-height:1.7; margin:0;">
               Combine multiple generated clips into a seamless, polished final video. Perfect for storytelling and longer content.
             </p>
@@ -445,7 +451,7 @@
               <li><i class="fa-solid fa-check"></i> 720p video output</li>
               <li><i class="fa-solid fa-check"></i> Email support</li>
             </ul>
-            <a href="/register" class="btn btn-pricing">Get Started</a>
+            <a href="/register" class="btn-pricing">Get Started</a>
           </div>
         </div>
         <!-- Pro -->
@@ -461,7 +467,7 @@
               <li><i class="fa-solid fa-check"></i> 1080p video output</li>
               <li><i class="fa-solid fa-check"></i> Priority support</li>
             </ul>
-            <a href="/register" class="btn btn-pricing btn-pricing-primary">Get Started</a>
+            <a href="/register" class="btn-pricing btn-pricing-primary">Get Started</a>
           </div>
         </div>
         <!-- Enterprise -->
@@ -476,7 +482,7 @@
               <li><i class="fa-solid fa-check"></i> API access</li>
               <li><i class="fa-solid fa-check"></i> Dedicated support</li>
             </ul>
-            <a href="/register" class="btn btn-pricing">Get Started</a>
+            <a href="/register" class="btn-pricing">Get Started</a>
           </div>
         </div>
       </div>
@@ -541,18 +547,6 @@
                 </div>
               </div>
             </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                  Is there a free trial?
-                </button>
-              </h2>
-              <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                <div class="accordion-body">
-                  Yes! Every new account receives 5 free credits to try out the platform. No credit card required to sign up. You can generate your first AI video within minutes of creating your account.
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -563,7 +557,6 @@
   <%- include('partials/footer') %>
 
   <!-- Scripts -->
-  <script src="/assets/js/bootstrap.bundle.min.js"></script>
   <script>
     // Navbar scroll effect
     window.addEventListener('scroll', () => {

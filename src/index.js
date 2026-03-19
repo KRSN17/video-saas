@@ -25,6 +25,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+app.use('/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
+app.use('/css', express.static(path.join(__dirname, '..', 'public', 'css')));
+app.use('/js', express.static(path.join(__dirname, '..', 'public', 'js')));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Rate limiting
@@ -44,6 +47,12 @@ app.use('/api/admin', adminRoutes);
 
 // Page Routes
 app.use('/', pageRoutes);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 app.listen(PORT, () => {
   console.log(`Video SaaS running at http://localhost:${PORT}`);

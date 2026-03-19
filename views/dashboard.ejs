@@ -6,7 +6,7 @@
     body {
       background: #0a0a14;
       margin: 0;
-      font-family: 'Manrope', 'Gordita', sans-serif;
+      font-family: 'Manrope', sans-serif;
     }
     .dash-main {
       margin-left: 260px;
@@ -79,6 +79,40 @@
       color: rgba(255,255,255,0.45);
       font-weight: 500;
     }
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .quick-action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 20px 24px;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .quick-action-btn:hover {
+      background: rgba(123,92,255,0.1);
+      border-color: rgba(123,92,255,0.25);
+      color: #fff;
+    }
+    .quick-action-btn .action-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
     .video-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
@@ -122,40 +156,6 @@
       font-size: 11px;
       color: rgba(255,255,255,0.35);
     }
-    .quick-action-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 20px 24px;
-      color: #fff;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: all 0.2s ease;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .quick-action-btn:hover {
-      background: rgba(123,92,255,0.1);
-      border-color: rgba(123,92,255,0.25);
-      color: #fff;
-    }
-    .quick-action-btn .action-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-    .section-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 20px;
-    }
     .status-badge {
       font-size: 11px;
       padding: 3px 10px;
@@ -189,8 +189,8 @@
             <div class="stat-icon" style="background: rgba(245,158,11,0.12); color: #f59e0b;">
               <i class="fa-solid fa-coins"></i>
             </div>
-            <div class="stat-value" id="statCredits">--</div>
-            <div class="stat-label">Credits Balance</div>
+            <div class="stat-value" id="statBalance">--</div>
+            <div class="stat-label">Credit Balance</div>
           </div>
         </div>
         <div class="col-lg-3 col-sm-6">
@@ -198,7 +198,7 @@
             <div class="stat-icon" style="background: rgba(16,185,129,0.12); color: #10b981;">
               <i class="fa-solid fa-film"></i>
             </div>
-            <div class="stat-value" id="statVideos">--</div>
+            <div class="stat-value" id="statTotal">--</div>
             <div class="stat-label">Videos Generated</div>
           </div>
         </div>
@@ -208,7 +208,7 @@
               <i class="fa-solid fa-spinner"></i>
             </div>
             <div class="stat-value" id="statProcessing">--</div>
-            <div class="stat-label">Videos Processing</div>
+            <div class="stat-label">Processing</div>
           </div>
         </div>
         <div class="col-lg-3 col-sm-6">
@@ -234,7 +234,7 @@
           </a>
         </div>
         <div class="col-md-4">
-          <a href="/videos" class="quick-action-btn">
+          <a href="/my-videos" class="quick-action-btn">
             <div class="action-icon" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
               <i class="fa-solid fa-upload"></i>
             </div>
@@ -253,7 +253,7 @@
 
       <!-- Recent Videos -->
       <div class="section-title">Recent Videos</div>
-      <div class="row g-4" id="recentVideosGrid">
+      <div class="row g-4" id="recentVideos">
         <div class="col-12 text-center py-5" id="videosLoading">
           <div class="spinner-border text-secondary" role="status"></div>
         </div>
@@ -265,8 +265,7 @@
     </div>
   </div>
 
-  <script src="/assets/vendor/jquery.min.js"></script>
-  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
     (function() {
       var token = localStorage.getItem('token');
@@ -282,7 +281,7 @@
             var name = u.name || u.email || 'User';
             document.getElementById('topbarUserName').textContent = name;
             document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
-            document.getElementById('statCredits').textContent = u.credits != null ? u.credits : 0;
+            document.getElementById('statBalance').textContent = u.credits != null ? u.credits : 0;
           }
         })
         .catch(function() {});
@@ -295,10 +294,11 @@
           if (!Array.isArray(videos)) videos = [];
           document.getElementById('videosLoading').style.display = 'none';
 
-          var completed = videos.filter(function(v) { return v.status === 'completed'; }).length;
+          var total = videos.filter(function(v) { return v.status === 'completed'; }).length;
           var processing = videos.filter(function(v) { return v.status === 'processing' || v.status === 'pending'; }).length;
-          document.getElementById('statVideos').textContent = completed;
+          document.getElementById('statTotal').textContent = total;
           document.getElementById('statProcessing').textContent = processing;
+          document.getElementById('statMerges').textContent = '0';
 
           if (videos.length === 0) {
             document.getElementById('emptyVideos').style.display = 'block';
@@ -306,7 +306,7 @@
           }
 
           var recent = videos.slice(0, 4);
-          var grid = document.getElementById('recentVideosGrid');
+          var grid = document.getElementById('recentVideos');
           grid.innerHTML = '';
           recent.forEach(function(v) {
             var statusClass = 'status-' + (v.status || 'pending');
@@ -331,9 +331,6 @@
         .catch(function() {
           document.getElementById('videosLoading').style.display = 'none';
         });
-
-      // Merge jobs stat
-      document.getElementById('statMerges').textContent = '0';
     })();
   </script>
 </body>

@@ -69,3 +69,21 @@ model CreditPackage {
   popular Boolean @default(false)
   active  Boolean @default(true)
 }
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  provider   String    @default("fal")
+  key        String
+  label      String?
+  active     Boolean   @default(true)
+  usageCount Int       @default(0)
+  lastUsed   DateTime?
+  createdAt  DateTime  @default(now())
+}

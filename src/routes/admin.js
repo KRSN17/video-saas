@@ -17,7 +17,9 @@ router.get('/stats', async (req, res) => {
       totalUsers,
       totalVideos,
       totalCreditsUsed: Math.abs(totalCreditsUsed._sum.credits || 0),
+      creditsUsed: Math.abs(totalCreditsUsed._sum.credits || 0),
       totalRevenue: totalRevenue._sum.amount || 0,
+      revenue: totalRevenue._sum.amount || 0,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -80,6 +82,89 @@ router.put('/packages/:id', async (req, res) => {
       data: { name, credits: parseInt(credits), price: parseFloat(price), popular: !!popular, active: active !== false },
     });
     res.json({ package: pkg });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Settings ---
+
+router.get('/settings', async (req, res) => {
+  try {
+    const settings = await prisma.setting.findMany();
+    res.json({ settings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/settings', async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    if (!key || value === undefined) {
+      return res.status(400).json({ error: 'key and value are required' });
+    }
+    const setting = await prisma.setting.upsert({
+      where: { key },
+      update: { value: String(value) },
+      create: { key, value: String(value) },
+    });
+    res.json({ setting });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- API Keys ---
+
+router.get('/api-keys', async (req, res) => {
+  try {
+    const apiKeys = await prisma.apiKey.findMany({ orderBy: { createdAt: 'desc' } });
+    const masked = apiKeys.map((k) => ({
+      ...k,
+      key: '****' + k.key.slice(-4),
+    }));
+    res.json({ apiKeys: masked });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/api-keys', async (req, res) => {
+  try {
+    const { provider, key, label } = req.body;
+    if (!key) {
+      return res.status(400).json({ error: 'key is required' });
+    }
+    const apiKey = await prisma.apiKey.create({
+      data: { provider: provider || 'fal', key, label },
+    });
+    res.json({ apiKey: { ...apiKey, key: '****' + apiKey.key.slice(-4) } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/api-keys/:id', async (req, res) => {
+  try {
+    const existing = await prisma.apiKey.findUnique({ where: { id: req.params.id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'API key not found' });
+    }
+    const apiKey = await prisma.apiKey.update({
+      where: { id: req.params.id },
+      data: { active: !existing.active },
+    });
+    res.json({ apiKey: { ...apiKey, key: '****' + apiKey.key.slice(-4) } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/api-keys/:id', async (req, res) => {
+  try {
+    await prisma.apiKey.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

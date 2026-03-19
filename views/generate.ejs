@@ -6,7 +6,7 @@
     body {
       background: #0a0a14;
       margin: 0;
-      font-family: 'Manrope', 'Gordita', sans-serif;
+      font-family: 'Manrope', sans-serif;
     }
     .dash-main {
       margin-left: 260px;
@@ -23,24 +23,6 @@
     .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
     .dash-topbar .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7b5cff, #c86dd7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
     .dash-content { padding: 28px 32px; max-width: 900px; }
-    .gen-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
-    .gen-tab {
-      padding: 10px 24px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      color: rgba(255,255,255,0.5);
-      transition: all 0.2s ease;
-    }
-    .gen-tab.active {
-      background: linear-gradient(135deg, rgba(123,92,255,0.25), rgba(200,109,215,0.15));
-      border-color: rgba(123,92,255,0.3);
-      color: #fff;
-    }
-    .gen-tab:hover { color: #fff; }
     .form-panel {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
@@ -63,6 +45,7 @@
       color: #fff;
     }
     .form-control::placeholder { color: rgba(255,255,255,0.25); }
+    .form-select option { background: #1a1a2e; color: #fff; }
     textarea.form-control { min-height: 120px; resize: vertical; }
     .char-counter { font-size: 11px; color: rgba(255,255,255,0.3); text-align: right; margin-top: 4px; }
     .option-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -108,7 +91,9 @@
     }
     .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .progress-section {
+    .image-url-row { display: none; }
+    .image-url-row.visible { display: block; }
+    #statusSection {
       display: none;
       margin-top: 28px;
       background: rgba(255,255,255,0.03);
@@ -129,18 +114,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .progress-status { color: rgba(255,255,255,0.6); font-size: 14px; }
     .progress-status strong { color: #fff; }
-    .upload-zone {
-      border: 2px dashed rgba(255,255,255,0.12);
-      border-radius: 12px;
-      padding: 28px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: rgba(255,255,255,0.4);
-    }
-    .upload-zone:hover { border-color: rgba(123,92,255,0.3); background: rgba(123,92,255,0.04); }
-    .upload-zone i { font-size: 28px; margin-bottom: 8px; display: block; }
-    .image-preview { max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 12px; }
+    #videoPreview { display: none; margin-top: 16px; max-width: 480px; border-radius: 12px; }
   </style>
 </head>
 <body>
@@ -156,33 +130,30 @@
     </div>
 
     <div class="dash-content">
-      <!-- Tabs -->
-      <div class="gen-tabs">
-        <div class="gen-tab active" data-tab="text2video">
-          <i class="fa-solid fa-font me-2"></i>Text to Video
-        </div>
-        <div class="gen-tab" data-tab="img2video">
-          <i class="fa-solid fa-image me-2"></i>Image to Video
-        </div>
-      </div>
-
-      <!-- Text to Video -->
-      <div class="form-panel" id="tab-text2video">
-        <form id="formText2Video" autocomplete="off">
+      <div class="form-panel">
+        <form id="generateForm" autocomplete="off">
           <div class="mb-3">
             <label class="form-label">AI Model</label>
             <select class="form-select" id="modelSelect" name="model">
-              <option value="kling">Kling Video</option>
-              <option value="minimax">MiniMax</option>
-              <option value="wan">Wan</option>
+              <option value="kling-text">Kling Text-to-Video</option>
+              <option value="kling-image">Kling Image-to-Video</option>
+              <option value="minimax-text">MiniMax</option>
+              <option value="wan-text">Wan</option>
             </select>
           </div>
+
           <div class="mb-3">
             <label class="form-label">Prompt</label>
-            <textarea class="form-control" id="promptText" name="prompt" maxlength="2000"
+            <textarea class="form-control" id="prompt" name="prompt" maxlength="2000"
               placeholder="Describe the video you want to generate..."></textarea>
             <div class="char-counter"><span id="charCount">0</span> / 2000</div>
           </div>
+
+          <div class="mb-3 image-url-row" id="imageUrlRow">
+            <label class="form-label">Image URL</label>
+            <input type="text" class="form-control" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+          </div>
+
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <label class="form-label">Duration</label>
@@ -200,6 +171,7 @@
               </div>
             </div>
           </div>
+
           <div class="d-flex align-items-center justify-content-between mt-4">
             <div class="credit-cost">
               <i class="fa-solid fa-coins"></i>
@@ -212,77 +184,19 @@
         </form>
       </div>
 
-      <!-- Image to Video -->
-      <div class="form-panel" id="tab-img2video" style="display: none;">
-        <form id="formImg2Video" autocomplete="off">
-          <div class="mb-3">
-            <label class="form-label">AI Model</label>
-            <select class="form-select" name="model">
-              <option value="kling">Kling Video</option>
-              <option value="minimax">MiniMax</option>
-              <option value="wan">Wan</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Source Image</label>
-            <input type="text" class="form-control mb-2" id="imageUrl" name="imageUrl" placeholder="Paste image URL...">
-            <div class="text-center my-2" style="color: rgba(255,255,255,0.3); font-size: 12px;">OR</div>
-            <div class="upload-zone" id="imageUploadZone">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <div>Click or drag an image here</div>
-              <input type="file" id="imageFile" accept="image/*" style="display: none;">
-            </div>
-            <img id="imagePreview" class="image-preview" style="display: none;" alt="Preview">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Prompt (optional)</label>
-            <textarea class="form-control" id="promptImg" name="prompt" maxlength="2000"
-              placeholder="Describe the motion or transformation..."></textarea>
-            <div class="char-counter"><span id="charCountImg">0</span> / 2000</div>
-          </div>
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Duration</label>
-              <div class="option-group" id="durationGroupImg">
-                <div class="option-btn active" data-value="5">5s</div>
-                <div class="option-btn" data-value="10">10s</div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Aspect Ratio</label>
-              <div class="option-group" id="ratioGroupImg">
-                <div class="option-btn active" data-value="16:9">16:9</div>
-                <div class="option-btn" data-value="9:16">9:16</div>
-                <div class="option-btn" data-value="1:1">1:1</div>
-              </div>
-            </div>
-          </div>
-          <div class="d-flex align-items-center justify-content-between mt-4">
-            <div class="credit-cost">
-              <i class="fa-solid fa-coins"></i>
-              <span>1 credit</span>
-            </div>
-            <button type="submit" class="btn-generate" id="btnGenerateImg">
-              <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Generate Video
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Progress -->
-      <div class="progress-section" id="progressSection">
-        <div class="progress-spinner"></div>
+      <!-- Status Section -->
+      <div id="statusSection">
+        <div class="progress-spinner" id="statusSpinner"></div>
         <div class="progress-status">
-          <strong id="progressStatus">Submitting...</strong>
-          <div style="margin-top: 6px; font-size: 13px;" id="progressDetail">Your video is being generated</div>
+          <strong id="genStatus">Submitting...</strong>
+          <div style="margin-top: 6px; font-size: 13px;" id="genDetail">Sending request to AI model</div>
         </div>
-        <a href="#" id="progressViewLink" class="btn btn-sm btn-outline-light mt-3" style="display: none;">View Video</a>
+        <video id="videoPreview" controls></video>
       </div>
     </div>
   </div>
 
-  <script src="/assets/vendor/jquery.min.js"></script>
-  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
     (function() {
       var token = localStorage.getItem('token');
@@ -300,16 +214,19 @@
           }
         });
 
-      // Tabs
-      document.querySelectorAll('.gen-tab').forEach(function(tab) {
-        tab.addEventListener('click', function() {
-          document.querySelectorAll('.gen-tab').forEach(function(t) { t.classList.remove('active'); });
-          tab.classList.add('active');
-          var target = tab.getAttribute('data-tab');
-          document.getElementById('tab-text2video').style.display = target === 'text2video' ? 'block' : 'none';
-          document.getElementById('tab-img2video').style.display = target === 'img2video' ? 'block' : 'none';
-        });
-      });
+      // Show/hide image URL for image-to-video models
+      var modelSelect = document.getElementById('modelSelect');
+      var imageUrlRow = document.getElementById('imageUrlRow');
+      function toggleImageUrl() {
+        var val = modelSelect.value;
+        if (val === 'kling-image') {
+          imageUrlRow.classList.add('visible');
+        } else {
+          imageUrlRow.classList.remove('visible');
+        }
+      }
+      modelSelect.addEventListener('change', toggleImageUrl);
+      toggleImageUrl();
 
       // Option buttons
       document.querySelectorAll('.option-group').forEach(function(group) {
@@ -321,81 +238,47 @@
         });
       });
 
-      // Char counters
-      document.getElementById('promptText').addEventListener('input', function() {
+      // Char counter
+      var promptEl = document.getElementById('prompt');
+      promptEl.addEventListener('input', function() {
         document.getElementById('charCount').textContent = this.value.length;
       });
-      document.getElementById('promptImg').addEventListener('input', function() {
-        document.getElementById('charCountImg').textContent = this.value.length;
-      });
-
-      // Image upload zone
-      var uploadZone = document.getElementById('imageUploadZone');
-      var imageFile = document.getElementById('imageFile');
-      uploadZone.addEventListener('click', function() { imageFile.click(); });
-      uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.style.borderColor = '#7b5cff'; });
-      uploadZone.addEventListener('dragleave', function() { uploadZone.style.borderColor = ''; });
-      uploadZone.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadZone.style.borderColor = '';
-        if (e.dataTransfer.files.length) { imageFile.files = e.dataTransfer.files; showPreview(e.dataTransfer.files[0]); }
-      });
-      imageFile.addEventListener('change', function() {
-        if (this.files.length) showPreview(this.files[0]);
-      });
-      function showPreview(file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var preview = document.getElementById('imagePreview');
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
 
       function getSelectedValue(groupId) {
         var active = document.querySelector('#' + groupId + ' .option-btn.active');
         return active ? active.getAttribute('data-value') : null;
       }
 
-      // Text-to-Video submit
-      document.getElementById('formText2Video').addEventListener('submit', function(e) {
+      // Form submit
+      document.getElementById('generateForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        var prompt = document.getElementById('promptText').value.trim();
-        if (!prompt) return alert('Please enter a prompt.');
+        var promptVal = promptEl.value.trim();
+        if (!promptVal) return alert('Please enter a prompt.');
+
+        var model = modelSelect.value;
         var body = {
-          type: 'text2video',
-          model: document.getElementById('modelSelect').value,
-          prompt: prompt,
+          model: model,
+          prompt: promptVal,
           duration: getSelectedValue('durationGroup'),
           aspectRatio: getSelectedValue('ratioGroup')
         };
-        submitGeneration(body);
-      });
 
-      // Image-to-Video submit
-      document.getElementById('formImg2Video').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var imgUrl = document.getElementById('imageUrl').value.trim();
-        if (!imgUrl && !imageFile.files.length) return alert('Please provide an image.');
-        var body = {
-          type: 'img2video',
-          model: document.querySelector('#tab-img2video select[name="model"]').value,
-          prompt: document.getElementById('promptImg').value.trim(),
-          imageUrl: imgUrl,
-          duration: getSelectedValue('durationGroupImg'),
-          aspectRatio: getSelectedValue('ratioGroupImg')
-        };
-        submitGeneration(body);
-      });
+        // Determine type from model
+        if (model === 'kling-image') {
+          body.type = 'img2video';
+          body.imageUrl = document.getElementById('imageUrl').value.trim();
+          if (!body.imageUrl) return alert('Please provide an image URL for Image-to-Video.');
+        } else {
+          body.type = 'text2video';
+        }
 
-      function submitGeneration(body) {
-        document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = true; });
-        var section = document.getElementById('progressSection');
+        document.getElementById('btnGenerate').disabled = true;
+        var section = document.getElementById('statusSection');
         section.style.display = 'block';
-        document.getElementById('progressStatus').textContent = 'Submitting...';
-        document.getElementById('progressDetail').textContent = 'Sending request to AI model';
-        document.getElementById('progressViewLink').style.display = 'none';
+        document.getElementById('statusSpinner').style.display = 'block';
+        document.getElementById('genStatus').textContent = 'Submitting...';
+        document.getElementById('genDetail').textContent = 'Sending request to AI model';
+        document.getElementById('videoPreview').style.display = 'none';
 
         fetch('/api/videos/generate', { method: 'POST', headers: headers, body: JSON.stringify(body) })
           .then(function(r) { return r.json(); })
@@ -403,7 +286,7 @@
             if (data.error) {
               alert(data.error);
               section.style.display = 'none';
-              document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+              document.getElementById('btnGenerate').disabled = false;
               return;
             }
             var videoId = data.video ? data.video._id || data.video.id : data.id || data._id;
@@ -412,36 +295,47 @@
           .catch(function(err) {
             alert('Generation failed. Please try again.');
             section.style.display = 'none';
-            document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+            document.getElementById('btnGenerate').disabled = false;
           });
-      }
+      });
 
       function pollStatus(videoId) {
-        document.getElementById('progressStatus').textContent = 'Processing...';
-        document.getElementById('progressDetail').textContent = 'Your video is being generated. This may take a few minutes.';
+        document.getElementById('genStatus').textContent = 'Processing...';
+        document.getElementById('genDetail').textContent = 'Your video is being generated. This may take a few minutes.';
 
         var interval = setInterval(function() {
           fetch('/api/videos/' + videoId + '/status', { headers: { 'Authorization': 'Bearer ' + token } })
             .then(function(r) { return r.json(); })
             .then(function(data) {
               var status = data.status || (data.video && data.video.status);
+              var videoUrl = data.videoUrl || (data.video && data.video.videoUrl);
               if (status === 'completed') {
                 clearInterval(interval);
-                document.getElementById('progressStatus').textContent = 'Complete!';
-                document.getElementById('progressDetail').textContent = 'Your video is ready.';
-                document.querySelector('.progress-spinner').style.display = 'none';
-                var link = document.getElementById('progressViewLink');
-                link.href = '/videos';
-                link.style.display = 'inline-block';
-                document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+                document.getElementById('genStatus').textContent = 'Complete!';
+                document.getElementById('genDetail').textContent = 'Your video is ready.';
+                document.getElementById('statusSpinner').style.display = 'none';
+                document.getElementById('btnGenerate').disabled = false;
+                if (videoUrl) {
+                  var preview = document.getElementById('videoPreview');
+                  preview.src = videoUrl;
+                  preview.style.display = 'block';
+                }
+                // Refresh sidebar credits
+                fetch('/api/auth/profile', { headers: { 'Authorization': 'Bearer ' + token } })
+                  .then(function(r) { return r.json(); })
+                  .then(function(d) {
+                    if (d.user && d.user.credits != null) {
+                      document.getElementById('sidebarCredits').textContent = d.user.credits;
+                    }
+                  });
               } else if (status === 'failed') {
                 clearInterval(interval);
-                document.getElementById('progressStatus').textContent = 'Failed';
-                document.getElementById('progressDetail').textContent = data.error || 'Video generation failed. Please try again.';
-                document.querySelector('.progress-spinner').style.display = 'none';
-                document.querySelectorAll('.btn-generate').forEach(function(b) { b.disabled = false; });
+                document.getElementById('genStatus').textContent = 'Failed';
+                document.getElementById('genDetail').textContent = data.error || 'Video generation failed. Please try again.';
+                document.getElementById('statusSpinner').style.display = 'none';
+                document.getElementById('btnGenerate').disabled = false;
               } else {
-                document.getElementById('progressStatus').textContent = 'Processing...';
+                document.getElementById('genStatus').textContent = 'Processing...';
               }
             });
         }, 3000);

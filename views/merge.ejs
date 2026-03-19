@@ -6,13 +6,15 @@
     body {
       background: #0a0a14;
       margin: 0;
-      font-family: 'Manrope', 'Gordita', sans-serif;
+      font-family: 'Manrope', sans-serif;
     }
     .dash-main { margin-left: 260px; min-height: 100vh; }
     .dash-topbar {
       padding: 20px 32px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
     .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
@@ -129,6 +131,20 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .merge-status { color: rgba(255,255,255,0.6); font-size: 14px; }
     .merge-status strong { color: #fff; }
+    .merge-download-link {
+      display: none;
+      margin-top: 16px;
+      padding: 10px 24px;
+      border-radius: 10px;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #10b981;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .merge-download-link:hover { background: rgba(16,185,129,0.25); color: #10b981; }
   </style>
 </head>
 <body>
@@ -182,18 +198,17 @@
 
       <!-- Merge Progress -->
       <div class="panel merge-progress" id="mergeProgress">
-        <div class="merge-spinner"></div>
+        <div class="merge-spinner" id="mergeSpinner"></div>
         <div class="merge-status">
           <strong id="mergeStatusText">Merging videos...</strong>
           <div style="margin-top: 6px; font-size: 13px;" id="mergeDetail">This may take a few minutes</div>
         </div>
-        <a href="/videos" id="mergeViewLink" class="btn btn-sm btn-outline-light mt-3" style="display: none;">View Result</a>
+        <a href="#" id="mergeDownloadLink" class="merge-download-link"><i class="fa-solid fa-download me-2"></i>Download Merged Video</a>
       </div>
     </div>
   </div>
 
-  <script src="/assets/vendor/jquery.min.js"></script>
-  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
     (function() {
       var token = localStorage.getItem('token');
@@ -293,7 +308,7 @@
           btn.disabled = true;
           return;
         }
-        btn.disabled = false;
+        btn.disabled = selectedVideos.length < 2;
         list.innerHTML = '';
         selectedVideos.forEach(function(v, idx) {
           var item = document.createElement('div');
@@ -333,9 +348,10 @@
         btn.disabled = true;
         var progress = document.getElementById('mergeProgress');
         progress.style.display = 'block';
+        document.getElementById('mergeSpinner').style.display = 'block';
         document.getElementById('mergeStatusText').textContent = 'Merging videos...';
         document.getElementById('mergeDetail').textContent = 'This may take a few minutes';
-        document.getElementById('mergeViewLink').style.display = 'none';
+        document.getElementById('mergeDownloadLink').style.display = 'none';
 
         var formData = new FormData();
         var videoIds = [];
@@ -360,12 +376,12 @@
             return;
           }
           var mergeId = data.mergeId || data.id || data._id;
-          if (mergeId) pollMerge(mergeId);
-          else {
-            document.getElementById('mergeStatusText').textContent = 'Complete!';
-            document.getElementById('mergeDetail').textContent = 'Your merged video is ready.';
-            document.querySelector('.merge-spinner').style.display = 'none';
-            document.getElementById('mergeViewLink').style.display = 'inline-block';
+          if (mergeId) {
+            pollMerge(mergeId);
+          } else if (data.videoUrl || data.url) {
+            mergeComplete(data.videoUrl || data.url);
+          } else {
+            mergeComplete(null);
           }
         })
         .catch(function() {
@@ -375,6 +391,18 @@
         });
       });
 
+      function mergeComplete(url) {
+        document.getElementById('mergeStatusText').textContent = 'Complete!';
+        document.getElementById('mergeDetail').textContent = 'Your merged video is ready.';
+        document.getElementById('mergeSpinner').style.display = 'none';
+        document.getElementById('btnMerge').disabled = false;
+        if (url) {
+          var link = document.getElementById('mergeDownloadLink');
+          link.href = url;
+          link.style.display = 'inline-block';
+        }
+      }
+
       function pollMerge(mergeId) {
         var interval = setInterval(function() {
           fetch('/api/merge/' + mergeId + '/status', { headers: headers })
@@ -382,16 +410,12 @@
             .then(function(data) {
               if (data.status === 'completed') {
                 clearInterval(interval);
-                document.getElementById('mergeStatusText').textContent = 'Complete!';
-                document.getElementById('mergeDetail').textContent = 'Your merged video is ready.';
-                document.querySelector('.merge-spinner').style.display = 'none';
-                document.getElementById('mergeViewLink').style.display = 'inline-block';
-                document.getElementById('btnMerge').disabled = false;
+                mergeComplete(data.videoUrl || data.url || null);
               } else if (data.status === 'failed') {
                 clearInterval(interval);
                 document.getElementById('mergeStatusText').textContent = 'Failed';
                 document.getElementById('mergeDetail').textContent = data.error || 'Merge failed.';
-                document.querySelector('.merge-spinner').style.display = 'none';
+                document.getElementById('mergeSpinner').style.display = 'none';
                 document.getElementById('btnMerge').disabled = false;
               }
             });

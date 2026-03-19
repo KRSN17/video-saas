@@ -9,10 +9,10 @@
       --accent-gradient: linear-gradient(135deg, #6c5ce7, #a855f7, #ec4899);
       --glass-bg: rgba(255, 255, 255, 0.04);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --font-main: 'Manrope', 'Gordita', sans-serif;
+      --font-main: 'Manrope', sans-serif;
     }
 
-    * { font-family: var(--font-main); }
+    * { font-family: var(--font-main); box-sizing: border-box; }
 
     body {
       background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
@@ -23,6 +23,7 @@
       color: #e2e8f0;
       position: relative;
       overflow: hidden;
+      margin: 0;
     }
 
     body::before {
@@ -180,12 +181,12 @@
 
       <form id="loginForm" novalidate>
         <div class="mb-3">
-          <label for="email" class="form-label">Email Address</label>
-          <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+          <label for="loginEmail" class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="loginEmail" name="email" placeholder="you@example.com" required>
         </div>
         <div class="mb-4">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+          <label for="loginPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
         </div>
         <button type="submit" class="btn btn-auth" id="submitBtn">
           <span id="btnText">Sign In</span>
@@ -210,8 +211,8 @@
       const btnSpinner = document.getElementById('btnSpinner');
       const alertBox = document.getElementById('alertBox');
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
 
       if (!email || !password) {
         alertBox.textContent = 'Please fill in all fields.';
@@ -219,7 +220,6 @@
         return;
       }
 
-      // Show loading state
       btn.disabled = true;
       btnText.classList.add('d-none');
       btnSpinner.classList.remove('d-none');

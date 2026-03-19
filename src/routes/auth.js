@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/profile', authenticate, async (req, res) => {
   const { id, email, name, credits, role, createdAt } = req.user;
-  res.json({ id, email, name, credits, role, createdAt });
+  res.json({ user: { id, email, name, credits, role, createdAt } });
 });
 
 module.exports = router;

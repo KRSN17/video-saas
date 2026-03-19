@@ -55,7 +55,7 @@ router.post('/', authenticate, upload.array('videos', 10), async (req, res) => {
         });
       });
 
-    res.json({ mergeJob: { id: mergeJob.id, status: 'processing' } });
+    res.json({ mergeJob: { id: mergeJob.id, status: 'processing' }, mergeId: mergeJob.id, id: mergeJob.id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

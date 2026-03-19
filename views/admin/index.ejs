@@ -6,13 +6,15 @@
     body {
       background: #0a0a14;
       margin: 0;
-      font-family: 'Manrope', 'Gordita', sans-serif;
+      font-family: 'Manrope', sans-serif;
     }
     .dash-main { margin-left: 260px; min-height: 100vh; }
     .dash-topbar {
       padding: 20px 32px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .dash-topbar h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
     .dash-topbar .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 14px; }
@@ -79,13 +81,25 @@
     }
     .btn-sm-action:hover { background: rgba(123,92,255,0.2); }
 
-    .pkg-form {
+    .settings-panel {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
     }
+    .settings-group {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .settings-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .settings-group-title {
+      font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .settings-group-title i { color: #a78bfa; font-size: 14px; }
+
     .form-label { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
     .form-control, .form-select {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
@@ -95,6 +109,43 @@
       background: rgba(255,255,255,0.06); border-color: rgba(123,92,255,0.4);
       box-shadow: 0 0 0 3px rgba(123,92,255,0.1); color: #fff;
     }
+    .form-control::placeholder { color: rgba(255,255,255,0.25); }
+
+    .api-key-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+      padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .api-key-row .key-label { flex: 1; font-size: 13px; color: rgba(255,255,255,0.5); font-family: monospace; }
+    .api-key-row .key-status {
+      font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .api-key-row .key-active { background: rgba(16,185,129,0.15); color: #10b981; }
+    .api-key-row .key-fallback { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .api-key-row .btn-remove-key {
+      background: none; border: none; color: rgba(239,68,68,0.5); cursor: pointer;
+      font-size: 14px; padding: 2px 6px; transition: all 0.15s ease;
+    }
+    .api-key-row .btn-remove-key:hover { color: #ef4444; }
+
+    .btn-save-settings {
+      background: linear-gradient(135deg, #7b5cff, #c86dd7);
+      border: none; color: #fff; padding: 10px 24px;
+      border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .btn-save-settings:hover { opacity: 0.9; }
+    .btn-save-settings:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .toast-success {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+      color: #10b981; padding: 12px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; display: none;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     .modal-content {
       background: #141425;
@@ -180,46 +231,56 @@
         </div>
       </div>
 
-      <!-- Credit Packages Management -->
-      <div class="section-title">Credit Packages</div>
-      <div id="packagesContainer">
-        <div class="text-center py-4">
-          <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+      <!-- Settings Section -->
+      <div class="section-title">Settings</div>
+      <div class="settings-panel">
+        <!-- fal.ai API Keys -->
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <i class="fa-solid fa-key"></i>
+            fal.ai API Keys
+          </div>
+          <p style="font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 14px;">
+            Add multiple API keys for fallback support. The primary key is used first; if it fails, fallback keys are tried in order.
+          </p>
+          <div id="apiKeysContainer"></div>
+          <div class="d-flex gap-2 mt-3">
+            <input type="text" class="form-control" id="newApiKey" placeholder="fal-xxxxxxxxxxxxxxxxxxxxxxxx" style="flex: 1; font-family: monospace;">
+            <button class="btn-sm-action" id="btnAddApiKey" style="padding: 8px 16px; white-space: nowrap;">
+              <i class="fa-solid fa-plus me-1"></i>Add Key
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="mt-3">
-        <button class="btn-sm-action" id="btnAddPackage" style="padding: 10px 20px; font-size: 13px;">
-          <i class="fa-solid fa-plus me-2"></i>Add Package
-        </button>
-      </div>
 
-      <!-- Add/Edit Package Form -->
-      <div class="pkg-form mt-3" id="packageForm" style="display: none;">
-        <div class="section-title" style="font-size: 15px;" id="packageFormTitle">Add Package</div>
-        <form id="formPackage">
-          <input type="hidden" id="pkgEditId">
+        <!-- Site Configuration -->
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <i class="fa-solid fa-gear"></i>
+            Site Configuration
+          </div>
           <div class="row g-3">
-            <div class="col-md-3">
-              <label class="form-label">Name</label>
-              <input type="text" class="form-control" id="pkgName" placeholder="e.g. Starter" required>
+            <div class="col-md-6">
+              <label class="form-label">Site Name</label>
+              <input type="text" class="form-control" id="settingSiteName" placeholder="VideoGen AI">
             </div>
-            <div class="col-md-3">
-              <label class="form-label">Credits</label>
-              <input type="number" class="form-control" id="pkgCredits" placeholder="e.g. 10" required>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Price ($)</label>
-              <input type="number" step="0.01" class="form-control" id="pkgPrice" placeholder="e.g. 9.99" required>
-            </div>
-            <div class="col-md-3 d-flex align-items-end gap-2">
-              <button type="submit" class="btn-sm-action" style="padding: 8px 16px;">Save</button>
-              <button type="button" class="btn-sm-action" style="padding: 8px 16px; border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4);" id="btnCancelPkg">Cancel</button>
+            <div class="col-md-6">
+              <label class="form-label">Logo URL</label>
+              <input type="text" class="form-control" id="settingLogoUrl" placeholder="https://example.com/logo.png">
             </div>
           </div>
-        </form>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button class="btn-save-settings" id="btnSaveSettings">
+            <i class="fa-solid fa-check me-2"></i>Save Settings
+          </button>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Toast -->
+  <div class="toast-success" id="toastSuccess">Settings saved successfully</div>
 
   <!-- Adjust Credits Modal -->
   <div class="modal fade" id="adjustCreditsModal" tabindex="-1">
@@ -236,14 +297,13 @@
           <input type="number" class="form-control" id="adjustAmount" placeholder="e.g. 10 or -5">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-sm-action" id="btnAdjustSubmit">Apply</button>
+          <button type="button" class="btn-sm-action" id="btnAdjustSubmit" style="padding: 8px 20px;">Apply</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="/assets/vendor/jquery.min.js"></script>
-  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/public/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
     (function() {
       var token = localStorage.getItem('token');
@@ -276,7 +336,7 @@
         })
         .catch(function() {});
 
-      // Load users
+      // --- Users Table ---
       function loadUsers() {
         fetch('/api/admin/users', { headers: headers })
           .then(function(r) { return r.json(); })
@@ -322,7 +382,7 @@
           });
       }
 
-      // Adjust credits
+      // Adjust credits submit
       document.getElementById('btnAdjustSubmit').addEventListener('click', function() {
         var userId = document.getElementById('adjustUserId').value;
         var amount = parseInt(document.getElementById('adjustAmount').value);
@@ -342,7 +402,7 @@
         });
       });
 
-      // Load recent videos
+      // --- Videos Table ---
       fetch('/api/admin/videos', { headers: headers })
         .then(function(r) { return r.json(); })
         .then(function(data) {
@@ -376,88 +436,101 @@
           container.innerHTML = html;
         });
 
-      // Load packages
-      function loadPackages() {
-        fetch('/api/credits/packages', { headers: headers })
+      // --- Settings: API Keys ---
+      var apiKeys = [];
+
+      function loadSettings() {
+        fetch('/api/admin/settings', { headers: headers })
           .then(function(r) { return r.json(); })
           .then(function(data) {
-            var packages = data.packages || data || [];
-            if (!Array.isArray(packages)) packages = [];
-            var container = document.getElementById('packagesContainer');
-
-            if (packages.length === 0) {
-              container.innerHTML = '<div class="text-center py-4" style="color: rgba(255,255,255,0.3);">No packages configured</div>';
-              return;
-            }
-
-            container.innerHTML = '';
-            packages.forEach(function(pkg) {
-              var pkgId = pkg.id || pkg._id;
-              var div = document.createElement('div');
-              div.className = 'pkg-form';
-              div.innerHTML =
-                '<div class="d-flex align-items-center justify-content-between">' +
-                '<div>' +
-                '<strong style="color: #fff;">' + (pkg.name || 'Package') + '</strong>' +
-                '<span style="color: rgba(255,255,255,0.3); font-size: 13px; margin-left: 12px;">' +
-                pkg.credits + ' credits - $' + (pkg.price || 0).toFixed(2) +
-                '</span></div>' +
-                '<button class="btn-sm-action btn-edit-pkg" data-id="' + pkgId + '" ' +
-                'data-name="' + (pkg.name || '') + '" data-credits="' + pkg.credits + '" data-price="' + (pkg.price || 0) + '">' +
-                '<i class="fa-solid fa-pen me-1"></i>Edit</button>' +
-                '</div>';
-              container.appendChild(div);
-            });
-
-            container.querySelectorAll('.btn-edit-pkg').forEach(function(btn) {
-              btn.addEventListener('click', function() {
-                document.getElementById('pkgEditId').value = this.getAttribute('data-id');
-                document.getElementById('pkgName').value = this.getAttribute('data-name');
-                document.getElementById('pkgCredits').value = this.getAttribute('data-credits');
-                document.getElementById('pkgPrice').value = this.getAttribute('data-price');
-                document.getElementById('packageFormTitle').textContent = 'Edit Package';
-                document.getElementById('packageForm').style.display = 'block';
-              });
-            });
+            var settings = data.settings || data || {};
+            apiKeys = settings.apiKeys || [];
+            document.getElementById('settingSiteName').value = settings.siteName || '';
+            document.getElementById('settingLogoUrl').value = settings.logoUrl || '';
+            renderApiKeys();
+          })
+          .catch(function() {
+            // Settings endpoint may not exist yet
+            renderApiKeys();
           });
       }
 
-      document.getElementById('btnAddPackage').addEventListener('click', function() {
-        document.getElementById('pkgEditId').value = '';
-        document.getElementById('pkgName').value = '';
-        document.getElementById('pkgCredits').value = '';
-        document.getElementById('pkgPrice').value = '';
-        document.getElementById('packageFormTitle').textContent = 'Add Package';
-        document.getElementById('packageForm').style.display = 'block';
-      });
-
-      document.getElementById('btnCancelPkg').addEventListener('click', function() {
-        document.getElementById('packageForm').style.display = 'none';
-      });
-
-      document.getElementById('formPackage').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var id = document.getElementById('pkgEditId').value;
-        var body = {
-          name: document.getElementById('pkgName').value,
-          credits: parseInt(document.getElementById('pkgCredits').value),
-          price: parseFloat(document.getElementById('pkgPrice').value)
-        };
-        var url = id ? '/api/admin/packages/' + id : '/api/admin/packages';
-        var method = id ? 'PUT' : 'POST';
-        fetch(url, { method: method, headers: jsonHeaders, body: JSON.stringify(body) })
-          .then(function(r) { return r.json(); })
-          .then(function(data) {
-            if (data.error) alert(data.error);
-            else {
-              document.getElementById('packageForm').style.display = 'none';
-              loadPackages();
-            }
+      function renderApiKeys() {
+        var container = document.getElementById('apiKeysContainer');
+        if (apiKeys.length === 0) {
+          container.innerHTML = '<div style="text-align: center; padding: 12px; color: rgba(255,255,255,0.2); font-size: 13px;">No API keys configured</div>';
+          return;
+        }
+        container.innerHTML = '';
+        apiKeys.forEach(function(key, idx) {
+          var masked = key.substring(0, 8) + '...' + key.substring(key.length - 4);
+          var statusLabel = idx === 0 ? 'Primary' : 'Fallback';
+          var statusClass = idx === 0 ? 'key-active' : 'key-fallback';
+          var row = document.createElement('div');
+          row.className = 'api-key-row';
+          row.innerHTML =
+            '<span class="key-label">' + masked + '</span>' +
+            '<span class="key-status ' + statusClass + '">' + statusLabel + '</span>' +
+            '<button class="btn-remove-key" data-idx="' + idx + '"><i class="fa-solid fa-xmark"></i></button>';
+          row.querySelector('.btn-remove-key').addEventListener('click', function() {
+            apiKeys.splice(idx, 1);
+            renderApiKeys();
           });
+          container.appendChild(row);
+        });
+      }
+
+      document.getElementById('btnAddApiKey').addEventListener('click', function() {
+        var input = document.getElementById('newApiKey');
+        var key = input.value.trim();
+        if (!key) return alert('Enter an API key.');
+        apiKeys.push(key);
+        input.value = '';
+        renderApiKeys();
       });
 
+      // Save settings
+      document.getElementById('btnSaveSettings').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        var body = {
+          apiKeys: apiKeys,
+          siteName: document.getElementById('settingSiteName').value.trim(),
+          logoUrl: document.getElementById('settingLogoUrl').value.trim()
+        };
+        fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: jsonHeaders,
+          body: JSON.stringify(body)
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            showToast('Settings saved successfully');
+          }
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Save Settings';
+        })
+        .catch(function() {
+          alert('Failed to save settings.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Save Settings';
+        });
+      });
+
+      function showToast(msg) {
+        var toast = document.getElementById('toastSuccess');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 3000);
+      }
+
+      // Initialize
       loadUsers();
-      loadPackages();
+      loadSettings();
     })();
   </script>
 </body>

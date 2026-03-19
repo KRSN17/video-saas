@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     border-right: 1px solid rgba(255,255,255,0.06);
-    font-family: 'Manrope', 'Gordita', sans-serif;
+    font-family: 'Manrope', sans-serif;
   }
   .dash-sidebar .sidebar-logo {
     padding: 24px 24px 20px;
@@ -52,7 +52,7 @@
   }
   .dash-sidebar .sidebar-nav .nav-link:hover {
     color: #fff;
-    background: rgba(123,92,255,0.1);
+    background: rgba(255,255,255,0.05);
   }
   .dash-sidebar .sidebar-nav .nav-link.active {
     color: #fff;
@@ -140,7 +140,7 @@
     <ul class="list-unstyled mb-0">
       <li class="nav-item">
         <a href="/dashboard" class="nav-link" data-page="dashboard">
-          <i class="fa-solid fa-grid-2"></i>
+          <i class="fa-solid fa-chart-line"></i>
           Dashboard
         </a>
       </li>
@@ -151,7 +151,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/videos" class="nav-link" data-page="videos">
+        <a href="/my-videos" class="nav-link" data-page="my-videos">
           <i class="fa-solid fa-film"></i>
           My Videos
         </a>
@@ -159,19 +159,19 @@
       <li class="nav-item">
         <a href="/merge" class="nav-link" data-page="merge">
           <i class="fa-solid fa-object-group"></i>
-          Merge Videos
+          Merge
         </a>
       </li>
       <li class="nav-item">
-        <a href="/credits" class="nav-link" data-page="credits">
+        <a href="/buy-credits" class="nav-link" data-page="buy-credits">
           <i class="fa-solid fa-coins"></i>
-          Buy Credits
+          Credits
         </a>
       </li>
       <li class="nav-item nav-admin" style="display: none;">
         <a href="/admin" class="nav-link" data-page="admin">
           <i class="fa-solid fa-shield"></i>
-          Admin Panel
+          Admin
         </a>
       </li>
     </ul>
@@ -201,7 +201,9 @@
   document.querySelectorAll('.dash-sidebar .nav-link').forEach(function(link) {
     var page = link.getAttribute('data-page');
     if (path === '/' + page || (page === 'dashboard' && path === '/dashboard') ||
-        (page === 'admin' && path.startsWith('/admin'))) {
+        (page === 'admin' && path.startsWith('/admin')) ||
+        (page === 'my-videos' && (path === '/my-videos' || path === '/videos')) ||
+        (page === 'buy-credits' && (path === '/buy-credits' || path === '/credits'))) {
       link.classList.add('active');
     }
   });
